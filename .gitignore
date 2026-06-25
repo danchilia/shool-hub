@@ -1,0 +1,31 @@
+# Sensitive files - NEVER push these
+application/config/database.php
+application/config/purchase_key.php
+
+# Sample/test SQL files
+sample_school_data.sql
+sample_students_bulk.sql
+sample_complete_school.sql
+
+# Uploads (user data - too large for git)
+uploads/images/
+uploads/attachments/
+uploads/qrcode_cache/
+
+# System files
+.DS_Store
+Thumbs.db
+*.log
+*.bak
+*.tmp
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# PHP dependencies (if any)
+vendor/
+
+# XAMPP specific
+php_error_log
