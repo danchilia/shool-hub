@@ -23,7 +23,7 @@
 						<span class="error"><?=form_error('name')?></span>
 					</div>
 					<div class="form-group">
-						<label class="control-label">Curriculum Level <span class="required">*</span></label>
+						<label class="control-label">Curriculum Level <span class="required">*</span><?=help_tip('Pre-Primary = PP1-PP2&lt;br&gt;Lower Primary = Grade 1-3&lt;br&gt;Upper Primary = Grade 4-6&lt;br&gt;Junior Secondary = Grade 7-9. Each level has its own learning areas as defined by KICD.')?></label>
 						<?php
 							$levels = array(
 								'' => translate('select'),
@@ -135,7 +135,7 @@
 					<span class="error"></span>
 				</div>
 				<div class="form-group">
-					<label class="control-label">Curriculum Level <span class="required">*</span></label>
+					<label class="control-label">Curriculum Level <span class="required">*</span><?=help_tip('Pre-Primary = PP1-PP2&lt;br&gt;Lower Primary = Grade 1-3&lt;br&gt;Upper Primary = Grade 4-6&lt;br&gt;Junior Secondary = Grade 7-9. Each level has its own learning areas as defined by KICD.')?></label>
 					<?php
 						$levels = array('' => translate('select'), 'pp' => 'Pre-Primary', 'lower_primary' => 'Lower Primary', 'upper_primary' => 'Upper Primary', 'junior_secondary' => 'Junior Secondary');
 						echo form_dropdown("level", $levels, '', "class='form-control' id='edit_level' data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity'");

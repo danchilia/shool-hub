@@ -34,7 +34,7 @@
 <?php } ?>
 						<div class="col-md-<?=$widget?> mb-sm">
 							<div class="form-group">
-								<label class="control-label"><?=translate('role')?> <span class="required">*</span></label>
+								<label class="control-label"><?=translate('role')?> <span<?=help_tip('System access level. Admin=full school control, Teacher=marks/attendance/homework, Accountant=fees/payroll, Librarian=library only')?> class="required">*</span></label>
 								<?php
 									$role_list = $this->app_lib->getRoles();
 									echo form_dropdown("user_role", $role_list, set_value('user_role'), "class='form-control'
@@ -81,7 +81,7 @@
 						</div>
 						<div class="col-md-4 mb-sm">
 							<div class="form-group">
-								<label class="control-label"><?=translate('qualification')?> <span class="required">*</span></label>
+								<label class="control-label"><?=translate('qualification')?><?=help_tip('Highest education level. Example: B.Ed, Dip. Education, CPA-K, PhD')?> <span class="required">*</span></label>
 								<input type="text" class="form-control" name="qualification" value="<?=set_value('qualification')?>">
 								<span class="error"><?php echo form_error('qualification'); ?></span>
 							</div>

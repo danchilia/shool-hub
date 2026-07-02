@@ -26,7 +26,7 @@
 					<?php endif; ?>
 					<div class="form-group">
 						<label class="col-md-3 control-label">
-							<?=translate('subject_name')?> <span class="required">*</span>
+							<?=translate('subject_name')?><?=help_tip('Full subject name. Example: Mathematics, English, Biology, Computer Studies')?> <span class="required">*</span>
 						</label>
 						<div class="col-md-6">
 							<input type="text" class="form-control" name="name" value="<?=$subject['name']?>" />
@@ -36,7 +36,7 @@
 
 					<div class="form-group">
 						<label class="col-md-3 control-label">
-							<?=translate('subject_code')?> <span class="required">*</span>
+							<?=translate('subject_code')?><?=help_tip('Short code. Example: MAT, ENG, BIO, COM')?> <span class="required">*</span>
 						</label>
 						<div class="col-md-6">
 							<input type="text" class="form-control" name="subject_code" value="<?=$subject['subject_code']?>" />
@@ -52,7 +52,7 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-md-3 control-label"><?=translate('subject_type')?> <span class="required">*</span></label>
+						<label class="col-md-3 control-label"><?=translate('subject_type')?><?=help_tip('Theory = written exam only. Practical = includes hands-on component (e.g. Computer Studies, Home Science)')?> <span class="required">*</span></label>
 						<div class="col-md-6 mb-md">
 						<?php
 							$subjectArray = array(

@@ -79,7 +79,7 @@
 						</div>
 					<?php endif; ?>
 						<div class="form-group">
-							<label class="col-md-3 control-label"><?=translate('group_name')?> <span class="required">*</span></label>
+							<label class="col-md-3 control-label"><?=translate('group_name')?><?=help_tip('Bundle of fees for a term. Example: Term 2 Fees - Primary, Term 2 Fees - Secondary')?> <span class="required">*</span></label>
 							<div class="col-md-6">
 								<input type="text" class="form-control" name="name" value="<?=set_value('name')?>" autocomplete="off" />
 								<span class="error"></span>

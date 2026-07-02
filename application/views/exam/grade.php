@@ -20,7 +20,7 @@
 							<th><?=translate('branch')?></th>
 <?php endif; ?>
 							<th><?=translate('grade_name')?></th>
-							<th><?=translate('grade_point')?></th>
+							<th><?=translate('grade_point')?><?=help_tip('Points for this grade. KCSE: A=12, B+=10, C=6, E=1')?></th>
 							<th><?=translate('min_percentage')?></th>
 							<th><?=translate('max_percentage')?></th>
 							<th><?=translate('remarks')?></th>

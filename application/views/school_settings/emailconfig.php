@@ -17,7 +17,7 @@
 					<div id="email_config" class="tab-pane active">
 						<?php echo form_open('school_settings/saveEmailConfig' . $url, array('class' => 'form-horizontal form-bordered frm-submit-msg')); ?>
 						<div class="form-group">
-							<label class="col-md-3 control-label"><?=translate('system_email')?> <span class="required">*</span></label>
+							<label class="col-md-3 control-label"><?=translate('system_email')?><?=help_tip('Email address that notifications are sent FROM. Example: notifications@yourschool.co.ke or yourschool@gmail.com')?> <span class="required">*</span></label>
 							<div class="col-md-6">
 								<input class="form-control" value="<?=$config['email']?>" name="email" 
 								type="email" placeholder="All Outgoing Email Will be sent from This Email Address.">

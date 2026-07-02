@@ -43,7 +43,7 @@
 									<span class="error"></span>
 								</div>
 								<div class="form-group">
-									<label class="control-label">Curriculum Type <span class="required">*</span></label>
+									<label class="control-label">Curriculum Type <span class="required">*</span><?=help_tip('CBC = Competency Based Curriculum (PP1-Grade 9). Uses EE/ME/AE/BE competency levels.&lt;br&gt;8-4-4 = Traditional marks system (Form 1-4). Uses CATs and End Term marks with A-E grades.')?></label>
 									<?php
 										$curriculumTypes = array('' => translate('select'), 'cbc' => 'CBC (Competency Based)', '844' => '8-4-4 (Traditional Marks)');
 										echo form_dropdown("curriculum_type", $curriculumTypes, set_value('curriculum_type'), "class='form-control' data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity'");
@@ -51,7 +51,7 @@
 									<span class="error"></span>
 								</div>
 								<div class="form-group">
-									<label class="control-label">Level <span class="required">*</span></label>
+									<label class="control-label">Level <span class="required">*</span><?=help_tip('Pre-Primary = PP1, PP2&lt;br&gt;Lower Primary = Grade 1-3&lt;br&gt;Upper Primary = Grade 4-6&lt;br&gt;Junior Secondary = Grade 7-9&lt;br&gt;Senior Secondary = Form 1-4. This controls which CBC learning areas appear.')?></label>
 									<?php
 										$levels = array('' => translate('select'), 'pp' => 'Pre-Primary (PP1-PP2)', 'lower_primary' => 'Lower Primary (Grade 1-3)', 'upper_primary' => 'Upper Primary (Grade 4-6)', 'junior_secondary' => 'Junior Secondary (Grade 7-9)', 'senior_secondary' => 'Senior Secondary (Form 1-4)');
 										echo form_dropdown("level", $levels, set_value('level'), "class='form-control' data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity'");

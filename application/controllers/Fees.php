@@ -532,6 +532,16 @@ class Fees extends Admin_Controller
         $this->form_validation->set_rules('amount', translate('amount'), array('trim','required','numeric','greater_than[0]',array('deposit_verify', array($this->fees_model, 'depositAmountVerify'))));
         $this->form_validation->set_rules('pay_via', translate('payment_method'), 'trim|required');
         if ($this->form_validation->run() !== false) {
+            $idempotencyKey = $this->input->post('idempotency_key');
+            if (!empty($idempotencyKey)) {
+                $already = $this->db->where('idempotency_key', $idempotencyKey)->get('fee_payment_history')->num_rows();
+                if ($already > 0) {
+                    // Already saved by a previous attempt (e.g. offline sync retry) - don't charge twice.
+                    set_alert('success', translate('information_has_been_saved_successfully'));
+                    echo json_encode(array('status' => 'success'));
+                    return;
+                }
+            }
             $feesType = explode("|", $this->input->post('fees_type'));
             $amount = $this->input->post('amount');
             $fineAmount = $this->input->post('fine_amount');
@@ -548,9 +558,10 @@ class Fees extends Admin_Controller
                 'pay_via' => $payVia,
                 'remarks' => $this->input->post('remarks'),
                 'date' => $date,
+                'idempotency_key' => $idempotencyKey,
             );
             $this->db->insert('fee_payment_history', $arrayFees);
-            
+
             // transaction voucher save function
             if (isset($_POST['account_id'])) {
                 $arrayTransaction = array(

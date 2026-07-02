@@ -19,7 +19,7 @@
 						</div>
 					<?php endif; ?>
 					<div class="form-group mb-md">
-						<label class="control-label"><?=translate('category_name')?> <span class="required">*</span></label>
+						<label class="control-label"><?=translate('category_name')?><?=help_tip('Book category. Example: Textbooks, Fiction, Reference, Science, Kiswahili Literature, English Literature')?> <span class="required">*</span></label>
 						<input type="text" class="form-control" name="name" value="<?=set_value('name')?>" />
 						<span class="error"><?=form_error('name')?></span>
 					</div>

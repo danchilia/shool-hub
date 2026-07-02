@@ -85,6 +85,56 @@ class Attendance extends Admin_Controller
         $this->load->view('layout/index', $this->data);
     }
 
+    // AJAX endpoint used by the normal page (and replayed by the offline queue once
+    // connectivity returns). idempotency_key prevents a retried/offline-queued submission
+    // from being saved twice.
+    public function save_student_ajax()
+    {
+        if (!get_permission('student_attendance', 'is_add')) {
+            echo json_encode(array('status' => 'fail', 'error' => array('permission' => 'Access denied')));
+            return;
+        }
+
+        $idempotencyKey = $this->input->post('idempotency_key');
+        if (!empty($idempotencyKey)) {
+            $already = $this->db->where('idempotency_key', $idempotencyKey)->get('student_attendance')->num_rows();
+            if ($already > 0) {
+                echo json_encode(array('status' => 'success', 'message' => translate('information_has_been_updated_successfully')));
+                return;
+            }
+        }
+
+        $branchID = $this->application_model->get_branch_id();
+        $attendance = $this->input->post('attendance');
+        $date = $this->input->post('date');
+        if (empty($attendance) || empty($date)) {
+            echo json_encode(array('status' => 'fail', 'error' => array('date' => 'Missing attendance data')));
+            return;
+        }
+
+        foreach ($attendance as $key => $value) {
+            $attStatus = (isset($value['status']) ? $value['status'] : "");
+            $arrayAttendance = array(
+                'student_id' => $value['student_id'],
+                'status' => $attStatus,
+                'remark' => $value['remark'],
+                'date' => $date,
+                'branch_id' => $branchID,
+                'idempotency_key' => $idempotencyKey,
+            );
+            if (empty($value['attendance_id'])) {
+                $this->db->insert('student_attendance', $arrayAttendance);
+            } else {
+                $this->db->where('id', $value['attendance_id']);
+                $this->db->update('student_attendance', array('status' => $attStatus, 'remark' => $value['remark'], 'idempotency_key' => $idempotencyKey));
+            }
+            if ($attStatus == 'A') {
+                $this->sms_model->send_sms($arrayAttendance, 3);
+            }
+        }
+        echo json_encode(array('status' => 'success', 'message' => translate('information_has_been_updated_successfully')));
+    }
+
     // employees submitted attendance all data are prepared and stored in the database here
     public function employees_entry()
     {
@@ -138,6 +188,56 @@ class Attendance extends Admin_Controller
         $this->data['sub_page'] = 'attendance/employees_entries';
         $this->data['main_menu'] = 'attendance';
         $this->load->view('layout/index', $this->data);
+    }
+
+    // AJAX endpoint used by the normal page (and replayed by the offline queue once
+    // connectivity returns). idempotency_key prevents a retried/offline-queued submission
+    // from being saved twice.
+    public function save_staff_ajax()
+    {
+        if (!get_permission('employee_attendance', 'is_add')) {
+            echo json_encode(array('status' => 'fail', 'error' => array('permission' => 'Access denied')));
+            return;
+        }
+
+        $idempotencyKey = $this->input->post('idempotency_key');
+        if (!empty($idempotencyKey)) {
+            $already = $this->db->where('idempotency_key', $idempotencyKey)->get('staff_attendance')->num_rows();
+            if ($already > 0) {
+                echo json_encode(array('status' => 'success', 'message' => translate('information_has_been_updated_successfully')));
+                return;
+            }
+        }
+
+        $branchID = $this->application_model->get_branch_id();
+        $attendance = $this->input->post('attendance');
+        $date = $this->input->post('date');
+        if (empty($attendance) || empty($date)) {
+            echo json_encode(array('status' => 'fail', 'error' => array('date' => 'Missing attendance data')));
+            return;
+        }
+
+        foreach ($attendance as $key => $value) {
+            $attStatus = (isset($value['status']) ? $value['status'] : "");
+            $arrayAttendance = array(
+                'staff_id' => $value['staff_id'],
+                'status' => $attStatus,
+                'remark' => $value['remark'],
+                'date' => $date,
+                'branch_id' => $branchID,
+                'idempotency_key' => $idempotencyKey,
+            );
+            if (empty($value['attendance_id'])) {
+                $this->db->insert('staff_attendance', $arrayAttendance);
+            } else {
+                $this->db->where('id', $value['attendance_id']);
+                $this->db->update('staff_attendance', array('status' => $attStatus, 'remark' => $value['remark'], 'idempotency_key' => $idempotencyKey));
+            }
+            if ($attStatus == 'A') {
+                $this->sms_model->send_sms($arrayAttendance, 3);
+            }
+        }
+        echo json_encode(array('status' => 'success', 'message' => translate('information_has_been_updated_successfully')));
     }
 
     // exam submitted attendance all data are prepared and stored in the database here

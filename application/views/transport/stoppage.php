@@ -24,8 +24,8 @@
 							<th><?=translate('branch')?></th>
 <?php endif; ?>
 							<th><?=translate('stoppage')?></th>
-							<th><?=translate('stop_time')?></th>
-							<th><?=translate('route_fare')?></th>
+							<th><?=translate('stop_time')?><?=help_tip('Scheduled pickup time in the morning. Example: 07:00')?></th>
+							<th><?=translate('route_fare')?><?=help_tip('Monthly transport fee from this stop in KES. Example: 2000')?></th>
 							<th><?=translate('action')?></th>
 						</tr>
 					</thead>

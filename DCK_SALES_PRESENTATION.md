@@ -238,18 +238,39 @@
 
 ## PRICING
 
-| Plan | Monthly | Students | Staff | What's included |
-|------|---------|----------|-------|----------------|
-| **Basic** | KSh 5,000 | Up to 200 | Up to 20 | All features |
-| **Standard** | KSh 10,000 | Up to 500 | Up to 50 | All features |
-| **Premium** | KSh 25,000 | Up to 2,000 | Up to 200 | All features |
-| **Unlimited** | KSh 50,000 | Unlimited | Unlimited | All features |
+### Monthly Plans
 
-- All plans include ALL features
-- Pay monthly via **M-Pesa Paybill**
-- Free setup and training
-- Free system updates
+| Plan | Monthly (KES) | Students | Staff | All Features |
+|------|-------------|----------|-------|-------------|
+| **Basic** | 3,000 | Up to 500 | Up to 50 | ✓ |
+| **Standard** | 5,000 | Up to 800 | Up to 50 | ✓ |
+| **Premium** | 20,000 | Up to 2,000 | Up to 200 | ✓ |
+| **Unlimited** | 50,000 | Unlimited | Unlimited | ✓ |
+
+### Yearly Plans (Pay once, save more + FREE COMPUTER!)
+
+| Plan | Yearly (KES) | Students | Staff | Free Computer |
+|------|-------------|----------|-------|--------------|
+| **Basic** | 30,000 | Up to 500 | Up to 50 | ✓ FREE |
+| **Standard** | 50,000 | Up to 800 | Up to 50 | ✓ FREE |
+| **Premium** | 200,000 | Up to 2,000 | Up to 200 | ✓ FREE |
+| **Unlimited** | 500,000 | Unlimited | Unlimited | ✓ FREE |
+
+### Yearly Computer Offer
+- Schools that pay yearly receive a **FREE computer** for use in the school office
+- The computer is provided by DCK Solutions for the school to use
+- The computer remains **property of DCK Solutions**
+- School keeps the computer as long as the subscription is active
+- If subscription is cancelled or not renewed, computer is returned to DCK Solutions
+- Computer is for school administration use (running the system, printing reports, etc.)
+
+### All Plans Include:
+- ALL system features (no feature restrictions)
+- Free initial setup and data entry
+- Free staff training
+- Free system updates and improvements
 - Phone/WhatsApp support
+- Pay via **M-Pesa Paybill**
 
 ---
 

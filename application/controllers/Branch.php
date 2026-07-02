@@ -88,8 +88,83 @@ class Branch extends Admin_Controller
     public function delete_data($id = '')
     {
         if (is_superadmin_loggedin()) {
+            // Delete all branch data
+            $tables_with_branch_id = array(
+                'class', 'section', 'subject', 'student_category',
+                'staff_department', 'staff_designation', 'exam_term',
+                'exam_mark_distribution', 'exam_hall', 'grade',
+                'fees_type', 'fee_groups', 'fee_fine', 'fees_reminder',
+                'leave_category', 'event_types', 'event',
+                'voucher_head', 'accounts', 'transactions',
+                'book_category', 'book', 'book_issues',
+                'hostel_category', 'hostel', 'hostel_room',
+                'transport_route', 'transport_vehicle', 'transport_stoppage', 'transport_assign',
+                'cbc_learning_areas', 'cbc_strands', 'cbc_assessment', 'cbc_behaviour_assessment',
+                'admission_requests', 'mpesa_transactions',
+                'payment_config', 'email_config', 'sms_credential',
+                'sms_template_details', 'email_templates_details',
+                'timetable_class', 'timetable_exam', 'exam',
+                'teacher_allocation', 'subject_assign', 'sections_allocation',
+                'student_attendance', 'staff_attendance', 'exam_attendance',
+                'homework', 'attachments', 'attachments_type',
+                'salary_template', 'payslip', 'advance_salary',
+                'award', 'leave_application', 'live_class',
+                'mark', 'hall_allocation', 'custom_field',
+                'branch_subscriptions', 'subscription_invoices',
+            );
+            foreach ($tables_with_branch_id as $table) {
+                $this->db->where('branch_id', $id);
+                $this->db->delete($table);
+            }
+
+            // Delete students and their data
+            $students = $this->db->select('student_id')->where('branch_id', $id)->get('enroll')->result();
+            if (count($students)) {
+                $studentIds = array();
+                foreach ($students as $s) { $studentIds[] = $s->student_id; }
+                $this->db->where_in('id', $studentIds);
+                $this->db->delete('student');
+                $this->db->where_in('user_id', $studentIds);
+                $this->db->where('role', 7);
+                $this->db->delete('login_credential');
+                $this->db->where_in('student_id', $studentIds);
+                $this->db->delete('enroll');
+                $this->db->where_in('student_id', $studentIds);
+                $this->db->delete('fee_allocation');
+                $this->db->where_in('student_id', $studentIds);
+                $this->db->delete('student_documents');
+            }
+
+            // Delete parents
+            $parents = $this->db->select('id')->where('branch_id', $id)->get('parent')->result();
+            if (count($parents)) {
+                $parentIds = array();
+                foreach ($parents as $p) { $parentIds[] = $p->id; }
+                $this->db->where_in('id', $parentIds);
+                $this->db->delete('parent');
+                $this->db->where_in('user_id', $parentIds);
+                $this->db->where('role', 6);
+                $this->db->delete('login_credential');
+            }
+
+            // Delete staff and their login credentials
+            $staff = $this->db->select('id')->where('branch_id', $id)->get('staff')->result();
+            if (count($staff)) {
+                $staffIds = array();
+                foreach ($staff as $st) { $staffIds[] = $st->id; }
+                $this->db->where_in('id', $staffIds);
+                $this->db->delete('staff');
+                $this->db->where_in('user_id', $staffIds);
+                $this->db->where('role !=', 1);
+                $this->db->delete('login_credential');
+            }
+
+            // Finally delete the branch
             $this->db->where('id', $id);
             $this->db->delete('branch');
+
+            set_alert('success', 'Branch and all its data deleted successfully.');
+            redirect(base_url('branch'));
         } else {
             redirect(base_url(), 'refresh');
         }

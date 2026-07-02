@@ -22,8 +22,8 @@
 							<?php if (is_superadmin_loggedin()): ?>
 								<th><?=translate('branch')?></th>
 							<?php endif; ?>
-								<th><?=translate('frequency')?></th>
-								<th><?=translate('days')?></th>
+								<th><?=translate('frequency')?><?=help_tip('When to send reminder: Before due date or After due date')?></th>
+								<th><?=translate('days')?><?=help_tip('Number of days before/after due date to send SMS. Example: 7 (sends reminder 7 days before due)')?></th>
 								<th><?=translate('notify')?></th>
 								<th><?=translate('action')?></th>
 							</tr>
@@ -97,7 +97,7 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-md-3 control-label"><?=translate('message')?></label>
+							<label class="col-md-3 control-label"><?=translate('message')?><?=help_tip('SMS text sent to parents. Use placeholders: {guardian_name}, {student_name}, {amount}, {due_date}, {school_name}')?></label>
 							<div class="col-md-6">
 								<textarea class="form-control" id="message" name="message" placeholder="" rows="3" ></textarea>
 								<span class="error"></span>

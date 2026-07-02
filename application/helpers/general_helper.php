@@ -6,21 +6,28 @@ function get_branch_logo($branchId = '', $type = 'printing_logo') {
     if (empty($branchId)) {
         $branchId = get_loggedin_branch_id();
     }
-    if (!empty($branchId)) {
-        $branch = $CI->db->select($type)->where('id', $branchId)->get('branch')->row();
-        if ($branch && !empty($branch->$type)) {
-            $path = 'uploads/branch_logos/' . $branch->$type;
-            if (file_exists(FCPATH . $path)) {
-                return base_url($path);
-            }
-        }
-    }
     $defaults = array(
         'logo' => 'uploads/app_image/logo.png',
         'printing_logo' => 'uploads/app_image/printing-logo.png',
         'report_card_logo' => 'uploads/app_image/report-card-logo.png',
     );
+    if (!empty($branchId)) {
+        $columns = $CI->db->list_fields('branch');
+        if (in_array($type, $columns)) {
+            $branch = $CI->db->select($type)->where('id', $branchId)->get('branch')->row();
+            if ($branch && isset($branch->$type) && !empty($branch->$type)) {
+                $path = 'uploads/branch_logos/' . $branch->$type;
+                if (file_exists(FCPATH . $path)) {
+                    return base_url($path);
+                }
+            }
+        }
+    }
     return base_url(isset($defaults[$type]) ? $defaults[$type] : $defaults['printing_logo']);
+}
+
+function help_tip($text) {
+    return ' <span class="help-tip" data-toggle="tooltip" data-placement="top" data-html="true" title="' . htmlspecialchars($text, ENT_QUOTES) . '"><i class="fas fa-info-circle"></i></span>';
 }
 
 function format_kenyan_phone($phone) {

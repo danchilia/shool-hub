@@ -29,3 +29,6 @@ vendor/
 
 # XAMPP specific
 php_error_log
+
+# Microsoft Office temp/lock files
+~$*

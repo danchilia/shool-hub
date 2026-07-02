@@ -10,6 +10,18 @@
 			Loading <span></span>
 		</div>
 	</div>
+
+	<!-- Offline / sync status banner (Attendance & Fee Collection keep working without internet) -->
+	<style>
+	#dck-offline-banner {
+		display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 99999;
+		text-align: center; padding: 8px 12px; font-weight: 600; font-size: 13px;
+	}
+	#dck-offline-banner.dck-banner-danger { background: #e74c3c; color: #fff; }
+	#dck-offline-banner.dck-banner-info { background: #2980b9; color: #fff; }
+	#dck-offline-banner.dck-banner-success { background: #27ae60; color: #fff; }
+	</style>
+	<div id="dck-offline-banner"></div>
 	<section class="body">
 		<!-- top navbar-->
 		<?php $this->load->view('layout/topbar.php');?>
@@ -61,6 +73,16 @@
 		</script>
 	<?php endif; ?>
 
+	<!-- Help tooltip styles and init -->
+	<style>
+	.help-tip { color: #3498db; cursor: help; font-size: 13px; margin-left: 3px; }
+	.help-tip:hover { color: #2175b5; }
+	.tooltip-inner { max-width: 300px; text-align: left; font-size: 12px; padding: 8px 12px; background: #1a2b4a; }
+	.tooltip.top .tooltip-arrow { border-top-color: #1a2b4a; }
+	.tooltip.bottom .tooltip-arrow { border-bottom-color: #1a2b4a; }
+	</style>
+	<script>$(function(){ $('[data-toggle="tooltip"]').tooltip(); });</script>
+
 	<!-- sweetalert box -->
 	<script type="text/javascript">
 		function confirm_modal(delete_url) {
@@ -80,6 +102,7 @@
 					$.ajax({
 						url: delete_url,
 						type: "POST",
+						data: {<?=$this->security->get_csrf_token_name()?>: "<?=$this->security->get_csrf_hash()?>"},
 						success:function(data) {
 							swal({
 							title: "<?php echo translate('deleted')?>",

@@ -33,7 +33,7 @@
 					
 					<div class="col-md-3 mb-sm">
 						<div class="form-group">
-							<label class="control-label"><?=translate('register_no')?> <span class="required">*</span></label>
+							<label class="control-label"><?=translate('register_no')?> <span class="required">*</span><?=help_tip('Unique admission number for this student. Auto-generated but you can change it. Example: SAN-00001')?></label>
 							<input type="text" class="form-control" name="register_no" value="<?=set_value('register_no', $register_id)?>" />
 							<span class="error"><?=form_error('register_no')?></span>
 						</div>
@@ -41,7 +41,7 @@
 				
 					<div class="col-md-3 mb-sm">
 						<div class="form-group">
-							<label class="control-label"><?=translate('roll')?> <span class="required">*</span></label>
+							<label class="control-label"><?=translate('roll')?> <span class="required">*</span><?=help_tip('Student sequence number in this class/section. Each section starts from 1. Example: If Grade 4 East has 10 students, the next student is Roll 11.')?></label>
 							<input type="text" class="form-control" name="roll" value="<?=set_value('roll')?>" />
 							<span class="error"><?=form_error('roll')?></span>
 						</div>
@@ -62,7 +62,7 @@
 				<div class="row mb-md">
 					<div class="col-md-3 mb-sm">
 						<div class="form-group">
-							<label class="control-label">UPI Number (NEMIS)</label>
+							<label class="control-label">UPI Number (NEMIS)<?=help_tip('Unique Personal Identifier from the government NEMIS system. Leave blank if the student does not have one yet. Can be added later. Example: UPI2026001')?></label>
 							<input type="text" class="form-control" name="upi_number" value="<?=set_value('upi_number')?>" placeholder="Enter if available" />
 						</div>
 					</div>

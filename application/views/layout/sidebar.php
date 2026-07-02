@@ -1028,9 +1028,49 @@
                                 </a>
                             </li>
                             <?php } ?>
+                            <?php if (get_permission('purchase_orders', 'is_view')): ?>
+                            <li class="<?php if ($sub_page == 'purchase_order/index' || $sub_page == 'purchase_order/view' || $sub_page == 'purchase_order/create') echo 'nav-active'; ?>">
+                                <a href="<?=base_url('purchase-orders')?>">
+                                    <span><i class="fas fa-caret-right"></i> LPO / Purchase Orders</span>
+                                </a>
+                            </li>
+                            <?php endif; if (get_permission('suppliers', 'is_view')): ?>
+                            <li class="<?php if ($sub_page == 'purchase_order/suppliers') echo 'nav-active'; ?>">
+                                <a href="<?=base_url('purchase-orders/suppliers')?>">
+                                    <span><i class="fas fa-caret-right"></i> Suppliers</span>
+                                </a>
+                            </li>
+                            <?php endif; ?>
                         </ul>
                     </li>
                     <?php } ?>
+                    <?php if (get_permission('biometric_devices', 'is_view') || get_permission('biometric_mapping', 'is_view') || get_permission('biometric_logs', 'is_view')): ?>
+                    <!-- biometric attendance -->
+                    <li class="nav-parent <?php if ($main_menu == 'biometric') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="fas fa-fingerprint"></i><span>Biometric Attendance</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <?php if (get_permission('biometric_devices', 'is_view')): ?>
+                            <li class="<?php if ($sub_page == 'biometric/devices') echo 'nav-active';?>">
+                                <a href="<?=base_url('biometric/devices')?>"><span><i class="fas fa-caret-right"></i> Devices</span></a>
+                            </li>
+                            <?php endif; if (get_permission('biometric_mapping', 'is_view')): ?>
+                            <li class="<?php if ($sub_page == 'biometric/mapping') echo 'nav-active';?>">
+                                <a href="<?=base_url('biometric/mapping')?>"><span><i class="fas fa-caret-right"></i> ID Mapping</span></a>
+                            </li>
+                            <?php endif; if (get_permission('biometric_logs', 'is_add')): ?>
+                            <li class="<?php if ($sub_page == 'biometric/import') echo 'nav-active';?>">
+                                <a href="<?=base_url('biometric/import')?>"><span><i class="fas fa-caret-right"></i> Import CSV</span></a>
+                            </li>
+                            <?php endif; if (get_permission('biometric_logs', 'is_view')): ?>
+                            <li class="<?php if ($sub_page == 'biometric/logs') echo 'nav-active';?>">
+                                <a href="<?=base_url('biometric/logs')?>"><span><i class="fas fa-caret-right"></i> Scan Logs</span></a>
+                            </li>
+                            <?php endif; ?>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
                     <!-- message -->
                     <li class="<?php if ($main_menu == 'message') echo 'nav-active';?>">
                         <a href="<?=base_url('communication/mailbox/inbox')?>">

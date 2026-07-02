@@ -77,8 +77,8 @@
 							<th>Student Name</th>
 							<th>Register No</th>
 							<th>Roll</th>
-							<th width="180">Competency Level <span class="required">*</span></th>
-							<th>Remarks</th>
+							<th width="180">Competency Level <span class="required">*</span><?=help_tip('EE = Exceeding Expectations (excellent)&lt;br&gt;ME = Meeting Expectations (good)&lt;br&gt;AE = Approaching Expectations (needs help)&lt;br&gt;BE = Below Expectations (struggling)')?></th>
+							<th>Remarks<?=help_tip('Short comment on student performance. Example: Good progress, Needs practice in numbers, Very creative')?></th>
 						</tr>
 					</thead>
 					<tbody>

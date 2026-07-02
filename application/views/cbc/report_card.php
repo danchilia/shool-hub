@@ -20,7 +20,9 @@
 				<div class="form-group">
 					<label class="control-label"><?=translate('academic_year')?></label>
 					<?php
-						$arrayYear = $this->app_lib->getSelectByBranch('schoolyear', $branch_id);
+						$arrayYear = array('' => translate('select'));
+						$years = $this->db->get('schoolyear')->result();
+						foreach ($years as $year) { $arrayYear[$year->id] = $year->school_year; }
 						echo form_dropdown("session_id", $arrayYear, set_value('session_id', get_session_id()), "class='form-control' data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity'");
 					?>
 				</div>
@@ -61,6 +63,8 @@
 		<?php echo form_close();?>
 
 		<?php if (isset($students) && count($students)): ?>
+		<input type="hidden" id="saved_exam_id" value="<?=set_value('exam_id')?>">
+		<input type="hidden" id="saved_session_id" value="<?=set_value('session_id')?>">
 		<div class="table-responsive mt-md">
 			<table class="table table-bordered table-hover table-condensed">
 				<thead>
@@ -123,11 +127,14 @@
 				return;
 			}
 			var form = $('<form>', {action: base_url + 'cbc/report_card_print', method: 'POST', target: '_blank'});
+			form.append($('<input>', {type: 'hidden', name: '<?=$this->security->get_csrf_token_name()?>', value: '<?=$this->security->get_csrf_hash()?>'}));
 			$.each(students, function(i, v) {
 				form.append($('<input>', {type: 'hidden', name: 'student_id[]', value: v}));
 			});
-			form.append($('<input>', {type: 'hidden', name: 'exam_id', value: $('[name=exam_id]').val()}));
-			form.append($('<input>', {type: 'hidden', name: 'session_id', value: $('[name=session_id]').val()}));
+			var examId = $('#saved_exam_id').val() || $('[name=exam_id]').val();
+			var sessionId = $('#saved_session_id').val() || $('[name=session_id]').val();
+			form.append($('<input>', {type: 'hidden', name: 'exam_id', value: examId}));
+			form.append($('<input>', {type: 'hidden', name: 'session_id', value: sessionId}));
 			form.append($('<input>', {type: 'hidden', name: 'print_date', value: $('#print_date').val()}));
 			$('body').append(form);
 			form.submit();

@@ -19,9 +19,9 @@
 						<?php if (is_superadmin_loggedin()): ?>
 							<th><?=translate('branch')?></th>
 						<?php endif; ?>
-							<th><?=translate('route_name')?></th>
-							<th><?=translate('start_place')?></th>
-							<th><?=translate('stop_place')?></th>
+							<th><?=translate('route_name')?><?=help_tip('Name of the bus route. Example: Westlands Route, Karen Route, South B Route')?></th>
+							<th><?=translate('start_place')?><?=help_tip('Where the route begins. Usually the school. Example: School Gate')?></th>
+							<th><?=translate('stop_place')?><?=help_tip('Final destination of the route. Example: Westlands Roundabout')?></th>
 							<th><?=translate('remarks')?></th>
 							<th><?=translate('action')?></th>
 						</tr>

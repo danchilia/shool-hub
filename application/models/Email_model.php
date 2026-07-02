@@ -127,8 +127,15 @@ class Email_model extends CI_Model
 
     public function sentForgotPassword($data)
     {
-        $emailTemplate = $this->db->where(array('template_id' => 2, 'branch_id' => $data['branch_id'] ))->get('email_templates_details')->row_array();
-        if ($emailTemplate['notified'] == 1) {
+        $branchId = $data['branch_id'];
+        $emailTemplate = null;
+        if (!empty($branchId)) {
+            $emailTemplate = $this->db->where(array('template_id' => 2, 'branch_id' => $branchId))->get('email_templates_details')->row_array();
+        }
+        if (empty($emailTemplate)) {
+            $emailTemplate = $this->db->where('template_id', 2)->order_by('id', 'ASC')->limit(1)->get('email_templates_details')->row_array();
+        }
+        if (!empty($emailTemplate) && isset($emailTemplate['notified']) && $emailTemplate['notified'] == 1) {
             $message = $emailTemplate['template_body'];
             $message = str_replace("{institute_name}", get_global_setting('institute_name'), $message);
             $message = str_replace("{username}", $data['username'] , $message);
@@ -137,14 +144,41 @@ class Email_model extends CI_Model
             $msgData['recipient'] = $data['email'];
             $msgData['subject'] = $emailTemplate['subject'];
             $msgData['message'] = $message;
+            $msgData['branch_id'] = $branchId;
             $this->sendEmail($msgData);
         }
     }
 
     public function sendEmail($data)
     {
-        $branchID = $this->application_model->get_branch_id();
-        $getConfig = $this->db->get_where('email_config', array('id' => 1))->row_array();
+        $branchID = isset($data['branch_id']) && !empty($data['branch_id']) ? $data['branch_id'] : $this->application_model->get_branch_id();
+        $getConfig = null;
+        if (!empty($branchID)) {
+            $getConfig = $this->db->get_where('email_config', array('branch_id' => $branchID))->row_array();
+        }
+        // Branch has no email configured (or no branch at all, e.g. superadmin) - use the
+        // company-wide fallback email set in global_settings rather than guessing a branch.
+        if (empty($getConfig) || empty($getConfig['smtp_host'])) {
+            $company = $this->db->select('company_email, company_smtp_host, company_smtp_port, company_smtp_user, company_smtp_pass, company_smtp_encryption')->get('global_settings')->row_array();
+            if (!empty($company) && !empty($company['company_smtp_host'])) {
+                $getConfig = array(
+                    'email' => $company['company_email'],
+                    'smtp_host' => $company['company_smtp_host'],
+                    'smtp_port' => $company['company_smtp_port'],
+                    'smtp_user' => $company['company_smtp_user'],
+                    'smtp_pass' => $company['company_smtp_pass'],
+                    'smtp_encryption' => $company['company_smtp_encryption'],
+                    'protocol' => 'smtp',
+                );
+            }
+        }
+        // Last resort - any branch that happens to have email configured.
+        if (empty($getConfig) || empty($getConfig['smtp_host'])) {
+            $getConfig = $this->db->where('smtp_host !=', '')->order_by('id', 'ASC')->limit(1)->get('email_config')->row_array();
+        }
+        if (empty($getConfig) || empty($getConfig['smtp_host'])) {
+            return false;
+        }
         if ($getConfig['protocol'] == 'smtp') {
             $config = array(
                 'smtp_host'     => trim($getConfig['smtp_host']),

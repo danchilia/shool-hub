@@ -45,12 +45,15 @@
 								<td><?php echo $row->state;?></td>
 								<td><?php echo $row->address;?></td>
 								<td class="min-w-c">
-									<!--update link-->
-									<a href="<?=base_url('branch/edit/'.$row->id)?>" class="btn btn-default btn-circle icon">
+									<a href="<?=base_url('branch_health/check/'.$row->id)?>" class="btn btn-success btn-circle icon" title="Health Check">
+										<i class="fas fa-heartbeat"></i>
+									</a>
+									<a href="<?=base_url('branch/edit/'.$row->id)?>" class="btn btn-default btn-circle icon" title="Edit">
 										<i class="fas fa-pen-nib"></i>
 									</a>
-									<!-- delete link -->
-									<?php echo btn_delete('branch/delete_data/' . $row->id);?>
+									<a href="<?=base_url('branch/delete_data/' . $row->id)?>" class="btn btn-danger btn-circle icon" title="Delete" onclick="return confirm('WARNING: This will permanently delete this entire school and ALL its data (students, staff, marks, fees, everything). Are you sure?')">
+										<i class="fas fa-trash-alt"></i>
+									</a>
 								</td>
 							</tr>
 							<?php endforeach; ?>
@@ -120,6 +123,22 @@
 							<textarea type="text" rows="3" class="form-control" name="address" ><?=set_value('address')?></textarea>
 						</div>
 					</div>
+					<div class="form-group">
+						<div class="col-md-offset-3 col-md-6">
+							<div class="alert alert-info" style="padding:10px;">
+								<label style="margin-bottom:5px; cursor:pointer; display:block;">
+									<input type="checkbox" name="kenya_template" value="1" id="kenya_tpl">
+									<strong> Kenya School Template (PP1-Form 4)</strong>
+								</label>
+								<p style="margin:0 0 8px; font-size:11px; color:#666;">Auto-creates: PP1-Form 4 classes, CBC learning areas, subjects, KCSE grading, fee types, salary templates, and more.</p>
+								<label style="margin-bottom:5px; cursor:pointer; display:block;">
+									<input type="checkbox" name="university_template" value="1" id="uni_tpl">
+									<strong> University/College Template</strong>
+								</label>
+								<p style="margin:0; font-size:11px; color:#666;">Auto-creates: 25 programmes (BCom, BSc IT, BEd, Engineering, Diplomas, Certificates), 50+ units, semesters, university grading, lecture halls, 18 salary templates, hostel categories, and more.</p>
+							</div>
+						</div>
+					</div>
 					<footer class="panel-footer mt-lg">
 						<div class="row">
 							<div class="col-md-2 col-md-offset-3">
@@ -127,8 +146,12 @@
 									<i class="fas fa-plus-circle"></i> <?=translate('save')?>
 								</button>
 							</div>
-						</div>	
+						</div>
 					</footer>
+					<script>
+					$('#kenya_tpl').change(function(){ if(this.checked) $('#uni_tpl').prop('checked', false); });
+					$('#uni_tpl').change(function(){ if(this.checked) $('#kenya_tpl').prop('checked', false); });
+					</script>
 				<?php echo form_close();?>
 			</div>
 		</div>

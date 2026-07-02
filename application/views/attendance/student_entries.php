@@ -66,7 +66,7 @@
 <?php if (isset($attendencelist)): ?>
 	<section class="panel appear-animation" data-appear-animation="<?=$global_config['animations'] ?>" data-appear-animation-delay="100">
 		<?php
-			echo form_open($this->uri->uri_string());
+			echo form_open('attendance/save_student_ajax', array('class' => 'frm-submit-offline', 'data-offline-label' => 'Student Attendance', 'data-reload-on-success' => '0'));
 			$data = array('date' => $date, 'branch_id' => $branch_id);
 			echo form_hidden($data);
 		?>

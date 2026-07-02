@@ -19,12 +19,12 @@
 					</div>
 					<?php endif; ?>
 					<div class="form-group">
-						<label class="control-label"><?=translate('hall_no')?> <span class="required">*</span></label>
+						<label class="control-label"><?=translate('hall_no')?><?=help_tip('Hall name or number. Example: Hall A, Exam Room 1')?> <span class="required">*</span></label>
 						<input type="text" class="form-control" name="hall_no" value="<?=set_value('hall_no')?>" />
 						<span class="error"><?=form_error('hall_no')?></span>
 					</div>
 					<div class="form-group mb-md">
-						<label class="control-label"> <?=translate('no_of_seats')?> <span class="required">*</span></label>
+						<label class="control-label"> <?=translate('no_of_seats')?><?=help_tip('Maximum students that can sit exams here. Example: 50')?> <span class="required">*</span></label>
 						<input type="text" class="form-control" name="no_of_seats" value="<?=set_value('no_of_seats')?>" />
 						<span class="error"><?=form_error('no_of_seats')?></span>
 					</div>

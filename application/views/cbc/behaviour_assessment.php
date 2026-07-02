@@ -63,8 +63,16 @@
 						<tr class="success">
 							<th><?=translate('sl')?></th>
 							<th>Student Name</th>
-							<?php foreach ($categories as $cat): ?>
-							<th><?=$cat?></th>
+							<?php
+							$catTips = array(
+								'Social' => 'Teamwork, sharing, respect for peers',
+								'Spiritual' => 'Moral values, honesty, integrity',
+								'Emotional' => 'Self-control, maturity, confidence',
+								'Physical' => 'Sports, fitness, PE participation',
+								'Creative' => 'Art, music, imagination, innovation',
+							);
+							foreach ($categories as $cat): ?>
+							<th><?=$cat?><?=help_tip(isset($catTips[$cat]) ? $catTips[$cat] . '. Rate: EE/ME/AE/BE' : 'Rate: EE/ME/AE/BE')?></th>
 							<?php endforeach; ?>
 						</tr>
 					</thead>

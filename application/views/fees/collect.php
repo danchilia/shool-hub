@@ -352,9 +352,9 @@
 			<!--add fees form-->
 			<?php if($invoice['status'] != 'total'): ?>
 				<div id="collect_fees" class="tab-pane">
-					<?php echo form_open('fees/fee_add', array('class' => 'form-horizontal frm-submit' )); ?>
+					<?php echo form_open('fees/fee_add', array('class' => 'form-horizontal frm-submit-offline', 'data-offline-label' => 'Fee Payment - ' . $basic['first_name'] . ' ' . $basic['last_name'], 'data-reload-on-success' => '1', 'data-reset-on-offline-save' => '1')); ?>
 						<div class="form-group">
-							<label class="col-md-3 control-label"><?=translate('fees_type')?> <span class="required">*</span></label>
+							<label class="col-md-3 control-label"><?=translate('fees_type')?> <span class="required">*</span><?=help_tip('Select which fee the parent is paying for. Example: Tuition Fee, Lunch Programme, Activity Fee. The balance auto-fills.')?></label>
 							<div class="col-md-6">
 							<?php
 								echo form_dropdown("fees_type", $typeData, set_value('fees_type'), "class='form-control' id='fees_type'
@@ -364,7 +364,7 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-md-3 control-label"><?=translate('date')?> <span class="required">*</span></label>
+							<label class="col-md-3 control-label"><?=translate('date')?> <span class="required">*</span><?=help_tip('Date the payment was received. Can be backdated for past payments. Example: 2026-06-15')?></label>
 							<div class="col-md-6">
 								<input type="text" class="form-control" data-plugin-datepicker
 								data-plugin-options='{"todayHighlight" : true}' name="date" value="<?=date('Y-m-d')?>" autocomplete="off" />
@@ -372,14 +372,14 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-md-3 control-label"><?=translate('amount')?> <span class="required">*</span></label>
+							<label class="col-md-3 control-label"><?=translate('amount')?> <span class="required">*</span><?=help_tip('Amount being paid. Can be partial - parent does not have to pay full amount at once. Example: 10000')?></label>
 							<div class="col-md-6">
 								<input type="text" class="form-control" name="amount" id="feeAmount" value="" autocomplete="off" />
 								<span class="error"></span>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-md-3 control-label"><?=translate('discount')?></label>
+							<label class="col-md-3 control-label"><?=translate('discount')?><?=help_tip('Enter discount amount if any. Leave as 0 if no discount. Example: 500 for KES 500 off')?></label>
 							<div class="col-md-6">
 								<input type="text" class="form-control" name="discount_amount" value="0" autocomplete="off" />
 								<span class="error"></span>
@@ -393,7 +393,7 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-md-3 control-label"><?=translate('payment_method')?> <span class="required">*</span></label>
+							<label class="col-md-3 control-label"><?=translate('payment_method')?> <span class="required">*</span><?=help_tip('How the parent paid. Cash = physical cash, M-Pesa = mobile money (add M-Pesa code in remarks), Cheque = bank cheque, Bank Transfer = direct deposit')?></label>
 							<div class="col-md-6">
 	    						<?php
 	    							$payvia_list = $this->app_lib->getSelectList('payment_types');

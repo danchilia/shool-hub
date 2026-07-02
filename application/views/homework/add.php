@@ -62,7 +62,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-md-3 control-label"><?=translate('date_of_homework')?> <span class="required">*</span></label>
+					<label class="col-md-3 control-label"><?=translate('date_of_homework')?><?=help_tip('Date the homework is being given. Usually today.')?> <span class="required">*</span></label>
 					<div class="col-md-6">
 						<div class="input-group">
 							<span class="input-group-addon"><i class="far fa-calendar-alt"></i></span>
@@ -73,7 +73,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-md-3 control-label"><?=translate('date_of_submission')?> <span class="required">*</span></label>
+					<label class="col-md-3 control-label"><?=translate('date_of_submission')?><?=help_tip('Deadline for students to submit. Example: 2 days from now')?> <span class="required">*</span></label>
 					<div class="col-md-6">
 						<div class="input-group">
 							<span class="input-group-addon"><i class="far fa-calendar-alt"></i></span>
@@ -101,7 +101,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="col-md-3 control-label"><?=translate('homework')?> <span class="required">*</span></label>
+					<label class="col-md-3 control-label"><?=translate('homework')?> <span<?=help_tip('Describe the assignment clearly. What students should do, which pages, how many questions, etc.')?> class="required">*</span></label>
 					<div class="col-md-6">
 						<textarea name="homework" class="summernote"></textarea>
 						<span class="error"></span>

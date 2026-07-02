@@ -77,7 +77,7 @@
 		<div class="row">
 			<div class="col-md-4">
 				<div class="form-group">
-					<label class="control-label"><?=translate('first_name')?> <span class="required">*</span></label>
+					<label class="control-label"><?=translate('first_name')?> <span class="required">*</span><?=help_tip('Student first name only. Example: Brian')?></label>
 					<input type="text" class="form-control" name="first_name" value="<?=set_value('first_name')?>" />
 					<span class="error"><?=form_error('first_name')?></span>
 				</div>
@@ -116,7 +116,7 @@
 			</div>
 			<div class="col-md-4">
 				<div class="form-group">
-					<label class="control-label">UPI Number (NEMIS)</label>
+					<label class="control-label">UPI Number (NEMIS)<?=help_tip('Government NEMIS unique identifier. Leave blank if not available yet. Example: UPI2026001')?></label>
 					<input type="text" class="form-control" name="upi_number" value="<?=set_value('upi_number')?>" />
 				</div>
 			</div>
@@ -163,7 +163,7 @@
 		<div class="form-group">
 			<label>
 				<input type="checkbox" name="guardian_chk" id="guardian_chk" value="1" <?=set_value('guardian_chk') ? 'checked' : ''?> />
-				Select existing guardian/parent
+				Select existing guardian/parent<?=help_tip('Check this box if the parent already has another child in this school. Select their name from the dropdown. If new parent, leave unchecked and fill details below.')?>
 			</label>
 		</div>
 

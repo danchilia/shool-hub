@@ -95,7 +95,7 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-md-3 control-label"><?=translate('book_isbn_no')?></label>
+						<label class="col-md-3 control-label"><?=translate('book_isbn_no')?><?=help_tip('International Standard Book Number. Found on the back cover. Example: 978-9966-001-01. Leave blank if not available.')?></label>
 						<div class="col-md-6"><input type="text" class="form-control" name="isbn_no"/></div>
 					</div>
 					<div class="form-group">
@@ -115,7 +115,7 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-md-3 control-label"><?=translate('book_category')?> <span class="required">*</span></label>
+						<label class="col-md-3 control-label"><?=translate('book_category')?><?=help_tip('Book type. Example: Textbooks, Fiction, Reference, Kiswahili Literature')?> <span class="required">*</span></label>
 						<div class="col-md-6">
 							<?php
 								$array = $this->app_lib->getSelectByBranch('book_category', $branch_id);

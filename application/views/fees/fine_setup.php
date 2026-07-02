@@ -3,7 +3,7 @@
 	<div class="tabs-custom">
 		<ul class="nav nav-tabs">
 			<li class="active">
-				<a href="#list" data-toggle="tab"><i class="fas fa-list-ul"></i> <?php echo translate('fine') . " " . translate('list'); ?></a>
+				<a href="#list" data-toggle="tab"><i class="fas fa-list-ul"></i> <?php echo translate('fine')<?=help_tip('Fine amount in KES (if fixed) or percentage (if percentage). Example: 50')?> . " " . translate('list'); ?></a>
 			</li>
 <?php if (get_permission('fees_fine_setup', 'is_add')){ ?>
 			<li>
@@ -24,9 +24,9 @@
 							<?php endif; ?>
 								<th><?=translate('group_name')?></th>
 								<th><?=translate('fees_type') . " " . translate('name') ?></th>
-								<th><?=translate('fine_type')?></th>
+								<th><?=translate('fine_type')?><?=help_tip('Fixed = flat amount (e.g. KES 50), Percentage = percent of fee amount (e.g. 2%)')?></th>
 								<th><?=translate('fine_value')?></th>
-								<th><?=translate('late_fee_frequency')?></th>
+								<th><?=translate('late_fee_frequency')?><?=help_tip('How often the fine is charged. Example: Every 7 days after due date, or 0 for one-time fine')?></th>
 								<th><?=translate('action')?></th>
 							</tr>
 						</thead>

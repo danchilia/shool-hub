@@ -23,12 +23,12 @@
 						<?php if (is_superadmin_loggedin()): ?>
 							<th><?=translate('branch')?></th>
 						<?php endif; ?>
-							<th><?=translate('vehicle_no')?></th>
-							<th><?=translate('capacity')?></th>
+							<th><?=translate('vehicle_no')?><?=help_tip('Vehicle registration plate number. Example: KCA 123A')?></th>
+							<th><?=translate('capacity')?><?=help_tip('Maximum number of passengers. Example: 33, 45, 52')?></th>
 							<th><?=translate('insurance_renewal_date')?></th>
 							<th><?=translate('driver_name')?></th>
 							<th><?=translate('driver_phone')?></th>
-							<th><?=translate('driver_license')?></th>
+							<th><?=translate('driver_license')?><?=help_tip('Driver\'s NTSA driving license number. Example: DL-2020-12345')?></th>
 							<th><?=translate('action')?></th>
 						</tr>
 					</thead>

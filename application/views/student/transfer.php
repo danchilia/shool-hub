@@ -76,7 +76,7 @@
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
-								<label class="control-label"><?=translate('promote_to_session')?> <span class="required">*</span></label>
+								<label class="control-label"><?=translate('promote_to_session')?><?=help_tip('The new academic year students are moving to. Example: 2027. Create it first in Settings > Session.')?> <span class="required">*</span></label>
 								<?php
 									$arraySession = array("" => translate('select'));
 									$years = $this->db->get('schoolyear')->result();
@@ -91,7 +91,7 @@
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
-								<label class="control-label"><?=translate('promote_to_class')?> <span class="required">*</span></label>
+								<label class="control-label"><?=translate('promote_to_class')?><?=help_tip('The next class level. Example: Grade 3 students promote to Grade 4. Form 3 to Form 4.')?> <span class="required">*</span></label>
 								<?php
 									$arrayClass = $this->app_lib->getClass($branch_id);
 									echo form_dropdown("promote_class_id", $arrayClass, set_value('promote_class_id'), "class='form-control' id='class_promote_id'

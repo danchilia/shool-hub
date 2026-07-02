@@ -22,7 +22,7 @@
 							<th><?=translate('exam_name')?></th>
 							<th><?=translate('exam_type')?></th>
 							<th><?=translate('term')?></th>
-							<th><?=translate('mark_distribution')?></th>
+							<th><?=translate('mark_distribution')?><?=help_tip('Select assessment components. Example: CAT 1, CAT 2, End Term Exam')?></th>
 							<th><?=translate('remarks')?></th>
 							<th><?=translate('action')?></th>
 						</tr>
@@ -88,7 +88,7 @@
 						</div>
 						<?php endif; ?>
 						<div class="form-group">
-							<label class="col-md-3 control-label"><?=translate('name')?> <span class="required">*</span></label>
+							<label class="col-md-3 control-label"><?=translate('name')?> <span<?=help_tip('Exam name. Example: Form 1 Term 2 Exam 2026')?> class="required">*</span></label>
 							<div class="col-md-6">
 								<input type="text" class="form-control" name="name" />
 								<span class="error"></span>
