@@ -1,0 +1,42 @@
+{
+  "name": "DCK School Management",
+  "short_name": "DCK Schools",
+  "description": "DCK Solutions School Management System — Parent & Student Portal",
+  "start_url": "/multibranchschoolmanagementsystem/userrole/dashboard",
+  "display": "standalone",
+  "background_color": "#1a5276",
+  "theme_color": "#1a5276",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/multibranchschoolmanagementsystem/assets/images/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/multibranchschoolmanagementsystem/assets/images/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "en-KE",
+  "shortcuts": [
+    {
+      "name": "Fees",
+      "short_name": "Fees",
+      "description": "View fees & pay",
+      "url": "/multibranchschoolmanagementsystem/userrole/invoice",
+      "icons": [{ "src": "/multibranchschoolmanagementsystem/assets/images/favicon.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Notice Board",
+      "short_name": "Notices",
+      "description": "School announcements",
+      "url": "/multibranchschoolmanagementsystem/noticeboard",
+      "icons": [{ "src": "/multibranchschoolmanagementsystem/assets/images/favicon.png", "sizes": "96x96" }]
+    }
+  ]
+}

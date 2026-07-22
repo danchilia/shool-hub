@@ -10,7 +10,7 @@
 		</ul>
 		<div class="tab-content">
 			<div id="list" class="tab-pane <?=(empty($validation_error) ? 'active' : '')?>">
-				<div class="mb-md">
+				<div class="table-responsive">
 					<table class="table table-bordered table-hover table-condensed mb-none table-export">
 						<thead>
 							<tr>
@@ -51,8 +51,8 @@
 									<a href="<?=base_url('branch/edit/'.$row->id)?>" class="btn btn-default btn-circle icon" title="Edit">
 										<i class="fas fa-pen-nib"></i>
 									</a>
-									<a href="<?=base_url('branch/delete_data/' . $row->id)?>" class="btn btn-danger btn-circle icon" title="Delete" onclick="return confirm('WARNING: This will permanently delete this entire school and ALL its data (students, staff, marks, fees, everything). Are you sure?')">
-										<i class="fas fa-trash-alt"></i>
+									<a href="<?=base_url('branch/delete_data/' . $row->id)?>" class="btn btn-danger btn-xs" title="Delete" onclick="return confirm('WARNING: This will permanently delete this entire school and ALL its data (students, staff, marks, fees, everything). Are you sure?')">
+										<i class="fas fa-trash-alt"></i> Delete
 									</a>
 								</td>
 							</tr>
@@ -128,14 +128,20 @@
 							<div class="alert alert-info" style="padding:10px;">
 								<label style="margin-bottom:5px; cursor:pointer; display:block;">
 									<input type="checkbox" name="kenya_template" value="1" id="kenya_tpl">
-									<strong> Kenya School Template (PP1-Form 4)</strong>
+									<strong> Kenya School Template (PP1&ndash;Form 4)</strong>
 								</label>
-								<p style="margin:0 0 8px; font-size:11px; color:#666;">Auto-creates: PP1-Form 4 classes, CBC learning areas, subjects, KCSE grading, fee types, salary templates, and more.</p>
+								<p style="margin:0 0 2px; font-size:11px; color:#555;"><strong>Academic:</strong> PP1&ndash;Form 4 classes (3 streams), CBC learning areas &amp; strands, 18 subjects, 3 exam terms, CAT &amp; End-Term distributions, 3 exam halls, KCSE grading, SMS &amp; email templates, Kenyan public holidays.</p>
+								<p style="margin:0 0 2px; font-size:11px; color:#555;"><strong>Finance:</strong> 10 fee types, Day Scholar &amp; Boarding fee groups with amounts, fee fine, 2 reminders, 8 salary templates (PAYE/NHIF/NSSF), 4 bank accounts, voucher heads.</p>
+								<p style="margin:0 0 2px; font-size:11px; color:#555;"><strong>Operations:</strong> 12 canteen items, 5 asset categories + 9 assets, 10 inventory items, 3 bus routes + 9 stopovers + 3 vehicles, 2 GPS buses, Boys &amp; Girls hostels with 6 rooms each, 3 notices.</p>
+								<p style="margin:0 0 10px; font-size:11px; color:#555;"><strong>Admin:</strong> KCPE/KCSE/CBC Grade 9 exam centres, 2 bursary programmes, TSC appraisal template, 1 PTM session, 1 CBT quiz, 1 virtual class, 1-year trial subscription, 36 library books.</p>
 								<label style="margin-bottom:5px; cursor:pointer; display:block;">
 									<input type="checkbox" name="university_template" value="1" id="uni_tpl">
-									<strong> University/College Template</strong>
+									<strong> University / College Template</strong>
 								</label>
-								<p style="margin:0; font-size:11px; color:#666;">Auto-creates: 25 programmes (BCom, BSc IT, BEd, Engineering, Diplomas, Certificates), 50+ units, semesters, university grading, lecture halls, 18 salary templates, hostel categories, and more.</p>
+								<p style="margin:0 0 2px; font-size:11px; color:#555;"><strong>Academic:</strong> 25 programmes across 5 intakes/groups, 54 units/modules, 3 semesters, 5 assessment distributions, 8 exam &amp; lecture halls, GPA grading scale.</p>
+								<p style="margin:0 0 2px; font-size:11px; color:#555;"><strong>Finance:</strong> 15 fee types, Undergraduate/Postgraduate/Residential fee groups with semester amounts, 18 salary templates, 5 bank accounts, voucher heads.</p>
+								<p style="margin:0 0 2px; font-size:11px; color:#555;"><strong>Operations:</strong> 15 cafeteria items, 6 asset categories + 10 assets, 10 inventory items, campus shuttle routes + 2 buses, Male/Female/Postgrad hostels with rooms, 4 notices.</p>
+								<p style="margin:0; font-size:11px; color:#555;"><strong>Admin:</strong> 3 bursary/HELB programmes, 3 appraisal templates, 1 consultation day, 1 CBT quiz, 1 virtual class, 1-year Premium trial subscription, 10 book categories.</p>
 							</div>
 						</div>
 					</div>

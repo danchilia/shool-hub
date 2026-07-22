@@ -23,6 +23,7 @@ class Feespayment extends Admin_Controller
         $this->load->library('paypal_payment');
         $this->load->library('stripe_payment');
         $this->load->library('razorpay_payment');
+        $this->load->library('mpesa_payment');
     }
 
     public function index()
@@ -54,6 +55,9 @@ class Feespayment extends Admin_Controller
                 $this->form_validation->set_rules('payer_name', translate('name'), 'trim|required');
                 $this->form_validation->set_rules('email', translate('email'), 'trim|required|valid_email');
                 $this->form_validation->set_rules('phone', translate('phone'), 'trim|required');
+            }
+            if ($payVia == 'mpesa') {
+                $this->form_validation->set_rules('mpesa_phone', 'M-Pesa Phone', 'trim|required');
             }
             if ($this->form_validation->run() !== false) {
                 $stu = $this->userrole_model->getStudentDetails();
@@ -108,7 +112,40 @@ class Feespayment extends Admin_Controller
                     $url = base_url("feespayment/razorpay");
                     $this->session->set_userdata("params", $params);
                 }
-                
+
+                if ($payVia == 'mpesa') {
+                    $phone = $this->input->post('mpesa_phone');
+                    $phone = format_kenyan_phone($phone);
+                    $config = $this->get_payment_config();
+                    $branchId = get_loggedin_branch_id();
+                    $this->mpesa_payment->loadConfig($branchId);
+                    $amount = floatval($params['amount']) + floatval($params['fine']);
+                    $ref = 'INV' . $params['invoice_no'];
+                    $stkResult = $this->mpesa_payment->stkPush($phone, $amount, $ref, 'School Fees');
+                    if ($stkResult['success']) {
+                        $this->db->insert('mpesa_transactions', array(
+                            'merchant_request_id'  => $stkResult['MerchantRequestID'],
+                            'checkout_request_id'  => $stkResult['CheckoutRequestID'],
+                            'phone_number'         => $phone,
+                            'amount'               => $amount,
+                            'status'               => 'pending',
+                            'student_id'           => $stu['student_id'],
+                            'allocation_id'        => $params['allocation_id'],
+                            'type_id'              => $params['type_id'],
+                            'branch_id'            => $branchId,
+                        ));
+                        $array = array(
+                            'status'               => 'mpesa_pending',
+                            'checkout_request_id'  => $stkResult['CheckoutRequestID'],
+                            'message'              => 'Check your phone ' . $phone . ' and enter your M-Pesa PIN to complete payment.',
+                        );
+                    } else {
+                        $array = array('status' => 'fail', 'url' => '', 'error' => array('mpesa_phone' => $stkResult['message']));
+                    }
+                    echo json_encode($array);
+                    return;
+                }
+
                 $array = array('status' => 'success', 'url' => $url);
             } else {
                 $error = $this->form_validation->error_array();
@@ -530,6 +567,28 @@ class Feespayment extends Admin_Controller
         }
     }
 
+
+    public function mpesa_status()
+    {
+        if (!is_student_loggedin() && !is_parent_loggedin()) {
+            ajax_access_denied();
+        }
+        $checkoutId = $this->input->post('checkout_request_id');
+        if (empty($checkoutId)) {
+            echo json_encode(array('status' => 'error'));
+            return;
+        }
+        $tx = $this->db->get_where('mpesa_transactions', array('checkout_request_id' => $checkoutId))->row_array();
+        if (!$tx) {
+            echo json_encode(array('status' => 'error', 'message' => 'Transaction not found'));
+            return;
+        }
+        echo json_encode(array(
+            'status'      => $tx['status'],
+            'transaction_id' => $tx['transaction_id'],
+            'message'     => $tx['result_desc'],
+        ));
+    }
 
     private function savePaymentData($data)
     {

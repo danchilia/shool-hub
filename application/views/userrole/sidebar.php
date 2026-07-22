@@ -175,6 +175,13 @@ if ((is_parent_loggedin() && !empty(get_activeChildren_id())) || is_student_logg
                         </a>
                     </li>
 
+                    <!-- notice board -->
+                    <li class="<?php if ($sub_page == 'noticeboard/index') echo 'nav-active'; ?>">
+                        <a href="<?=base_url('noticeboard')?>">
+                            <i class="fas fa-bullhorn"></i><span>Notice Board</span>
+                        </a>
+                    </li>
+
                    <!-- fees history -->
                     <li class="<?php if ($main_menu == 'fees') echo 'nav-active';?> ">
                         <a href="<?=base_url('userrole/invoice')?>">

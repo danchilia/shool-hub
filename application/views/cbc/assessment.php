@@ -77,7 +77,7 @@
 							<th>Student Name</th>
 							<th>Register No</th>
 							<th>Roll</th>
-							<th width="180">Competency Level <span class="required">*</span><?=help_tip('EE = Exceeding Expectations (excellent)&lt;br&gt;ME = Meeting Expectations (good)&lt;br&gt;AE = Approaching Expectations (needs help)&lt;br&gt;BE = Below Expectations (struggling)')?></th>
+							<th width="200">Competency Level <span class="required">*</span><?=help_tip('KNEC 8-Level CBC Rubric:&lt;br&gt;EE2 = Exceeding Expectations (Advanced)&lt;br&gt;EE1 = Exceeding Expectations&lt;br&gt;ME2 = Meeting Expectations (Proficient)&lt;br&gt;ME1 = Meeting Expectations&lt;br&gt;AE2 = Approaching Expectations (Developing)&lt;br&gt;AE1 = Approaching Expectations&lt;br&gt;BE2 = Below Expectations (Beginning)&lt;br&gt;BE1 = Below Expectations')?></th>
 							<th>Remarks<?=help_tip('Short comment on student performance. Example: Good progress, Needs practice in numbers, Very creative')?></th>
 						</tr>
 					</thead>
@@ -93,12 +93,24 @@
 							<td><?=$stu['register_no']?></td>
 							<td><?=$stu['roll']?></td>
 							<td>
-								<select name="assessment[<?=$stu['student_id']?>][competency_level]" class="form-control input-sm" required>
-									<option value="">Select</option>
-									<option value="EE" <?=$existingLevel == 'EE' ? 'selected' : ''?>>EE - Exceeding Expectations</option>
-									<option value="ME" <?=$existingLevel == 'ME' ? 'selected' : ''?>>ME - Meeting Expectations</option>
-									<option value="AE" <?=$existingLevel == 'AE' ? 'selected' : ''?>>AE - Approaching Expectations</option>
-									<option value="BE" <?=$existingLevel == 'BE' ? 'selected' : ''?>>BE - Below Expectations</option>
+								<select name="assessment[<?=$stu['student_id']?>][competency_level]" class="form-control input-sm cbc-level-select" required>
+									<option value="">Select Level</option>
+									<optgroup label="Exceeding Expectations">
+										<option value="EE2" <?=$existingLevel == 'EE2' || $existingLevel == 'EE' ? 'selected' : ''?>>EE2 - Exceeding (Advanced)</option>
+										<option value="EE1" <?=$existingLevel == 'EE1' ? 'selected' : ''?>>EE1 - Exceeding Expectations</option>
+									</optgroup>
+									<optgroup label="Meeting Expectations">
+										<option value="ME2" <?=$existingLevel == 'ME2' || $existingLevel == 'ME' ? 'selected' : ''?>>ME2 - Meeting (Proficient)</option>
+										<option value="ME1" <?=$existingLevel == 'ME1' ? 'selected' : ''?>>ME1 - Meeting Expectations</option>
+									</optgroup>
+									<optgroup label="Approaching Expectations">
+										<option value="AE2" <?=$existingLevel == 'AE2' ? 'selected' : ''?>>AE2 - Approaching (Developing)</option>
+										<option value="AE1" <?=$existingLevel == 'AE1' || $existingLevel == 'AE' ? 'selected' : ''?>>AE1 - Approaching Expectations</option>
+									</optgroup>
+									<optgroup label="Below Expectations">
+										<option value="BE2" <?=$existingLevel == 'BE2' ? 'selected' : ''?>>BE2 - Below (Beginning)</option>
+										<option value="BE1" <?=$existingLevel == 'BE1' || $existingLevel == 'BE' ? 'selected' : ''?>>BE1 - Below Expectations</option>
+									</optgroup>
 								</select>
 							</td>
 							<td>

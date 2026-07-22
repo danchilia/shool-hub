@@ -145,6 +145,11 @@
 								data-original-title="<?=translate('details')?>">
 									<i class="far fa-arrow-alt-circle-right"></i>
 								</a>
+								<?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+								<a href="<?=base_url('student/leaving_certificate/' . $row['student_id'])?>" class="btn btn-default btn-circle icon" data-toggle="tooltip" data-original-title="Leaving Certificate">
+									<i class="fas fa-file-alt"></i>
+								</a>
+								<?php endif; ?>
 							<?php endif; if (get_permission('student', 'is_delete')): ?>
 								<!-- delete link -->
 								<?php echo btn_delete('student/delete_data/' . $row['id'] . '/' . $row['student_id']);?>

@@ -1,127 +1,120 @@
 <!doctype html>
-<html class="fixed sidebar-left-sm <?php echo ($theme_config['dark_skin'] == 'true' ? 'dark' : 'sidebar-light');?>">
-<!-- html header -->
+<html lang="en" class="<?php echo ($theme_config['dark_skin'] == 'true' ? 'dark' : '');?>">
 <?php $this->load->view('layout/header.php');?>
 
-<body class="loading-overlay-showing" data-loading-overlay>
-	<!-- page preloader -->
-	<div class="loading-overlay dark">
-		<div class="ring-loader">
-			Loading <span></span>
-		</div>
-	</div>
+<body class="dck-body">
 
-	<!-- Offline / sync status banner (Attendance & Fee Collection keep working without internet) -->
-	<style>
-	#dck-offline-banner {
-		display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 99999;
-		text-align: center; padding: 8px 12px; font-weight: 600; font-size: 13px;
-	}
-	#dck-offline-banner.dck-banner-danger { background: #e74c3c; color: #fff; }
-	#dck-offline-banner.dck-banner-info { background: #2980b9; color: #fff; }
-	#dck-offline-banner.dck-banner-success { background: #27ae60; color: #fff; }
-	</style>
-	<div id="dck-offline-banner"></div>
-	<section class="body">
-		<!-- top navbar-->
-		<?php $this->load->view('layout/topbar.php');?>
-		<div class="inner-wrapper">
-			<!-- sidebar -->
-			<?php 
-			if (is_student_loggedin() || is_parent_loggedin()) {
-				$this->load->view('userrole/sidebar'); 
-			} else {
-				$this->load->view('layout/sidebar'); 
-			} 
-			?>
-			<!-- page main content -->
-			<section role="main" class="content-body">
-				<header class="page-header">
-					<a class="page-title-icon" href="<?php echo base_url('dashboard');?>"><i class="fas fa-home"></i></a>
-					<h2><?php echo $title;?></h2>
-				</header>
-				<?php $this->load->view($sub_page); ?>
-			</section>
-		</div>
-	</section>
+<!-- Page loader -->
+<div class="dck-loader" id="dckLoader">
+    <div class="dck-loader-spinner"></div>
+    <div class="dck-loader-text">Loading…</div>
+</div>
 
-	<!-- JS Script -->
-	<?php $this->load->view('layout/script.php');?>
-	
-	<?php
-	$alertclass = "";
-	if($this->session->flashdata('alert-message-success')){
-		$alertclass = "success";
-	} else if ($this->session->flashdata('alert-message-error')){
-		$alertclass = "error";
-	} else if ($this->session->flashdata('alert-message-info')){
-		$alertclass = "info";
-	}
-	if($alertclass != ''):
-		$alert_message = $this->session->flashdata('alert-message-'. $alertclass);
-	?>
-		<script type="text/javascript">
-			swal({
-				toast: true,
-				position: 'top-end',
-				type: '<?php echo $alertclass?>',
-				title: '<?php echo $alert_message?>',
-				confirmButtonClass: 'btn btn-default',
-				buttonsStyling: false,
-				timer: 8000
-			})
-		</script>
-	<?php endif; ?>
+<!-- Offline / sync status banner -->
+<div id="dck-offline-banner"></div>
 
-	<!-- Help tooltip styles and init -->
-	<style>
-	.help-tip { color: #3498db; cursor: help; font-size: 13px; margin-left: 3px; }
-	.help-tip:hover { color: #2175b5; }
-	.tooltip-inner { max-width: 300px; text-align: left; font-size: 12px; padding: 8px 12px; background: #1a2b4a; }
-	.tooltip.top .tooltip-arrow { border-top-color: #1a2b4a; }
-	.tooltip.bottom .tooltip-arrow { border-bottom-color: #1a2b4a; }
-	</style>
-	<script>$(function(){ $('[data-toggle="tooltip"]').tooltip(); });</script>
+<!-- Mobile sidebar overlay -->
+<div class="dck-sidebar-overlay" id="dckSidebarOverlay"></div>
 
-	<!-- sweetalert box -->
-	<script type="text/javascript">
-		function confirm_modal(delete_url) {
-			swal({
-				title: "<?php echo translate('are_you_sure')?>",
-				text: "<?php echo translate('delete_this_information')?>",
-				type: "warning",
-				showCancelButton: true,
-				confirmButtonClass: "btn btn-default swal2-btn-default",
-				cancelButtonClass: "btn btn-default swal2-btn-default",
-				confirmButtonText: "<?php echo translate('yes_continue')?>",
-				cancelButtonText: "<?php echo translate('cancel')?>",
-				buttonsStyling: false,
-				footer: "<?php echo translate('deleted_note')?>"
-			}).then((result) => {
-				if (result.value) {
-					$.ajax({
-						url: delete_url,
-						type: "POST",
-						data: {<?=$this->security->get_csrf_token_name()?>: "<?=$this->security->get_csrf_hash()?>"},
-						success:function(data) {
-							swal({
-							title: "<?php echo translate('deleted')?>",
-							text: "<?php echo translate('information_deleted')?>",
-							buttonsStyling: false,
-							showCloseButton: true,
-							focusConfirm: false,
-							confirmButtonClass: "btn btn-default swal2-btn-default",
-							type: "success"
-							}).then((result) => {
-								if (result.value) {
-									location.reload();
-								}
-							});
-						}
-					});
-				}
-			});
-		}
-	</script>
+<div class="dck-wrapper">
+
+    <!-- ── SIDEBAR ──────────────────────────────────────────────────── -->
+    <?php
+    if (is_student_loggedin() || is_parent_loggedin()) {
+        $this->load->view('userrole/sidebar');
+    } else {
+        $this->load->view('layout/sidebar');
+    }
+    ?>
+
+    <!-- ── MAIN AREA ─────────────────────────────────────────────────── -->
+    <div class="dck-main" id="dckMain">
+
+        <!-- Topbar -->
+        <?php $this->load->view('layout/topbar.php'); ?>
+
+        <!-- Page content -->
+        <main class="dck-content">
+            <div class="dck-page-header">
+                <div class="dck-page-title">
+                    <a href="<?php echo base_url('dashboard'); ?>" class="dck-page-icon text-decoration-none">
+                        <i class="fas fa-home"></i>
+                    </a>
+                    <h1><?php echo html_escape($title); ?></h1>
+                </div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="<?php echo base_url('dashboard'); ?>"><i class="fas fa-home"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page"><?php echo html_escape($title); ?></li>
+                    </ol>
+                </nav>
+            </div>
+
+            <?php $this->load->view($sub_page); ?>
+        </main>
+    </div><!-- /.dck-main -->
+
+</div><!-- /.dck-wrapper -->
+
+<!-- JS includes -->
+<?php $this->load->view('layout/script.php'); ?>
+
+<!-- ── FLASH MESSAGES (SweetAlert) ──────────────────────────────────────── -->
+<?php
+$alertClass   = '';
+$alertMessage = '';
+if ($this->session->flashdata('alert-message-success')) {
+    $alertClass   = 'success';
+    $alertMessage = $this->session->flashdata('alert-message-success');
+} elseif ($this->session->flashdata('alert-message-error')) {
+    $alertClass   = 'error';
+    $alertMessage = $this->session->flashdata('alert-message-error');
+} elseif ($this->session->flashdata('alert-message-info')) {
+    $alertClass   = 'info';
+    $alertMessage = $this->session->flashdata('alert-message-info');
+}
+if ($alertClass !== '' && $alertMessage !== ''):
+?>
+<script>
+swal({
+    toast: true,
+    position: 'top-end',
+    type: '<?php echo $alertClass; ?>',
+    title: '<?php echo addslashes(html_escape($alertMessage)); ?>',
+    confirmButtonClass: 'btn btn-default',
+    buttonsStyling: false,
+    timer: 8000
+});
+</script>
+<?php endif; ?>
+
+<!-- ── TOOLTIP STYLE OVERRIDES (keep existing help-tip pattern) ──────────── -->
+<style>
+.help-tip { color: var(--dck-primary); cursor: help; font-size: .8rem; margin-left: 3px; }
+.help-tip:hover { color: var(--dck-primary-dark); }
+</style>
+
+<!-- ── CONFIRM MODAL (translations exposed for dck-app.js) ──────────────── -->
+<script>
+var translate_are_you_sure  = '<?php echo addslashes(translate('are_you_sure')); ?>';
+var translate_delete_info   = '<?php echo addslashes(translate('delete_this_information')); ?>';
+var translate_yes_continue  = '<?php echo addslashes(translate('yes_continue')); ?>';
+var translate_cancel        = '<?php echo addslashes(translate('cancel')); ?>';
+</script>
+
+<!-- ── LOADER DISMISS ────────────────────────────────────────────────────── -->
+<script>
+window.addEventListener('load', function () {
+    var loader = document.getElementById('dckLoader');
+    if (loader) {
+        loader.style.opacity = '0';
+        loader.style.transition = 'opacity .3s ease';
+        setTimeout(function () { loader.style.display = 'none'; }, 320);
+    }
+});
+</script>
+
 </body>
 </html>

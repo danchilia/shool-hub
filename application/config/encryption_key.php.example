@@ -1,0 +1,4 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+$config['encryption_key'] = 'YOUR_ENCRYPTION_KEY';

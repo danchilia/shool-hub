@@ -87,10 +87,14 @@
 							<td>
 								<select name="behaviour[<?=$stu['student_id']?>][<?=$cat?>][rating]" class="form-control input-sm">
 									<option value="">-</option>
-									<option value="EE" <?=$existing == 'EE' ? 'selected' : ''?>>EE</option>
-									<option value="ME" <?=$existing == 'ME' ? 'selected' : ''?>>ME</option>
-									<option value="AE" <?=$existing == 'AE' ? 'selected' : ''?>>AE</option>
-									<option value="BE" <?=$existing == 'BE' ? 'selected' : ''?>>BE</option>
+									<option value="EE2" <?=$existing == 'EE2' || $existing == 'EE' ? 'selected' : ''?>>EE2</option>
+									<option value="EE1" <?=$existing == 'EE1' ? 'selected' : ''?>>EE1</option>
+									<option value="ME2" <?=$existing == 'ME2' || $existing == 'ME' ? 'selected' : ''?>>ME2</option>
+									<option value="ME1" <?=$existing == 'ME1' ? 'selected' : ''?>>ME1</option>
+									<option value="AE2" <?=$existing == 'AE2' ? 'selected' : ''?>>AE2</option>
+									<option value="AE1" <?=$existing == 'AE1' || $existing == 'AE' ? 'selected' : ''?>>AE1</option>
+									<option value="BE2" <?=$existing == 'BE2' ? 'selected' : ''?>>BE2</option>
+									<option value="BE1" <?=$existing == 'BE1' || $existing == 'BE' ? 'selected' : ''?>>BE1</option>
 								</select>
 							</td>
 							<?php endforeach; ?>

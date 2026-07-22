@@ -325,7 +325,7 @@ function _d($date)
 // delete url
 function btn_delete($uri)
 {
-    return "<button class='btn btn-danger icon btn-circle' onclick=confirm_modal('" . base_url($uri) . "') ><i class='fas fa-trash-alt'></i></button>";
+    return "<button class='btn btn-danger btn-action' onclick=confirm_modal('" . base_url($uri) . "') ><i class='fas fa-trash-alt'></i> Delete</button>";
 }
 
 // delete url

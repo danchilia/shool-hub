@@ -1,14 +1,23 @@
-<aside id="sidebar-left" class="sidebar-left">
-	<div class="sidebar-header">
-		<div class="sidebar-title">
-			Main
-		</div>
-	</div>
+<aside class="dck-sidebar" id="dckSidebar">
 
-	<div class="nano">
-        <div class="nano-content">
-            <nav id="menu" class="nav-main" role="navigation">
-                <ul class="nav nav-main">
+    <!-- Brand / Logo -->
+    <div class="dck-sidebar-brand">
+        <a href="<?php echo base_url('dashboard'); ?>" class="dck-sidebar-logo">
+            <img src="<?php echo base_url('uploads/app_image/logo-small.png'); ?>" alt="DCK"
+                 onerror="this.style.display='none'">
+            <div class="dck-sidebar-brand-name">
+                DCK Schools
+                <small>Management System</small>
+            </div>
+        </a>
+        <button class="dck-sidebar-close" id="dckSidebarClose" title="Close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <div class="dck-sidebar-nav">
+        <nav id="menu" class="nav-main" role="navigation">
+            <ul class="nav-main">
                     <!-- dashboard -->
                     <?php if (is_superadmin_loggedin()) { ?>
                     <li class="nav-parent <?php if ($main_menu == 'dashboard') echo 'nav-active nav-expanded';?>">
@@ -91,6 +100,11 @@
                                     <span><i class="fas fa-caret-right" aria-hidden="true"></i><?=translate('create_admission')?></span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="<?=base_url('admission_portal')?>" target="_blank">
+                                    <span><i class="fas fa-caret-right" aria-hidden="true"></i> Online Admission Portal <i class="fas fa-external-link-alt" style="font-size:.7rem;opacity:.6"></i></span>
+                                </a>
+                            </li>
                         <?php } if(get_permission('admission_request', 'is_add')){ ?>
                             <li class="<?php if ($sub_page == 'admission_request/add') echo 'nav-active';?>">
                                 <a href="<?=base_url('admission_request/add')?>">
@@ -166,6 +180,13 @@
                                 </a>
                             </li>
                         <?php } ?>
+                        <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                            <li class="<?php if ($sub_page == 'student/nemis_export') echo 'nav-active';?>">
+                                <a href="<?=base_url('student/nemis_export')?>">
+                                    <span><i class="fas fa-caret-right" aria-hidden="true"></i> NEMIS Export</span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
                         </ul>
                     </li>
                     <?php } ?>
@@ -900,6 +921,274 @@
                         </ul>
                     </li>
                     <?php } ?>
+                    <!-- analytics -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                    <li class="<?php if ($main_menu == 'analytics') echo 'nav-active';?>">
+                        <a href="<?=base_url('analytics')?>">
+                            <i class="icons icon-speedometer"></i><span>Analytics &amp; Insights</span>
+                        </a>
+                    </li>
+                    <?php endif; ?>
+                    <!-- canteen pos -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'canteen') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-basket"></i><span>Canteen / POS</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'canteen/pos') echo 'nav-active';?>">
+                                <a href="<?=base_url('canteen/pos')?>">
+                                    <span><i class="fas fa-caret-right"></i> POS Terminal</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'canteen/wallets') echo 'nav-active';?>">
+                                <a href="<?=base_url('canteen/wallets')?>">
+                                    <span><i class="fas fa-caret-right"></i> Student Wallets</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'canteen/menu') echo 'nav-active';?>">
+                                <a href="<?=base_url('canteen/menu')?>">
+                                    <span><i class="fas fa-caret-right"></i> Menu Items</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'canteen/report') echo 'nav-active';?>">
+                                <a href="<?=base_url('canteen/report')?>">
+                                    <span><i class="fas fa-caret-right"></i> Sales Report</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    <!-- staff appraisal -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'appraisal') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-like"></i><span>Staff Appraisal</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'appraisal/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('appraisal')?>">
+                                    <span><i class="fas fa-caret-right"></i> Appraisals</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'appraisal/templates') echo 'nav-active';?>">
+                                <a href="<?=base_url('appraisal/templates')?>">
+                                    <span><i class="fas fa-caret-right"></i> Templates</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    <!-- assets & inventory -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'assets') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-briefcase"></i><span>Assets &amp; Inventory</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'assets/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('assets')?>">
+                                    <span><i class="fas fa-caret-right"></i> Asset Register</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'assets/inventory') echo 'nav-active';?>">
+                                <a href="<?=base_url('assets/inventory')?>">
+                                    <span><i class="fas fa-caret-right"></i> Inventory</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'assets/categories') echo 'nav-active';?>">
+                                <a href="<?=base_url('assets/categories')?>">
+                                    <span><i class="fas fa-caret-right"></i> Categories</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    <!-- virtual classroom -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin() || is_teacher_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'virtual_class') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-screen-desktop"></i><span>Virtual Classroom</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'virtual_class/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('virtual_class')?>">
+                                    <span><i class="fas fa-caret-right"></i> Scheduled Classes</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    <!-- gps bus tracking -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'bus_tracking') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-map"></i><span>GPS Bus Tracking</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'bus_tracking/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('bus_tracking')?>">
+                                    <span><i class="fas fa-caret-right"></i> Live Map</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'bus_tracking/manage') echo 'nav-active';?>">
+                                <a href="<?=base_url('bus_tracking/manage')?>">
+                                    <span><i class="fas fa-caret-right"></i> Manage Buses</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    <!-- alumni -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'alumni') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-trophy"></i><span>Alumni</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'alumni/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('alumni')?>">
+                                    <span><i class="fas fa-caret-right"></i> Alumni Directory</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    <!-- cbt online exams -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin() || is_teacher_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'cbt') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-chemistry"></i><span>CBT / Online Exams</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'cbt/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('cbt')?>">
+                                    <span><i class="fas fa-caret-right"></i> Manage Exams</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    <!-- visitor gate management -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'visitor') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-people"></i><span>Visitor / Gate Log</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'visitor/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('visitor')?>">
+                                    <span><i class="fas fa-caret-right"></i> Today's Visitors</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'visitor/report') echo 'nav-active';?>">
+                                <a href="<?=base_url('visitor/report')?>">
+                                    <span><i class="fas fa-caret-right"></i> Visitor Report</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    <!-- knec -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'knec') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-docs"></i><span>KNEC Index Numbers</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'knec/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('knec')?>">
+                                    <span><i class="fas fa-caret-right"></i> Candidates &amp; Centres</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    <!-- ptm -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'ptm') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-bubbles"></i><span>PTM (Parent-Teacher)</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'ptm/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('ptm')?>">
+                                    <span><i class="fas fa-caret-right"></i> PTM Sessions</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    <!-- bursary -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'bursary') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-diamond"></i><span>Bursary &amp; Scholarships</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'bursary/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('bursary')?>">
+                                    <span><i class="fas fa-caret-right"></i> Programmes</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    <!-- pocket money -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'pocket_money') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-wallet"></i><span>Pocket Money</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'pocket_money/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('pocket_money')?>">
+                                    <span><i class="fas fa-caret-right"></i> All Students</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    <!-- health -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin() || is_teacher_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'health') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-heart"></i><span>Health Records</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'health/search') echo 'nav-active';?>">
+                                <a href="<?=base_url('health/search')?>">
+                                    <span><i class="fas fa-caret-right"></i> Student Health</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'health/clinic_log') echo 'nav-active';?>">
+                                <a href="<?=base_url('health/clinic_log')?>">
+                                    <span><i class="fas fa-caret-right"></i> Clinic Log</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+                    <!-- notice board -->
+                    <li class="nav-parent <?php if ($main_menu == 'noticeboard') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="icons icon-bubble"></i><span>Notice Board</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'noticeboard/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('noticeboard')?>">
+                                    <span><i class="fas fa-caret-right"></i> View Notices</span>
+                                </a>
+                            </li>
+                            <?php if (is_admin_loggedin() || is_superadmin_loggedin() || is_teacher_loggedin()): ?>
+                            <li class="<?php if ($sub_page == 'noticeboard/manage') echo 'nav-active';?>">
+                                <a href="<?=base_url('noticeboard/manage')?>">
+                                    <span><i class="fas fa-caret-right"></i> Manage Notices</span>
+                                </a>
+                            </li>
+                            <?php endif; ?>
+                        </ul>
+                    </li>
                     <?php
                     if(get_permission('sendsmsmail', 'is_add') ||
                     get_permission('sendsmsmail_template', 'is_view') ||
@@ -981,6 +1270,11 @@
                                 <a href="<?=base_url('fees/reminder')?>"><span><i class="fas fa-caret-right"></i><?=translate('fees_reminder')?></span></a>
                             </li>
                             <?php } ?>
+                            <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                            <li class="<?php if ($sub_page == 'mpesa/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('mpesa')?>"><span><i class="fas fa-caret-right"></i> M-Pesa Transactions</span></a>
+                            </li>
+                            <?php endif; ?>
                         </ul>
                     </li>
                     <?php } ?>
@@ -1300,17 +1594,6 @@
                     <?php } ?>
                 </ul>
             </nav>
-        </div>
-		<script>
-			// maintain scroll position
-			if (typeof localStorage !== 'undefined') {
-				if (localStorage.getItem('sidebar-left-position') !== null) {
-					var initialPosition = localStorage.getItem('sidebar-left-position'),
-						sidebarLeft = document.querySelector('#sidebar-left .nano-content');
-					sidebarLeft.scrollTop = initialPosition;
-				}
-			}
-		</script>
-	</div>
-</aside>
-<!-- end sidebar -->
+    </div><!-- /.dck-sidebar-nav -->
+
+</aside><!-- /.dck-sidebar -->

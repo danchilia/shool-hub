@@ -325,6 +325,9 @@ $config['cache_query_string'] = FALSE;
 |
 */
 $config['encryption_key'] = '';
+if (file_exists(__DIR__ . '/encryption_key.php')) {
+	require __DIR__ . '/encryption_key.php';
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -404,7 +407,7 @@ $config['cookie_prefix']	= '';
 $config['cookie_domain']	= '';
 $config['cookie_path']		= '/';
 $config['cookie_secure']	= FALSE;
-$config['cookie_httponly'] 	= FALSE;
+$config['cookie_httponly'] 	= TRUE;
 
 /*
 |--------------------------------------------------------------------------

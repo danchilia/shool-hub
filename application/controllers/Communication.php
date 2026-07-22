@@ -123,7 +123,7 @@ class Communication extends Admin_Controller
                     // uploading file using codeigniter upload library
                     $config['upload_path'] = 'uploads/attachments/';
                     $config['encrypt_name'] = true;
-                    $config['allowed_types'] = '*';
+                    $config['allowed_types'] = 'gif|jpg|jpeg|png|pdf|doc|docx|xls|xlsx|txt|zip';
                     $this->upload->initialize($config);
                     if ($this->upload->do_upload("attachment_file")) {
                         $arrayMsg['file_name'] = $this->upload->data('orig_name');

@@ -1,6 +1,7 @@
 # Sensitive files - NEVER push these
 application/config/database.php
 application/config/purchase_key.php
+application/config/encryption_key.php
 
 # Sample/test SQL files
 sample_school_data.sql

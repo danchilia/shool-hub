@@ -379,6 +379,39 @@ class School_settings extends Admin_Controller
         echo json_encode($array);
     }
 
+    public function whatsapp_save()
+    {
+        if (!get_permission('sms_settings', 'is_add')) {
+            ajax_access_denied();
+        }
+        $branchID = $this->school_model->getBranchID();
+        $this->form_validation->set_rules('wa_phone_number_id', 'Phone Number ID', 'trim|required');
+        $this->form_validation->set_rules('wa_access_token',    'Access Token',    'trim|required');
+        if ($this->form_validation->run() !== false) {
+            $data = array(
+                'sms_api_id'  => 7,
+                'field_one'   => $this->input->post('wa_phone_number_id'),
+                'field_two'   => $this->input->post('wa_access_token'),
+                'field_three' => $this->input->post('wa_business_account_id'),
+                'field_four'  => '',
+                'branch_id'   => $branchID,
+                'is_active'   => 0,
+            );
+            $this->db->where(array('sms_api_id' => 7, 'branch_id' => $branchID));
+            $q = $this->db->get('sms_credential');
+            if ($q->num_rows() > 0) {
+                $this->db->where(array('sms_api_id' => 7, 'branch_id' => $branchID));
+                $this->db->update('sms_credential', $data);
+            } else {
+                $this->db->insert('sms_credential', $data);
+            }
+            $array = array('status' => 'success', 'message' => translate('the_configuration_has_been_updated'));
+        } else {
+            $array = array('status' => 'fail', 'error' => $this->form_validation->error_array());
+        }
+        echo json_encode($array);
+    }
+
     public function smsconfig()
     {
         if (!get_permission('sms_settings', 'is_view')) {

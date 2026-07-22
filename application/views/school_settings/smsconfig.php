@@ -35,6 +35,7 @@
 													"4" 		=> "Bulk",
 													"5" 		=> "Textlocal",
 													"6" 		=> "Africa's Talking",
+												"7" 		=> "WhatsApp (Meta Cloud API)",
 												);
 												echo form_dropdown("sms_service_provider", $arraySMS, set_value('sms_service', $sms_service_provider), "class='form-control'
 												data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity' ");
@@ -294,6 +295,38 @@
 										<div class="form-group">
 											<label class="col-md-3 control-label">Sender ID</label>
 											<div class="col-md-6 mb-md"><input type="text" class="form-control" name="at_sender_id" value="<?=isset($api['africastalking']) ? $api['africastalking']['field_three'] : ''?>" placeholder="Optional"><span class="error"></span></div>
+										</div>
+									</div>
+									<div class="panel-footer"><div class="row"><div class="col-md-offset-3 col-md-2"><button type="submit" class="btn btn-default btn-block" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing"><i class="fas fa-plus-circle"></i> <?=translate('save')?></button></div></div></div>
+									<?php echo form_close();?>
+								</div>
+							</div>
+							<div class="panel panel-accordion">
+								<div class="panel-heading">
+									<h4 class="panel-title">
+										<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#whatsapp-cloud">WhatsApp Business Cloud API (Meta)</a>
+									</h4>
+								</div>
+								<div id="whatsapp-cloud" class="accordion-body collapse">
+									<?php echo form_open('school_settings/whatsapp_save', array('class' => 'form-horizontal form-bordered frm-submit-msg')); ?>
+									<input type="hidden" name="branch_id" value="<?=$branch_id?>">
+									<div class="panel-body">
+										<div class="col-md-12 mb-md">
+											<div class="alert alert-info">
+												<i class="fab fa-whatsapp"></i> <strong>Meta WhatsApp Cloud API</strong> — Go to <strong>developers.facebook.com</strong>, create an App, add the WhatsApp product, and get your Phone Number ID and Permanent Access Token. Outbound notifications require approved message templates.
+											</div>
+										</div>
+										<div class="form-group mt-md">
+											<label class="col-md-3 control-label">Phone Number ID <span class="required">*</span></label>
+											<div class="col-md-6"><input type="text" class="form-control" name="wa_phone_number_id" value="<?=isset($api['whatsapp']) ? $api['whatsapp']['field_one'] : ''?>" placeholder="e.g. 1234567890"><span class="error"></span></div>
+										</div>
+										<div class="form-group">
+											<label class="col-md-3 control-label">Permanent Access Token <span class="required">*</span></label>
+											<div class="col-md-6"><input type="text" class="form-control" name="wa_access_token" value="<?=isset($api['whatsapp']) ? $api['whatsapp']['field_two'] : ''?>" placeholder="EAAxxxxxxxx..."><span class="error"></span></div>
+										</div>
+										<div class="form-group">
+											<label class="col-md-3 control-label">Business Account ID</label>
+											<div class="col-md-6 mb-md"><input type="text" class="form-control" name="wa_business_account_id" value="<?=isset($api['whatsapp']) ? $api['whatsapp']['field_three'] : ''?>" placeholder="Optional"><span class="error"></span></div>
 										</div>
 									</div>
 									<div class="panel-footer"><div class="row"><div class="col-md-offset-3 col-md-2"><button type="submit" class="btn btn-default btn-block" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing"><i class="fas fa-plus-circle"></i> <?=translate('save')?></button></div></div></div>

@@ -188,6 +188,84 @@ class Branch_health extends Admin_Controller
         $daysLeft = $sub ? max(0, floor((strtotime($sub->end_date) - time()) / 86400)) : 0;
         $checks['subscription']['items'][] = $this->checkItem('Subscription Active', $subOk, $subOk ? 'Active (' . $daysLeft . ' days left)' : 'No active subscription', !$subOk ? 'Assign a plan in Branch > Subscriptions > Assign Plan' : '');
 
+        // 9. SCHOOL OPERATIONS (New Modules)
+        $checks['operations'] = array(
+            'title' => 'School Operations',
+            'icon' => 'fas fa-cogs',
+            'items' => array()
+        );
+        $canteenItems    = $this->db->where('branch_id', $branchId)->count_all_results('canteen_items');
+        $canteenWallets  = $this->db->where('branch_id', $branchId)->count_all_results('canteen_wallet');
+        $assetCategories = $this->db->where('branch_id', $branchId)->count_all_results('asset_categories');
+        $assetsCount     = $this->db->where('branch_id', $branchId)->count_all_results('assets');
+        $inventoryCount  = $this->db->where('branch_id', $branchId)->count_all_results('inventory_items');
+        $noticeCount     = $this->db->where('branch_id', $branchId)->count_all_results('notice_board');
+        $pocketMoneyTx   = $this->db->where('branch_id', $branchId)->count_all_results('pocket_money');
+        $pmBalances      = $this->db->where('branch_id', $branchId)->count_all_results('pocket_money_balance');
+        $bursaryProg     = $this->db->where('branch_id', $branchId)->count_all_results('bursary_programmes');
+        $bursaryAwards   = $this->db->where('branch_id', $branchId)->count_all_results('bursary_awards');
+
+        $checks['operations']['items'][] = $this->checkItem('Canteen Menu Items', $canteenItems > 0, $canteenItems . ' items', $canteenItems == 0 ? 'Add menu items in Canteen / POS > Menu Items' : '');
+        $checks['operations']['items'][] = $this->checkItem('Canteen Student Wallets', $canteenWallets > 0, $canteenWallets . ' wallets loaded', $canteenWallets == 0 ? 'Load wallets in Canteen / POS > Student Wallets' : '');
+        $checks['operations']['items'][] = $this->checkItem('Asset Categories', $assetCategories > 0, $assetCategories . ' categories', $assetCategories == 0 ? 'Create asset categories in Assets & Inventory > Categories' : '');
+        $checks['operations']['items'][] = $this->checkItem('Assets Registered', $assetsCount > 0, $assetsCount . ' assets', $assetsCount == 0 ? 'Register assets in Assets & Inventory > Asset Register' : '');
+        $checks['operations']['items'][] = $this->checkItem('Inventory Items', $inventoryCount > 0, $inventoryCount . ' items', $inventoryCount == 0 ? 'Add inventory in Assets & Inventory > Inventory' : '');
+        $checks['operations']['items'][] = $this->checkItem('Notice Board Posts', $noticeCount > 0, $noticeCount . ' notices', $noticeCount == 0 ? 'Post notices in Notice Board > Manage Notices' : '');
+        $checks['operations']['items'][] = $this->checkItem('Pocket Money Transactions', $pocketMoneyTx > 0, $pocketMoneyTx . ' transactions', $pocketMoneyTx == 0 ? 'Start transactions in Pocket Money' : '');
+        $checks['operations']['items'][] = $this->checkItem('Pocket Money Balances', $pmBalances > 0, $pmBalances . ' students', $pmBalances == 0 ? 'Deposit funds in Pocket Money > Student wallets' : '');
+        $checks['operations']['items'][] = $this->checkItem('Bursary Programmes', $bursaryProg > 0, $bursaryProg . ' programmes', $bursaryProg == 0 ? 'Create bursary programmes in Bursary & Scholarships' : '');
+        $checks['operations']['items'][] = $this->checkItem('Bursary Awards Given', $bursaryAwards > 0, $bursaryAwards . ' awards', $bursaryAwards == 0 ? 'Award bursaries in Bursary & Scholarships > (select programme)' : '');
+
+        // 10. STUDENT WELFARE (New Modules)
+        $checks['welfare'] = array(
+            'title' => 'Student Welfare & Records',
+            'icon' => 'fas fa-heart',
+            'items' => array()
+        );
+        $healthRecords  = $this->db->where('branch_id', $branchId)->count_all_results('student_health');
+        $vaccinations   = $this->db->where('branch_id', $branchId)->count_all_results('student_vaccinations');
+        $clinicVisits   = $this->db->where('branch_id', $branchId)->count_all_results('clinic_visits');
+        $alumniCount    = $this->db->where('branch_id', $branchId)->count_all_results('alumni');
+        $ptmSessions    = $this->db->where('branch_id', $branchId)->count_all_results('ptm_sessions');
+        $ptmBookings    = $this->db->where('branch_id', $branchId)->count_all_results('ptm_bookings');
+        $appraisalTpl   = $this->db->where('branch_id', $branchId)->count_all_results('appraisal_templates');
+        $appraisalCount = $this->db->where('branch_id', $branchId)->count_all_results('appraisals');
+
+        $checks['welfare']['items'][] = $this->checkItem('Student Health Records', $healthRecords > 0, $healthRecords . ' records', $healthRecords == 0 ? 'Add health records in Health Records > Student Health' : '');
+        $checks['welfare']['items'][] = $this->checkItem('Vaccination Records', $vaccinations > 0, $vaccinations . ' entries', $vaccinations == 0 ? 'Log vaccinations in Health Records > Student Health' : '');
+        $checks['welfare']['items'][] = $this->checkItem('Clinic Visit Logs', $clinicVisits > 0, $clinicVisits . ' visits', $clinicVisits == 0 ? 'Log visits in Health Records > Clinic Log' : '');
+        $checks['welfare']['items'][] = $this->checkItem('Alumni Records', $alumniCount > 0, $alumniCount . ' alumni', $alumniCount == 0 ? 'Add alumni in Alumni > Add Alumni or Import Students' : '');
+        $checks['welfare']['items'][] = $this->checkItem('PTM Sessions Created', $ptmSessions > 0, $ptmSessions . ' sessions', $ptmSessions == 0 ? 'Schedule meetings in PTM (Parent-Teacher) > New Session' : '');
+        $checks['welfare']['items'][] = $this->checkItem('PTM Bookings Made', $ptmBookings > 0, $ptmBookings . ' bookings', $ptmBookings == 0 ? 'Book slots in PTM (Parent-Teacher) > Bookings' : '');
+        $checks['welfare']['items'][] = $this->checkItem('Appraisal Templates', $appraisalTpl > 0, $appraisalTpl . ' templates', $appraisalTpl == 0 ? 'Create templates in Staff Appraisal > Templates' : '');
+        $checks['welfare']['items'][] = $this->checkItem('Staff Appraisals Conducted', $appraisalCount > 0, $appraisalCount . ' appraisals', $appraisalCount == 0 ? 'Start appraisals in Staff Appraisal > Start Appraisal' : '');
+
+        // 11. ADMINISTRATION & TECH (New Modules)
+        $checks['admin_tech'] = array(
+            'title' => 'Administration & Technology',
+            'icon' => 'fas fa-shield-alt',
+            'items' => array()
+        );
+        $busCount       = $this->db->where('branch_id', $branchId)->count_all_results('school_buses');
+        $busLocations   = $this->db->where('branch_id', $branchId)->count_all_results('bus_locations');
+        $visitorCount   = $this->db->where('branch_id', $branchId)->count_all_results('visitor_log');
+        $knecCentres    = $this->db->where('branch_id', $branchId)->count_all_results('knec_centres');
+        $knecCandidates = $this->db->where('branch_id', $branchId)->count_all_results('knec_candidates');
+        $cbtQuizzes     = $this->db->where('branch_id', $branchId)->count_all_results('cbt_quiz');
+        $cbtQuestions   = $this->db->where('branch_id', $branchId)->count_all_results('cbt_questions');
+        $virtualClasses = $this->db->where('branch_id', $branchId)->count_all_results('virtual_classes');
+        $admReqs        = $this->db->where('branch_id', $branchId)->count_all_results('admission_requests');
+
+        $checks['admin_tech']['items'][] = $this->checkItem('Buses Registered', $busCount > 0, $busCount . ' buses', $busCount == 0 ? 'Register buses in GPS Bus Tracking > Manage Buses' : '');
+        $checks['admin_tech']['items'][] = $this->checkItem('GPS Locations Logged', $busLocations > 0, $busLocations . ' pings', $busLocations == 0 ? 'Buses need to report location via GPS Tracking > Live Map' : '');
+        $checks['admin_tech']['items'][] = $this->checkItem('Visitor Log Entries', $visitorCount > 0, $visitorCount . ' visitors', $visitorCount == 0 ? 'Log visitors in Visitor / Gate Log > Today\'s Visitors' : '');
+        $checks['admin_tech']['items'][] = $this->checkItem('KNEC Exam Centres', $knecCentres > 0, $knecCentres . ' centres', $knecCentres == 0 ? 'Add centres in KNEC Index Numbers > Candidates & Centres' : '');
+        $checks['admin_tech']['items'][] = $this->checkItem('KNEC Candidates Registered', $knecCandidates > 0, $knecCandidates . ' candidates', $knecCandidates == 0 ? 'Register candidates in KNEC Index Numbers' : '');
+        $checks['admin_tech']['items'][] = $this->checkItem('CBT Quizzes Created', $cbtQuizzes > 0, $cbtQuizzes . ' quizzes', $cbtQuizzes == 0 ? 'Create online exams in CBT / Online Exams > Manage Exams' : '');
+        $checks['admin_tech']['items'][] = $this->checkItem('CBT Questions Added', $cbtQuestions > 0, $cbtQuestions . ' questions', $cbtQuestions == 0 ? 'Add questions to quizzes in CBT / Online Exams' : '');
+        $checks['admin_tech']['items'][] = $this->checkItem('Virtual Classes Scheduled', $virtualClasses > 0, $virtualClasses . ' sessions', $virtualClasses == 0 ? 'Schedule in Virtual Classroom > Scheduled Classes' : '');
+        $checks['admin_tech']['items'][] = $this->checkItem('Online Admission Requests', $admReqs > 0, $admReqs . ' requests', $admReqs == 0 ? 'Online portal at Admission > Online Admission Portal' : '');
+
         // Calculate totals
         $totalChecks = 0;
         $passedChecks = 0;

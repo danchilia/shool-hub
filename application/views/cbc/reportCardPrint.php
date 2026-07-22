@@ -64,7 +64,14 @@ if (count($student_array)) {
 		$schoolYear = get_type_name_by_id('schoolyear', $sessionID, 'school_year');
 		$termName = !empty($getExam['term_id']) ? get_type_name_by_id('exam_term', $getExam['term_id']) : '';
 
-		$levelClasses = array('EE' => 'level-ee', 'ME' => 'level-me', 'AE' => 'level-ae', 'BE' => 'level-be');
+		$levelClasses = array(
+			'EE2' => 'level-ee2', 'EE1' => 'level-ee1',
+			'ME2' => 'level-me2', 'ME1' => 'level-me1',
+			'AE2' => 'level-ae2', 'AE1' => 'level-ae1',
+			'BE2' => 'level-be2', 'BE1' => 'level-be1',
+			// backward compat
+			'EE' => 'level-ee2', 'ME' => 'level-me2', 'AE' => 'level-ae1', 'BE' => 'level-be1',
+		);
 ?>
 <div class="cbc-report">
 
@@ -119,13 +126,17 @@ if (count($student_array)) {
 		</tr>
 	</table>
 
-	<!-- COMPETENCY LEVEL KEY -->
-	<table class="key-table">
+	<!-- KNEC 8-LEVEL COMPETENCY KEY -->
+	<table class="key-table" style="font-size:10px;">
 		<tr>
-			<td class="key-ee" style="width:25%; border-radius:4px 0 0 4px;">EE - Exceeding Expectations</td>
-			<td class="key-me" style="width:25%;">ME - Meeting Expectations</td>
-			<td class="key-ae" style="width:25%;">AE - Approaching Expectations</td>
-			<td class="key-be" style="width:25%; border-radius:0 4px 4px 0;">BE - Below Expectations</td>
+			<td class="key-ee" style="width:12.5%; border-radius:4px 0 0 4px; background:#155724; color:#fff;">EE2 - Exceeding (Advanced)</td>
+			<td class="key-ee" style="width:12.5%; background:#1e7e34; color:#fff;">EE1 - Exceeding Expectations</td>
+			<td class="key-me" style="width:12.5%; background:#004085; color:#fff;">ME2 - Meeting (Proficient)</td>
+			<td class="key-me" style="width:12.5%; background:#0062cc; color:#fff;">ME1 - Meeting Expectations</td>
+			<td class="key-ae" style="width:12.5%; background:#856404; color:#fff;">AE2 - Approaching (Developing)</td>
+			<td class="key-ae" style="width:12.5%; background:#d39e00; color:#000;">AE1 - Approaching Expectations</td>
+			<td class="key-be" style="width:12.5%; background:#721c24; color:#fff;">BE2 - Below (Beginning)</td>
+			<td class="key-be" style="width:12.5%; background:#dc3545; color:#fff; border-radius:0 4px 4px 0;">BE1 - Below Expectations</td>
 		</tr>
 	</table>
 
@@ -143,30 +154,40 @@ if (count($student_array)) {
 		<tbody>
 		<?php
 		if (count($assessments)) {
-			$eeCount = 0; $meCount = 0; $aeCount = 0; $beCount = 0;
+			$counts = array('EE2'=>0,'EE1'=>0,'ME2'=>0,'ME1'=>0,'AE2'=>0,'AE1'=>0,'BE2'=>0,'BE1'=>0);
 			$num = 1;
 			foreach ($assessments as $a) {
-				$levelClass = isset($levelClasses[$a['competency_level']]) ? $levelClasses[$a['competency_level']] : '';
-				if ($a['competency_level'] == 'EE') $eeCount++;
-				elseif ($a['competency_level'] == 'ME') $meCount++;
-				elseif ($a['competency_level'] == 'AE') $aeCount++;
-				elseif ($a['competency_level'] == 'BE') $beCount++;
+				$lvl = $a['competency_level'];
+				// normalise old 4-level values
+				if ($lvl === 'EE') $lvl = 'EE2';
+				elseif ($lvl === 'ME') $lvl = 'ME2';
+				elseif ($lvl === 'AE') $lvl = 'AE1';
+				elseif ($lvl === 'BE') $lvl = 'BE1';
+				$levelClass = isset($levelClasses[$lvl]) ? $levelClasses[$lvl] : '';
+				if (isset($counts[$lvl])) $counts[$lvl]++;
 		?>
 			<tr>
 				<td style="text-align:center;"><?=$num++?></td>
 				<td><?=$a['learning_area_name']?></td>
-				<td class="<?=$levelClass?>"><?=$a['competency_level']?></td>
+				<td class="<?=$levelClass?>" style="font-weight:700;text-align:center;"><?=$lvl?></td>
 				<td style="font-size:12px;"><?=$a['remarks']?></td>
 			</tr>
 		<?php } ?>
 			<tr class="summary-row">
-				<td colspan="2" style="text-align:right; padding-right:15px;">Summary:</td>
-				<td colspan="2">
-					<span style="background:#28a745; color:#fff; padding:2px 8px; border-radius:3px; margin-right:5px;">EE: <?=$eeCount?></span>
-					<span style="background:#007bff; color:#fff; padding:2px 8px; border-radius:3px; margin-right:5px;">ME: <?=$meCount?></span>
-					<span style="background:#ffc107; color:#000; padding:2px 8px; border-radius:3px; margin-right:5px;">AE: <?=$aeCount?></span>
-					<span style="background:#dc3545; color:#fff; padding:2px 8px; border-radius:3px; margin-right:5px;">BE: <?=$beCount?></span>
-					&nbsp;&nbsp; Total: <?=count($assessments)?> areas
+				<td colspan="2" style="text-align:right; padding-right:15px;font-size:11px;">KNEC 8-Level Summary:</td>
+				<td colspan="2" style="font-size:10px;">
+					<?php foreach ($counts as $lv => $cnt): if ($cnt > 0): ?>
+					<?php
+						$bg = '#6c757d';
+						if (strpos($lv,'EE')===0) $bg = ($lv=='EE2'?'#155724':'#1e7e34');
+						elseif (strpos($lv,'ME')===0) $bg = ($lv=='ME2'?'#004085':'#0062cc');
+						elseif (strpos($lv,'AE')===0) $bg = ($lv=='AE2'?'#856404':'#d39e00');
+						elseif (strpos($lv,'BE')===0) $bg = ($lv=='BE2'?'#721c24':'#dc3545');
+						$fg = ($lv == 'AE1') ? '#000' : '#fff';
+					?>
+					<span style="background:<?=$bg?>;color:<?=$fg?>;padding:1px 7px;border-radius:3px;margin-right:3px;"><?=$lv?>:<?=$cnt?></span>
+					<?php endif; endforeach; ?>
+					&nbsp; Total: <?=count($assessments)?> areas
 				</td>
 			</tr>
 		<?php } else { ?>

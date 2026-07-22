@@ -1,0 +1,13 @@
+# Block execution of PHP and other server-side scripts in the uploads directory.
+# Any file uploaded by users must never be executed as code.
+<FilesMatch "\.(php\d?|phtml|pl|py|jsp|asp|aspx|sh|cgi|exe|rb)$">
+    <IfModule authz_core_module>
+        Require all denied
+    </IfModule>
+    <IfModule !authz_core_module>
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+Options -ExecCGI
+RemoveHandler .php .php3 .php4 .php5 .php7 .phtml .pl .py .jsp .asp .aspx .sh .cgi

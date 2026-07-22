@@ -386,6 +386,8 @@ if (count($allocations)) {
 								<div class="col-md-6">
 		    						<?php
 										$payvia_list = array('' => translate('select_payment_method'));
+										if (!empty($config['mpesa_status']) && $config['mpesa_status'] == 1)
+											$payvia_list['mpesa'] = 'M-Pesa (Lipa Na M-Pesa)';
 										if ($config['paypal_status'] == 1)
 											$payvia_list['paypal'] = 'Paypal';
 										if ($config['stripe_status'] == 1)
@@ -453,6 +455,15 @@ if (count($allocations)) {
 									<span class="error"></span>
 								</div>
 							</div>
+
+							<div class="form-group mpesa-field" style="display: none;">
+								<label class="col-md-3 control-label">M-Pesa Phone <span class="required">*</span></label>
+								<div class="col-md-6">
+									<input type="text" class="form-control" name="mpesa_phone" id="mpesa_phone" placeholder="e.g. 0712345678" autocomplete="off" />
+									<small class="text-muted">Enter the Safaricom number to receive the STK push</small>
+									<span class="error"></span>
+								</div>
+							</div>
 							<footer class="panel-footer">
 								<div class="row">
 									<div class="col-md-offset-3 col-md-3">
@@ -499,16 +510,104 @@ if (count($allocations)) {
 	$(document).ready(function () {
 		$(document).on('change', '#pay_via', function(){
 			var method = $(this).val();
+			$('.stripe').hide(400);
+			$('.payu').hide(400);
+			$('.mpesa-field').hide(400);
 			if (method == "stripe") {
 				$('.stripe').show(400);
-				$('.payu').hide(400);
-			} else if (method =="payumoney") {
+			} else if (method == "payumoney") {
 				$('.payu').show(400);
-				$('.stripe').hide(400);
-			} else{
-				$('.stripe').hide(400);
-				$('.payu').hide(400);
+			} else if (method == "mpesa") {
+				$('.mpesa-field').show(400);
 			}
 		});
+
+		/* ── M-Pesa STK Push: intercept form submit ── */
+		var mpesaPollTimer = null;
+
+		$('form.frm-submit').on('submit.mpesa', function(e) {
+			if ($('#pay_via').val() !== 'mpesa') return; // let default handler run for others
+			e.preventDefault();
+			e.stopImmediatePropagation();
+
+			var $form = $(this);
+			var $btn = $form.find('[type="submit"]');
+			var phone = $('#mpesa_phone').val().trim();
+
+			if (!phone) {
+				$form.find('[name="mpesa_phone"]').closest('.form-group').find('.error').html('M-Pesa phone number is required.');
+				return;
+			}
+
+			$btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Sending STK Push...');
+
+			$.ajax({
+				url: $form.attr('action'),
+				type: 'POST',
+				data: $form.serialize(),
+				dataType: 'json',
+				success: function(data) {
+					if (data.status === 'mpesa_pending') {
+						showMpesaWaiting(data.checkout_request_id, data.message, $btn);
+					} else if (data.status === 'fail') {
+						$.each(data.error || {}, function(k, v) {
+							$form.find("[name='" + k + "']").closest('.form-group').find('.error').html(v);
+						});
+						$btn.prop('disabled', false).html('<i class="fas fa-credit-card"></i> <?=translate('fees_pay_now')?>');
+					} else {
+						location.reload(true);
+					}
+				},
+				error: function() {
+					$btn.prop('disabled', false).html('<i class="fas fa-credit-card"></i> <?=translate('fees_pay_now')?>');
+				}
+			});
+		});
+
+		function showMpesaWaiting(checkoutId, msg, $btn) {
+			$('#mpesa-modal-msg').text(msg);
+			$('#mpesa-modal-ref').text(checkoutId);
+			mfp_modal('#mpesa-waiting-modal');
+			mpesaPollTimer = setInterval(function() {
+				$.post(base_url + 'feespayment/mpesa_status', {checkout_request_id: checkoutId}, function(data) {
+					if (data.status === 'completed') {
+						clearInterval(mpesaPollTimer);
+						$('#mpesa-wait-spinner').hide();
+						$('#mpesa-wait-success').show();
+						setTimeout(function(){ location.reload(true); }, 2000);
+					} else if (data.status === 'failed' || data.status === 'cancelled') {
+						clearInterval(mpesaPollTimer);
+						$('#mpesa-wait-spinner').hide();
+						$('#mpesa-wait-failed').show().text(data.message || 'Payment failed or cancelled.');
+						$btn.prop('disabled', false).html('<i class="fas fa-credit-card"></i> <?=translate('fees_pay_now')?>');
+					}
+				}, 'json');
+			}, 4000);
+
+			$('#mpesa-cancel-poll').on('click', function() {
+				clearInterval(mpesaPollTimer);
+				if (typeof $.magnificPopup !== 'undefined') $.magnificPopup.close();
+				$btn.prop('disabled', false).html('<i class="fas fa-credit-card"></i> <?=translate('fees_pay_now')?>');
+			});
+		}
 	});
 </script>
+
+<!-- M-Pesa Waiting Modal -->
+<div id="mpesa-waiting-modal" class="white-popup mfp-hide" style="max-width:420px;margin:auto;padding:32px;border-radius:12px;text-align:center;">
+	<div style="font-size:3rem;margin-bottom:12px;">📱</div>
+	<h4 style="font-weight:700;margin-bottom:8px;">M-Pesa Payment Request Sent</h4>
+	<p id="mpesa-modal-msg" style="color:#555;margin-bottom:16px;"></p>
+	<div id="mpesa-wait-spinner" style="margin:16px 0;">
+		<i class="fas fa-spinner fa-spin fa-2x" style="color:#10b981;"></i>
+		<p style="margin-top:8px;font-size:.85rem;color:#888;">Waiting for confirmation<span id="mpesa-dots">...</span></p>
+	</div>
+	<div id="mpesa-wait-success" style="display:none;color:#10b981;font-weight:700;font-size:1.1rem;">
+		<i class="fas fa-check-circle fa-2x"></i><br>Payment confirmed! Refreshing...
+	</div>
+	<div id="mpesa-wait-failed" style="display:none;color:#ef4444;font-weight:600;"></div>
+	<p style="font-size:.75rem;color:#aaa;margin-top:16px;">Reference: <span id="mpesa-modal-ref" style="font-family:monospace;"></span></p>
+	<button id="mpesa-cancel-poll" class="btn btn-default btn-sm" style="margin-top:12px;">
+		<i class="fas fa-times"></i> Cancel
+	</button>
+</div>

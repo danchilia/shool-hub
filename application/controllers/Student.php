@@ -885,6 +885,181 @@ class Student extends Admin_Controller
         echo json_encode($data);
     }
 
+    public function leaving_certificate($studentId = '')
+    {
+        if (!is_admin_loggedin() && !is_superadmin_loggedin()) {
+            access_denied();
+        }
+        if (empty($studentId)) {
+            set_alert('error', 'Student ID required.');
+            redirect(base_url('student'));
+        }
+        $branchId = $this->application_model->get_branch_id();
+
+        $this->db->select('s.*, e.roll, e.class_id, e.section_id, c.name as class_name, sec.name as section_name,
+            CONCAT(g.first_name," ",g.last_name) as guardian_name, g.mobileno as guardian_phone,
+            g.address as guardian_address, g.national_id as guardian_id_no')
+            ->from('student s')
+            ->join('enroll e', 'e.student_id = s.id')
+            ->join('class c', 'c.id = e.class_id')
+            ->join('section sec', 'sec.id = e.section_id', 'left')
+            ->join('guardian g', 'g.id = s.guardian_id', 'left')
+            ->where('s.id', $studentId)
+            ->where('e.branch_id', $branchId)
+            ->order_by('e.id', 'DESC')
+            ->limit(1);
+        $student = $this->db->get()->row_array();
+
+        if (!$student) {
+            set_alert('error', 'Student not found.');
+            redirect(base_url('student'));
+        }
+
+        $branch = $this->db->where('id', $branchId)->get('branch')->row_array();
+
+        // Calculate fee clearance
+        $totalFees = $this->db->select_sum('amount')
+            ->where('student_id', $studentId)
+            ->where('session_id', get_session_id())
+            ->get('fee_allocation')->row_array();
+        $totalPaid = $this->db->select_sum('amount')
+            ->join('fee_allocation fa', 'fa.id = fee_payment_history.allocation_id')
+            ->where('fa.student_id', $studentId)
+            ->where('fa.session_id', get_session_id())
+            ->get('fee_payment_history')->row_array();
+
+        $feesBalance = (floatval($totalFees['amount'] ?? 0)) - (floatval($totalPaid['amount'] ?? 0));
+
+        $this->data['student']      = $student;
+        $this->data['branch']       = $branch;
+        $this->data['fees_balance'] = $feesBalance;
+        $this->data['issue_date']   = $this->input->get('date') ?: date('Y-m-d');
+        $this->data['sub_page']     = 'student/leaving_certificate';
+        $this->data['main_menu']    = 'students';
+        $this->load->view('layout/index', $this->data);
+    }
+
+    public function nemis_export()
+    {
+        if (!is_admin_loggedin() && !is_superadmin_loggedin()) {
+            access_denied();
+        }
+        $branchId  = $this->application_model->get_branch_id();
+        $classId   = $this->input->get('class_id') ?: '';
+        $sectionId = $this->input->get('section_id') ?: '';
+
+        $this->data['classes']     = $this->db->where('branch_id', $branchId)->order_by('name')->get('class')->result_array();
+        $this->data['class_id']    = $classId;
+        $this->data['section_id']  = $sectionId;
+        $this->data['sections']    = $classId ? $this->db->where('class_id', $classId)->get('section')->result_array() : array();
+        $this->data['students']    = array();
+
+        if ($classId) {
+            $this->db->select('s.*, e.roll, e.class_id, c.name as class_name, sec.name as section_name,
+                CONCAT(g.first_name," ",g.last_name) as guardian_name, g.mobileno as guardian_phone,
+                g.email as guardian_email, g.address as guardian_address')
+                ->from('student s')
+                ->join('enroll e', 'e.student_id = s.id')
+                ->join('class c', 'c.id = e.class_id')
+                ->join('section sec', 'sec.id = e.section_id', 'left')
+                ->join('guardian g', 'g.id = s.guardian_id', 'left')
+                ->where('e.branch_id', $branchId)
+                ->where('e.session_id', get_session_id())
+                ->where('e.class_id', $classId);
+            if ($sectionId) {
+                $this->db->where('e.section_id', $sectionId);
+            }
+            $this->data['students'] = $this->db->order_by('s.last_name')->get()->result_array();
+        }
+
+        $this->data['sub_page']    = 'student/nemis_export';
+        $this->data['main_menu']   = 'students';
+        $this->data['page_title']  = 'NEMIS Export';
+        $this->load->view('layout/index', $this->data);
+    }
+
+    public function nemis_download()
+    {
+        if (!is_admin_loggedin() && !is_superadmin_loggedin()) {
+            show_404();
+        }
+        $branchId  = $this->application_model->get_branch_id();
+        $classId   = $this->input->post('class_id');
+        $sectionId = $this->input->post('section_id');
+
+        $this->db->select('s.first_name, s.last_name, s.birthday, s.gender, s.register_no,
+            s.upi_number, e.roll, c.name as class_name, sec.name as section_name,
+            s.student_address, s.mobileno,
+            CONCAT(g.first_name," ",g.last_name) as guardian_name, g.mobileno as guardian_phone,
+            g.national_id as guardian_id_no, g.address as guardian_address')
+            ->from('student s')
+            ->join('enroll e', 'e.student_id = s.id')
+            ->join('class c', 'c.id = e.class_id')
+            ->join('section sec', 'sec.id = e.section_id', 'left')
+            ->join('guardian g', 'g.id = s.guardian_id', 'left')
+            ->where('e.branch_id', $branchId)
+            ->where('e.session_id', get_session_id())
+            ->where('e.class_id', $classId);
+        if ($sectionId) {
+            $this->db->where('e.section_id', $sectionId);
+        }
+        $students = $this->db->order_by('s.last_name')->get()->result_array();
+
+        $branch = $this->db->where('id', $branchId)->get('branch')->row_array();
+
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="NEMIS_Export_' . date('Ymd') . '.csv"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        $output = fopen('php://output', 'w');
+        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF)); // UTF-8 BOM for Excel
+
+        // NEMIS portal column headers (matching NEMIS upload template)
+        fputcsv($output, array(
+            'INSTITUTION_CODE',
+            'UPI_NUMBER',
+            'SURNAME',
+            'OTHER_NAMES',
+            'DATE_OF_BIRTH',
+            'GENDER',
+            'CLASS_NAME',
+            'STREAM',
+            'ADM_NUMBER',
+            'ROLL_NUMBER',
+            'PARENT_GUARDIAN_NAME',
+            'PARENT_PHONE',
+            'PARENT_ID_NO',
+            'STUDENT_ADDRESS',
+        ));
+
+        $institutionCode = !empty($branch['school_code']) ? $branch['school_code'] : 'SCH000';
+
+        foreach ($students as $s) {
+            $gender = strtoupper(substr($s['gender'], 0, 1)); // M or F
+            $dob    = !empty($s['birthday']) ? date('d/m/Y', strtotime($s['birthday'])) : '';
+            fputcsv($output, array(
+                $institutionCode,
+                $s['upi_number'] ?: '',
+                strtoupper($s['last_name']),
+                strtoupper($s['first_name']),
+                $dob,
+                $gender === 'M' ? 'Male' : ($gender === 'F' ? 'Female' : ''),
+                $s['class_name'],
+                $s['section_name'] ?: '',
+                $s['register_no'],
+                $s['roll'],
+                $s['guardian_name'] ?: '',
+                $s['guardian_phone'] ?: '',
+                $s['guardian_id_no'] ?: '',
+                $s['student_address'] ?: '',
+            ));
+        }
+
+        fclose($output);
+        exit;
+    }
+
     function bulk_delete()
     {
         $status = 'success';

@@ -1,48 +1,44 @@
 <head>
-	<meta charset="UTF-8">
-	<meta name="keywords" content="">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="description" content="DCK Solutions - School Management System">
-	<meta name="author" content="DCK Solutions">
-	<title><?php echo html_escape($title);?></title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="DCK Solutions - School Management System">
+    <meta name="author" content="DCK Solutions">
+    <title><?php echo html_escape($title);?></title>
     <link rel="shortcut icon" href="<?php echo base_url('assets/images/favicon.png');?>">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<!-- include stylesheet -->
-	<?php include 'stylesheet.php';?>
+    <!-- PWA manifest -->
+    <link rel="manifest" href="<?php echo base_url('manifest.json'); ?>">
+    <meta name="theme-color" content="#1a5276">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DCK Schools">
 
-	<?php
-	if(isset($headerelements)) {
-		foreach ($headerelements as $type => $element) {
-			if($type == 'css') {
-				if(count($element)) {
-					foreach ($element as $keycss => $css) {
-						echo '<link rel="stylesheet" href="'. base_url('assets/' . $css) . '">' . "\n";
-					}
-				}
-			} elseif($type == 'js') {
-				if(count($element)) {
-					foreach ($element as $keyjs => $js) {
-						echo '<script type="text/javascript" src="' . base_url('assets/' . $js). '"></script>' . "\n";
-					}
-				}
-			}
-		}
-	}
-	?>
-	<!-- ramom css -->
-	<link rel="stylesheet" href="<?php echo base_url('assets/css/ramom.css');?>">
-	<?php if ($theme_config["border_mode"] == 'false'): ?>
-		<link rel="stylesheet" href="<?php echo base_url('assets/css/skins/square-borders.css');?>">
-	<?php endif; ?>
+    <!-- Stylesheets + early jQuery -->
+    <?php include 'stylesheet.php'; ?>
 
-	<!-- If user have enabled CSRF proctection this function will take care of the ajax requests and append custom header for CSRF -->
-	<script type="text/javascript">
-		var base_url = '<?php echo base_url(); ?>';
-		var csrfData = <?php echo json_encode(csrf_jquery_token()); ?>;
-		$(function($) {
-			$.ajaxSetup({
-				data: csrfData
-			});
-		});
-	</script>
+    <?php
+    // Per-page extra CSS/JS injected by controllers via $headerelements
+    if (isset($headerelements)) {
+        foreach ($headerelements as $type => $elements) {
+            if ($type === 'css') {
+                foreach ((array)$elements as $css) {
+                    echo '<link rel="stylesheet" href="' . base_url('assets/' . $css) . '">' . "\n";
+                }
+            } elseif ($type === 'js') {
+                foreach ((array)$elements as $js) {
+                    echo '<script src="' . base_url('assets/' . $js) . '"></script>' . "\n";
+                }
+            }
+        }
+    }
+    ?>
+
+    <!-- CSRF token exposed for jQuery AJAX -->
+    <script>
+    var base_url = '<?php echo base_url(); ?>';
+    var csrfData = <?php echo json_encode(csrf_jquery_token()); ?>;
+    $(function () {
+        $.ajaxSetup({ data: csrfData });
+    });
+    </script>
 </head>

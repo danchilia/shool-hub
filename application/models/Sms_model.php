@@ -14,6 +14,8 @@ class Sms_model extends CI_Model
         $this->load->library("msg91");
         $this->load->library("bulk");
         $this->load->library("textlocal");
+        $this->load->library("africastalking");
+        $this->load->library("whatsapp");
     }
 
     // common function for sending sms
@@ -162,6 +164,11 @@ class Sms_model extends CI_Model
             $res = $this->msg91->send($receiver, $text);
         } elseif ($sms_api == 5) {
             $res = $this->textlocal->sendSms(array($receiver), $text);
+        } elseif ($sms_api == 6) {
+            $phone = format_kenyan_phone($receiver);
+            $res = $this->africastalking->sendSms($phone, $text);
+        } elseif ($sms_api == 7) {
+            $res = $this->whatsapp->sendText($receiver, $text);
         }
     }
 }
