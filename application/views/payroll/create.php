@@ -190,7 +190,7 @@
         					</div>
                         <?php
                         $links = $this->payroll_model->get('transactions_links', array('branch_id' => $staff['branch_id']), true);
-                        if ($links['status'] == 1) {
+                        if (!empty($links) && $links['status'] == 1) {
                         ?>
                             <div class="form-group">
                                 <label class="control-label"><?php echo translate('account'); ?> <span class="required">*</span></label>

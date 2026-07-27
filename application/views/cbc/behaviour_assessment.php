@@ -58,7 +58,7 @@
 			<input type="hidden" name="branch_id" value="<?=$branch_id?>">
 			<?php endif; ?>
 			<div class="table-responsive mt-md">
-				<table class="table table-bordered table-hover table-condensed">
+				<table class="table table-bordered table-hover table-sm">
 					<thead>
 						<tr class="success">
 							<th><?=translate('sl')?></th>
@@ -77,7 +77,7 @@
 						</tr>
 					</thead>
 					<tbody>
-					<?php if (count($students)): $i = 1; foreach ($students as $stu): ?>
+					<?php if (!empty($students)): $i = 1; foreach ($students as $stu): ?>
 						<tr>
 							<td><?=$i++?></td>
 							<td><?=$stu['first_name'] . ' ' . $stu['last_name']?></td>
@@ -105,8 +105,8 @@
 					</tbody>
 				</table>
 			</div>
-			<?php if (count($students)): ?>
-			<div class="pull-right mt-md mb-md">
+			<?php if (!empty($students)): ?>
+			<div class="float-end mt-md mb-md">
 				<button type="submit" class="btn btn-default" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing">
 					<i class="fas fa-save"></i> Save Behaviour Assessment
 				</button>

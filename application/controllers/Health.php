@@ -12,9 +12,9 @@ class Health extends Admin_Controller
     public function student($studentId = '')
     {
         $branchId = get_loggedin_branch_id();
-        $student  = $this->db->select('s.*, c.name AS class, se.name AS section_name')
+        $student  = $this->db->select('s.id AS student_id, s.*, c.name AS class, se.name AS section_name')
             ->from('student s')
-            ->join('enroll e', 'e.student_id = s.id', 'left')
+            ->join('enroll e', 'e.student_id = s.id AND e.branch_id = ' . (int)$branchId)
             ->join('class c', 'c.id = e.class_id', 'left')
             ->join('section se', 'se.id = e.section_id', 'left')
             ->where('s.id', $studentId)
@@ -34,47 +34,54 @@ class Health extends Admin_Controller
         $this->data['visits']       = $visits;
         $this->data['sub_page']     = 'health/student';
         $this->data['main_menu']    = 'health';
-        $this->data['page_title']   = 'Health Record — ' . $student['first_name'] . ' ' . $student['last_name'];
+        $this->data['title']        = 'Health Record — ' . $student['first_name'] . ' ' . $student['last_name'];
         $this->load->view('layout/index', $this->data);
     }
 
     /** Save/update the main health profile */
     public function save_profile()
     {
-        $studentId = (int) $this->input->post('student_id');
-        $branchId  = get_loggedin_branch_id();
-        $data = array(
-            'student_id'             => $studentId,
-            'blood_group'            => $this->input->post('blood_group'),
-            'height_cm'              => $this->input->post('height_cm') ?: null,
-            'weight_kg'              => $this->input->post('weight_kg') ?: null,
-            'vision_left'            => $this->input->post('vision_left'),
-            'vision_right'           => $this->input->post('vision_right'),
-            'hearing'                => $this->input->post('hearing'),
-            'allergies'              => $this->input->post('allergies'),
-            'chronic_conditions'     => $this->input->post('chronic_conditions'),
-            'disabilities'           => $this->input->post('disabilities'),
-            'emergency_contact_name' => $this->input->post('emergency_contact_name'),
-            'emergency_contact_phone'=> $this->input->post('emergency_contact_phone'),
-            'doctor_name'            => $this->input->post('doctor_name'),
-            'doctor_phone'           => $this->input->post('doctor_phone'),
-            'nhif_number'            => $this->input->post('nhif_number'),
-            'insurance_provider'     => $this->input->post('insurance_provider'),
-            'notes'                  => $this->input->post('notes'),
-            'branch_id'              => $branchId,
-        );
-        $exists = $this->db->where('student_id', $studentId)->count_all_results('student_health');
-        if ($exists) {
-            $this->db->where('student_id', $studentId)->update('student_health', $data);
+        if (!$this->input->is_ajax_request()) show_404();
+        $this->form_validation->set_rules('student_id', 'Student', 'trim|required|is_natural_no_zero');
+        if ($this->form_validation->run() !== false) {
+            $studentId = (int) $this->input->post('student_id');
+            $branchId  = get_loggedin_branch_id();
+            $data = array(
+                'student_id'              => $studentId,
+                'blood_group'             => $this->input->post('blood_group'),
+                'height_cm'               => $this->input->post('height_cm') ?: null,
+                'weight_kg'               => $this->input->post('weight_kg') ?: null,
+                'vision_left'             => $this->input->post('vision_left'),
+                'vision_right'            => $this->input->post('vision_right'),
+                'hearing'                 => $this->input->post('hearing'),
+                'allergies'               => $this->input->post('allergies'),
+                'chronic_conditions'      => $this->input->post('chronic_conditions'),
+                'disabilities'            => $this->input->post('disabilities'),
+                'emergency_contact_name'  => $this->input->post('emergency_contact_name'),
+                'emergency_contact_phone' => $this->input->post('emergency_contact_phone'),
+                'doctor_name'             => $this->input->post('doctor_name'),
+                'doctor_phone'            => $this->input->post('doctor_phone'),
+                'nhif_number'             => $this->input->post('nhif_number'),
+                'insurance_provider'      => $this->input->post('insurance_provider'),
+                'notes'                   => $this->input->post('notes'),
+                'branch_id'               => $branchId,
+            );
+            $exists = $this->db->where('student_id', $studentId)->count_all_results('student_health');
+            if ($exists) {
+                $this->db->where('student_id', $studentId)->update('student_health', $data);
+            } else {
+                $this->db->insert('student_health', $data);
+            }
+            echo json_encode(array('status' => 'success', 'url' => base_url('health/student/' . $studentId)));
         } else {
-            $this->db->insert('student_health', $data);
+            echo json_encode(array('status' => 'error', 'msg' => validation_errors()));
         }
-        echo json_encode(array('status' => 'success', 'message' => 'Health profile updated.'));
     }
 
     /** Add vaccination record */
     public function add_vaccination()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $this->form_validation->set_rules('student_id',   'Student',      'trim|required');
         $this->form_validation->set_rules('vaccine_name', 'Vaccine Name', 'trim|required');
         if ($this->form_validation->run() !== false) {
@@ -88,22 +95,28 @@ class Health extends Admin_Controller
                 'remarks'      => $this->input->post('remarks'),
                 'branch_id'    => get_loggedin_branch_id(),
             ));
-            echo json_encode(array('status' => 'success', 'message' => 'Vaccination record saved.'));
+            $studentId = (int) $this->input->post('student_id');
+            echo json_encode(array('status' => 'success', 'url' => base_url('health/student/' . $studentId)));
         } else {
-            echo json_encode(array('status' => 'fail', 'error' => $this->form_validation->error_array()));
+            echo json_encode(array('status' => 'error', 'msg' => validation_errors()));
         }
     }
 
     /** Delete vaccination record */
     public function delete_vaccination($id)
     {
-        $this->db->where(array('id' => $id, 'branch_id' => get_loggedin_branch_id()))->delete('student_vaccinations');
-        echo json_encode(array('status' => 'success', 'message' => 'Deleted.'));
+        if (!$this->input->is_ajax_request()) show_404();
+        $branchId = get_loggedin_branch_id();
+        $row      = $this->db->select('student_id')->where(array('id' => $id, 'branch_id' => $branchId))->get('student_vaccinations')->row_array();
+        $studentId = $row['student_id'] ?? 0;
+        $this->db->where(array('id' => $id, 'branch_id' => $branchId))->delete('student_vaccinations');
+        echo json_encode(array('status' => 'success', 'url' => base_url('health/student/' . $studentId)));
     }
 
     /** Add clinic visit */
     public function add_visit()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $this->form_validation->set_rules('student_id', 'Student',   'trim|required');
         $this->form_validation->set_rules('visit_date', 'Date',      'trim|required');
         $this->form_validation->set_rules('complaint',  'Complaint', 'trim|required');
@@ -121,17 +134,22 @@ class Health extends Admin_Controller
                 'follow_up_date'   => $this->input->post('follow_up_date') ?: null,
                 'branch_id'        => get_loggedin_branch_id(),
             ));
-            echo json_encode(array('status' => 'success', 'message' => 'Visit recorded.'));
+            $studentId = (int) $this->input->post('student_id');
+            echo json_encode(array('status' => 'success', 'url' => base_url('health/student/' . $studentId)));
         } else {
-            echo json_encode(array('status' => 'fail', 'error' => $this->form_validation->error_array()));
+            echo json_encode(array('status' => 'error', 'msg' => validation_errors()));
         }
     }
 
     /** Delete clinic visit */
     public function delete_visit($id)
     {
-        $this->db->where(array('id' => $id, 'branch_id' => get_loggedin_branch_id()))->delete('clinic_visits');
-        echo json_encode(array('status' => 'success', 'message' => 'Deleted.'));
+        if (!$this->input->is_ajax_request()) show_404();
+        $branchId  = get_loggedin_branch_id();
+        $row       = $this->db->select('student_id')->where(array('id' => $id, 'branch_id' => $branchId))->get('clinic_visits')->row_array();
+        $studentId = $row['student_id'] ?? 0;
+        $this->db->where(array('id' => $id, 'branch_id' => $branchId))->delete('clinic_visits');
+        echo json_encode(array('status' => 'success', 'url' => base_url('health/student/' . $studentId)));
     }
 
     /** Branch-wide clinic visits log */
@@ -158,7 +176,7 @@ class Health extends Admin_Controller
         $this->data['to']         = $to;
         $this->data['sub_page']   = 'health/clinic_log';
         $this->data['main_menu']  = 'health';
-        $this->data['page_title'] = 'Clinic Visits Log';
+        $this->data['title']      = 'Clinic Visits Log';
         $this->load->view('layout/index', $this->data);
     }
 
@@ -179,7 +197,7 @@ class Health extends Admin_Controller
         $this->data['students']   = $students;
         $this->data['sub_page']   = 'health/search';
         $this->data['main_menu']  = 'health';
-        $this->data['page_title'] = 'Health Records';
+        $this->data['title']      = 'Health Records';
         $this->load->view('layout/index', $this->data);
     }
 }

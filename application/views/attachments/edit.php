@@ -3,15 +3,15 @@
 		<section class="panel">
 			<div class="tabs-custom">
 				<ul class="nav nav-tabs">
-					<li>
-						<a href="<?=base_url('attachments')?>"><i class="fas fa-list-ul"></i> <?=translate('attachments')?></a>
+					<li class="nav-item">
+						<a class="nav-link" href="<?=base_url('attachments')?>"><i class="fas fa-list-ul"></i> <?=translate('attachments')?></a>
 					</li>
-					<li  class="active">
-						<a href="#create" data-toggle="tab"><i class="far fa-edit"></i> <?=translate('edit_attachments')?></a>
+					<li class="nav-item">
+						<a class="nav-link active" href="#create" data-bs-toggle="tab"><i class="far fa-edit"></i> <?=translate('edit_attachments')?></a>
 					</li>
 				</ul>
 				<div class="tab-content">
-					<div class="tab-pane active" id="create">
+					<div class="tab-pane show active" id="create">
 						<?php echo form_open_multipart('attachments/save', array('class' => 'form-bordered form-horizontal frm-submit-data')); ?>
 							<input type="hidden" name="attachment_id" value="<?=$data['id']?>">
 							<?php if (is_superadmin_loggedin() ): ?>
@@ -46,51 +46,48 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<div class="col-md-offset-3">
-									<div class="ml-md checkbox-replace">
+								<div class="col-md-9 offset-md-3">
+									<div class="ms-1 checkbox-replace">
 										<label class="i-checks"><input type="checkbox" name="all_class_set" id="all_class_set" <?=($data['class_id'] == 'unfiltered' ? 'checked' : '');?>><i></i> Available For All Classes</label>
 									</div>
 								</div>
-								<div id="class_div" <?php if($data['class_id'] == 'unfiltered') { ?> style="display: none" <?php } ?>>
-									<div class="mt-sm">
-										<label class="control-label col-md-3"><?=translate('class')?> <span class="required">*</span></label>
-										<div class="col-md-6">
-
-											<?php
-												$arrayClass = $this->app_lib->getClass($data['branch_id']);
-												echo form_dropdown("class_id", $arrayClass, $data['class_id'], "class='form-control' id='class_id' onchange='getSubjectByClass(this.value)'
-												data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity' ");
-											?>
-											<span class="error"></span>
-										</div>
-									</div>
+							</div>
+							<div class="form-group" id="class_div" <?php if($data['class_id'] == 'unfiltered') { ?> style="display: none" <?php } ?>>
+								<label class="col-md-3 control-label"><?=translate('class')?> <span class="required">*</span></label>
+								<div class="col-md-6">
+									<?php
+										$arrayClass = $this->app_lib->getClass($data['branch_id']);
+										echo form_dropdown("class_id", $arrayClass, $data['class_id'], "class='form-control' id='class_id' onchange='getSubjectByClass(this.value)'
+										data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity' ");
+									?>
+									<span class="error"></span>
 								</div>
 							</div>
-							<div class="form-group" id="sub_div" <?php if($data['class_id'] == 'unfiltered') { ?> style="display: none" <?php } ?>>
-								<div class="col-md-offset-3">
-									<div class="ml-md checkbox-replace">
-										<label class="i-checks"><input type="checkbox" name="subject_wise" id="subject_wise" <?=($data['subject_id'] == 'unfiltered' ? 'checked' : '');?>><i></i> Not According Subject</label>
+							<div id="sub_div" <?php if($data['class_id'] == 'unfiltered') { ?> style="display: none" <?php } ?>>
+								<div class="form-group">
+									<div class="col-md-9 offset-md-3">
+										<div class="ms-1 checkbox-replace">
+											<label class="i-checks"><input type="checkbox" name="subject_wise" id="subject_wise" <?=($data['subject_id'] == 'unfiltered' ? 'checked' : '');?>><i></i> Not According Subject</label>
+										</div>
 									</div>
 								</div>
-								<div id="subject_div" <?php if($data['subject_id'] == 'unfiltered') { ?> style="display: none" <?php } ?>>
-									<div class="mt-sm">
-										<label class="control-label col-md-3"><?=translate('subject')?> <span class="required">*</span></label>
-										<div class="col-md-6">
-											<?php
-												if(!empty($data['class_id'])){
-													$arraySubject = array("" => translate('select'));
-													$assigns = $this->db->select('subject_id')->where('class_id', $data['class_id'])->get('subject_assign')->result();
-													foreach ($assigns as $assign){
-														$arraySubject[$assign->subject_id] = get_type_name_by_id('subject', $assign->subject_id);
-													}
-												}else{
-													$arraySubject = array("" => translate('select_class_first'));
+								<div class="form-group" id="subject_div" <?php if($data['subject_id'] == 'unfiltered') { ?> style="display: none" <?php } ?>>
+									<label class="col-md-3 control-label"><?=translate('subject')?> <span class="required">*</span></label>
+									<div class="col-md-6">
+										<?php
+											if(!empty($data['class_id'])){
+												$arraySubject = array("" => translate('select'));
+												$assigns = $this->db->select('subject_id')->where('class_id', $data['class_id'])->get('subject_assign')->result();
+												foreach ($assigns as $assign){
+													$arraySubject[$assign->subject_id] = get_type_name_by_id('subject', $assign->subject_id);
 												}
-												echo form_dropdown("subject_id", $arraySubject, $data['subject_id'], "class='form-control' id='subject_id'
-												data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity' ");
-											?>
-											<span class="error"></span>
-										</div>
+											}else{
+												$arraySubject = array("" => translate('select_class_first'));
+											}
+											echo form_dropdown("subject_id", $arraySubject, $data['subject_id'], "class='form-control' id='subject_id'
+											data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity' ");
+										?>
+										<span class="error"></span>
 									</div>
 								</div>
 							</div>
@@ -116,7 +113,7 @@
 							</div>
 							<footer class="panel-footer mt-lg">
 								<div class="row">
-									<div class="col-md-2 col-md-offset-3">
+									<div class="col-md-2 offset-md-3">
 										<button type="submit" class="btn btn-default btn-block" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing">
 											<i class="fas fa-plus-circle"></i> <?=translate('update')?>
 										</button>

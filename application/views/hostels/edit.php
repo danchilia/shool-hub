@@ -1,15 +1,15 @@
 <section class="panel">
 	<div class="tabs-custom">
 		<ul class="nav nav-tabs">
-			<li>
-				<a href="<?=base_url('hostels')?>"><i class="fas fa-list-ul"></i> <?=translate('hostel_list')?></a>
+			<li class="nav-item">
+				<a href="<?=base_url('hostels')?>" class="nav-link"><i class="fas fa-list-ul"></i> <?=translate('hostel_list')?></a>
 			</li>
-			<li class="active">
-				<a href="#create" data-toggle="tab"><i class="far fa-edit"></i> <?=translate('edit_hostel')?></a>
+			<li class="nav-item">
+				<a href="#create" class="nav-link active" data-bs-toggle="tab"><i class="far fa-edit"></i> <?=translate('edit_hostel')?></a>
 			</li>
 		</ul>
 		<div class="tab-content">
-			<div class="tab-pane active" id="create">
+			<div class="tab-pane active show" id="create">
 					<?php echo form_open($this->uri->uri_string(), array('class' => 'form-horizontal form-bordered frm-submit')); ?>
 					<input type="hidden" name="hostel_id" value="<?=$hostel['id']?>">
 					<?php if (is_superadmin_loggedin()): ?>
@@ -65,7 +65,7 @@
 
 					<footer class="panel-footer">
 						<div class="row">
-							<div class="col-md-offset-3 col-md-2">
+							<div class="col-md-2 offset-md-3">
 								<button type="submit" class="btn btn-default btn-block" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing">
 									<i class="fas fa-plus-circle"></i> <?=translate('update')?>
 								</button>

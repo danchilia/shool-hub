@@ -13,13 +13,14 @@ class Exam_model extends CI_Model
 
     public function getExamList()
     {
+        $sessionId = get_session_id();
         $this->db->select('e.*,b.name as branch_name');
         $this->db->from('exam as e');
         $this->db->join('branch as b', 'b.id = e.branch_id', 'left');
         if (!is_superadmin_loggedin()) {
             $this->db->where('e.branch_id', get_loggedin_branch_id());
         }
-        $this->db->where('e.session_id', get_session_id());
+        $this->db->where('e.session_id', $sessionId);
         $this->db->order_by('e.id', 'asc');
         return $this->db->get()->result_array();
     }
@@ -130,18 +131,20 @@ class Exam_model extends CI_Model
 
     public function getTimetableDetail($classID, $sectionID, $examID, $subjectID)
     {
+        $sessionId = get_session_id();
         $this->db->select('timetable_exam.mark_distribution');
         $this->db->where('class_id', $classID);
         $this->db->where('section_id', $sectionID);
         $this->db->where('exam_id', $examID);
         $this->db->where('subject_id', $subjectID);
-        $this->db->where('session_id', get_session_id());
+        $this->db->where('session_id', $sessionId);
         return $this->db->get('timetable_exam')->row_array();
     }
 
 
     public function getMarkAndStudent($branchID, $classID, $sectionID, $examID, $subjectID)
     {
+        $sessionId = get_session_id();
         $this->db->select('en.*,st.first_name,st.last_name,st.register_no,st.category_id,m.mark as get_mark,IFNULL(m.absent, 0) as get_abs,subject.name as subject_name');
         $this->db->from('enroll as en');
         $this->db->join('student as st', 'st.id = en.student_id', 'inner');
@@ -150,7 +153,7 @@ class Exam_model extends CI_Model
         $this->db->where('en.class_id', $classID);
         $this->db->where('en.section_id', $sectionID);
         $this->db->where('en.branch_id', $branchID);
-        $this->db->where('en.session_id', get_session_id());
+        $this->db->where('en.session_id', $sessionId);
         $this->db->order_by('en.roll', 'ASC');
         return $this->db->get()->result_array();
     }

@@ -69,7 +69,7 @@
 			</div>
 			<footer class="panel-footer">
 				<div class="row">
-					<div class="col-md-offset-10 col-md-2">
+					<div class="col-md-2 offset-md-10">
 						<button type="submit" name="search" value="1" class="btn btn btn-default btn-block"> <i class="fas fa-filter"></i> <?=translate('filter')?></button>
 					</div>
 				</div>
@@ -131,7 +131,7 @@
 							<td><?php echo empty(_d($row['schedule_date']))  ? "N/A" : _d($row['schedule_date']); ?></td>
 							<td><?php echo $row['creator_name']; ?></td>
 							<td class="min-w-sm">
-								<a href="javascript:void(0);" class="btn btn-circle btn-default icon" data-toggle="tooltip" data-original-title="<?=translate('evaluate')?>" onclick="getEvaluate(<?=$row['id']?>)" >
+								<a href="javascript:void(0);" class="btn btn-circle btn-default icon" data-bs-toggle="tooltip" data-bs-title="<?=translate('evaluate')?>" onclick="getEvaluate(<?=$row['id']?>)" >
 									<i class="fas fa-bars"></i>
 								</a>
 							<?php if (get_permission('homework', 'is_edit')) { ?>
@@ -147,7 +147,6 @@
 					</tbody>
 				</table>
 			</div>
-			<?php echo form_close(); ?>
 		</section>
 		<?php endif; ?>
 	</div>

@@ -39,6 +39,6 @@
 <?php endif; ?>
 	<tr>
 		<td><?=translate('message')?></td>
-		<td><?=$bulkdata['message'];?></td>
+		<td><?=html_escape($bulkdata['message']);?></td>
 	</tr>
 </tbody>

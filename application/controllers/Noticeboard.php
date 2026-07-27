@@ -34,7 +34,7 @@ class Noticeboard extends Admin_Controller
         $this->data['notices']    = $notices;
         $this->data['sub_page']   = 'noticeboard/index';
         $this->data['main_menu']  = 'noticeboard';
-        $this->data['page_title'] = 'Notice Board';
+        $this->data['title']      = 'Notice Board';
         $this->load->view('layout/index', $this->data);
     }
 
@@ -51,69 +51,72 @@ class Noticeboard extends Admin_Controller
         $this->data['notices']    = $notices;
         $this->data['sub_page']   = 'noticeboard/manage';
         $this->data['main_menu']  = 'noticeboard';
-        $this->data['page_title'] = 'Manage Notices';
+        $this->data['title']      = 'Manage Notices';
         $this->load->view('layout/index', $this->data);
     }
 
     public function add()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (!is_admin_loggedin() && !is_superadmin_loggedin() && !is_teacher_loggedin()) {
-            ajax_access_denied();
+            echo json_encode(array('status' => 'error', 'msg' => 'Access denied.')); return;
         }
-        if ($this->input->post()) {
-            $this->form_validation->set_rules('title',       'Title',       'trim|required|max_length[300]');
-            $this->form_validation->set_rules('notice_date', 'Notice Date', 'trim|required');
-            $this->form_validation->set_rules('audience',    'Audience',    'trim|required');
 
-            if ($this->form_validation->run() !== false) {
-                $branchId   = get_loggedin_branch_id();
-                $postedBy   = get_loggedin_user_id();
-                $attachment = null;
+        $this->form_validation->set_rules('title',       'Title',       'trim|required|max_length[300]');
+        $this->form_validation->set_rules('notice_date', 'Notice Date', 'trim|required');
+        $this->form_validation->set_rules('audience',    'Audience',    'trim|required');
 
-                if (!empty($_FILES['attachment']['name'])) {
-                    $config = array(
-                        'upload_path'   => './uploads/notices/',
-                        'allowed_types' => 'pdf|jpg|jpeg|png|doc|docx',
-                        'max_size'      => 5120,
-                        'encrypt_name'  => true,
-                    );
-                    if (!is_dir('./uploads/notices/')) {
-                        mkdir('./uploads/notices/', 0755, true);
-                    }
-                    $this->load->library('upload', $config);
-                    if ($this->upload->do_upload('attachment')) {
-                        $attachment = $this->upload->data('file_name');
-                    }
+        if ($this->form_validation->run() !== false) {
+            $branchId   = get_loggedin_branch_id();
+            $postedBy   = get_loggedin_user_id();
+            $attachment = null;
+
+            if (!empty($_FILES['attachment']['name'])) {
+                $config = array(
+                    'upload_path'   => './uploads/notices/',
+                    'allowed_types' => 'pdf|jpg|jpeg|png|doc|docx',
+                    'max_size'      => 5120,
+                    'encrypt_name'  => true,
+                );
+                if (!is_dir('./uploads/notices/')) {
+                    mkdir('./uploads/notices/', 0755, true);
                 }
-
-                $audience = $this->input->post('audience');
-                if (is_array($audience)) {
-                    $audience = implode(',', $audience);
+                $this->load->library('upload', $config);
+                if ($this->upload->do_upload('attachment')) {
+                    $attachment = $this->upload->data('file_name');
+                } else {
+                    echo json_encode(array('status' => 'error', 'msg' => $this->upload->display_errors('', '')));
+                    return;
                 }
-
-                $this->db->insert('notice_board', array(
-                    'title'       => $this->input->post('title'),
-                    'details'     => $this->input->post('details'),
-                    'notice_date' => $this->input->post('notice_date'),
-                    'expiry_date' => $this->input->post('expiry_date') ?: null,
-                    'audience'    => $audience,
-                    'priority'    => $this->input->post('priority'),
-                    'attachment'  => $attachment,
-                    'posted_by'   => $postedBy,
-                    'branch_id'   => $branchId,
-                ));
-                $array = array('status' => 'success', 'message' => 'Notice posted successfully.');
-            } else {
-                $array = array('status' => 'fail', 'error' => $this->form_validation->error_array());
             }
-            echo json_encode($array);
+
+            $audience = $this->input->post('audience');
+            if (is_array($audience)) {
+                $audience = implode(',', $audience);
+            }
+
+            $this->db->insert('notice_board', array(
+                'title'       => $this->input->post('title'),
+                'details'     => $this->input->post('details'),
+                'notice_date' => $this->input->post('notice_date'),
+                'expiry_date' => $this->input->post('expiry_date') ?: null,
+                'audience'    => $audience,
+                'priority'    => $this->input->post('priority'),
+                'attachment'  => $attachment,
+                'posted_by'   => $postedBy,
+                'branch_id'   => $branchId,
+            ));
+            echo json_encode(array('status' => 'success', 'url' => base_url('noticeboard/manage')));
+        } else {
+            echo json_encode(array('status' => 'error', 'msg' => validation_errors()));
         }
     }
 
     public function delete($id)
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (!is_admin_loggedin() && !is_superadmin_loggedin()) {
-            ajax_access_denied();
+            echo json_encode(array('status' => 'error', 'msg' => 'Access denied.')); return;
         }
         $branchId = get_loggedin_branch_id();
         $notice   = $this->db->get_where('notice_board', array('id' => $id, 'branch_id' => $branchId))->row_array();
@@ -121,6 +124,6 @@ class Noticeboard extends Admin_Controller
             @unlink('./uploads/notices/' . $notice['attachment']);
         }
         $this->db->where(array('id' => $id, 'branch_id' => $branchId))->delete('notice_board');
-        echo json_encode(array('status' => 'success', 'message' => 'Notice deleted.'));
+        echo json_encode(array('status' => 'success', 'url' => base_url('noticeboard/manage')));
     }
 }

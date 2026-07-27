@@ -20,6 +20,19 @@
   .cart-row { border-color:#3a3a50; }
   .cart-footer { border-color:#3a3a50; }
 }
+:root[data-theme="dark"] .pos-cart,
+:root[data-theme="dark"] .item-card { background:#2b2b3a; border-color:#3a3a50; }
+:root[data-theme="dark"] .item-card:hover { background:#3a3a55; }
+:root[data-theme="dark"] .wallet-info { background:#0f2d1a; border-color:#166534; }
+:root[data-theme="dark"] .student-found { background:#0f1f3d; border-color:#1e40af; }
+:root[data-theme="dark"] .cart-row { border-color:#3a3a50; }
+:root[data-theme="dark"] .cart-footer { border-color:#3a3a50; }
+:root[data-theme="light"] .pos-cart,
+:root[data-theme="light"] .item-card { background:#fff; border-color:#e2e8f0; }
+:root[data-theme="light"] .wallet-info { background:#f0fdf4; border-color:#bbf7d0; }
+:root[data-theme="light"] .student-found { background:#eff6ff; border-color:#bfdbfe; }
+:root[data-theme="light"] .cart-row { border-color:#f1f5f9; }
+:root[data-theme="light"] .cart-footer { border-color:#e2e8f0; }
 </style>
 
 <div style="padding:16px 20px 0;">
@@ -82,11 +95,7 @@
 
         <div class="cart-body">
             <div class="fw-semibold mb-2"><i class="fas fa-shopping-basket me-1"></i>Cart</div>
-            <div id="cart-items">
-                <div class="text-center text-muted py-4" id="cart-empty">
-                    <i class="fas fa-shopping-basket fa-2x mb-2"></i><br>Cart is empty
-                </div>
-            </div>
+            <div id="cart-items"></div>
         </div>
 
         <div class="cart-footer">
@@ -141,14 +150,15 @@ function changeQty(id,delta) {
     renderCart();
 }
 
+var CART_EMPTY_HTML = '<div class="text-center text-muted py-4"><i class="fas fa-shopping-basket fa-2x mb-2"></i><br>Cart is empty</div>';
+
 function renderCart() {
     var keys = Object.keys(cart);
     var html = '';
     var total = 0;
     if (!keys.length) {
-        document.getElementById('cart-empty').style.display='';
+        document.getElementById('cart-items').innerHTML = CART_EMPTY_HTML;
     } else {
-        document.getElementById('cart-empty').style.display='none';
         keys.forEach(function(k){
             var it=cart[k];
             var sub=it.price*it.qty;
@@ -163,12 +173,14 @@ function renderCart() {
                  +'<button class="cart-remove" onclick="removeFromCart('+k+')"><i class="fas fa-times"></i></button>'
                  +'</div>';
         });
+        document.getElementById('cart-items').innerHTML = html;
     }
-    document.getElementById('cart-items').innerHTML = (keys.length?'':document.getElementById('cart-empty').outerHTML) + html;
     document.getElementById('cart-total').textContent = 'KES '+total.toFixed(2);
 }
 
 function clearCart() { cart={}; renderCart(); }
+
+renderCart(); // seed empty state on load
 
 function processPayment() {
     if (!currentStudentId) { alert('Please select a student first.'); return; }

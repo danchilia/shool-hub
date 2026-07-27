@@ -117,7 +117,7 @@ class Payroll_model extends MY_Model
                 );
             }
 
-            if (count($ad_salary)) {
+            if (!empty($ad_salary)) {
                 $payslipData[] = array(
                     'payslip_id' => $payslip_id,
                     'name' => "Advance Salary",

@@ -7,14 +7,15 @@
         $this.on('submit', function(e){
             e.preventDefault();
             var btn = $this.find('[type="submit"]');
-            
+            var origHtml = btn.html();
+
             $.ajax({
                 url: $(this).attr('action'),
                 type: "POST",
                 data: $(this).serialize(),
                 dataType: 'json',
                 beforeSend: function () {
-                    btn.button('loading');
+                    btn.prop('disabled', true).html(btn.attr('data-loading-text') || '<i class="fas fa-spinner fa-spin"></i> Processing');
                 },
                 success: function (data) {
                     $('.error').html("");
@@ -22,7 +23,7 @@
                         $.each(data.error, function (index, value) {
                             $this.find("[name='" + index + "']").parents('.form-group').find('.error').html(value);
                         });
-                        btn.button('reset');
+                        btn.prop('disabled', false).html(origHtml);
                     } else if (data.status == "access_denied") {
                         window.location.href = base_url + "dashboard";
                     } else {
@@ -34,7 +35,7 @@
                     }
                 },
                 error: function () {
-                    btn.button('reset');
+                    btn.prop('disabled', false).html(origHtml);
                 }
             });
         });
@@ -46,13 +47,14 @@
         $this.on('submit', function(e){
             e.preventDefault();
             var btn = $this.find('[type="submit"]');
+            var origHtml = btn.html();
             $.ajax({
                 url: $(this).attr('action'),
                 type: "POST",
                 data: $(this).serialize(),
                 dataType: 'json',
                 beforeSend: function () {
-                    btn.button('loading');
+                    btn.prop('disabled', true).html(btn.attr('data-loading-text') || '<i class="fas fa-spinner fa-spin"></i> Processing');
                 },
                 success: function (data) {
                     $('.error').html("");
@@ -60,7 +62,7 @@
                         $.each(data.error, function (index, value) {
                             $this.find("[name='" + index + "']").parents('.form-group').find('.error').html(value);
                         });
-                        btn.button('reset');
+                        btn.prop('disabled', false).html(origHtml);
                     } else if (data.status == "access_denied") {
                         window.location.href = base_url + "dashboard";
                     } else {
@@ -76,10 +78,10 @@
                     }
                 },
                 complete: function (data) {
-                    btn.button('reset'); 
+                    btn.prop('disabled', false).html(origHtml);
                 },
                 error: function () {
-                    btn.button('reset');
+                    btn.prop('disabled', false).html(origHtml);
                 }
             });
         });
@@ -91,6 +93,7 @@
         $this.on('submit', function(e){
             e.preventDefault();
             var btn = $this.find('[type="submit"]');
+            var origHtml = btn.html();
             $.ajax({
                 url: $(this).attr('action'),
                 type: "POST",
@@ -100,7 +103,7 @@
                 processData: false,
                 cache: false,
                 beforeSend: function () {
-                    btn.button('loading');
+                    btn.prop('disabled', true).html(btn.attr('data-loading-text') || '<i class="fas fa-spinner fa-spin"></i> Processing');
                 },
                 success: function (data) {
                     $('.error').html("");
@@ -108,7 +111,7 @@
                         $.each(data.error, function (index, value) {
                             $this.find("[name='" + index + "']").parents('.form-group').find('.error').html(value);
                         });
-                        btn.button('reset');
+                        btn.prop('disabled', false).html(origHtml);
                     } else {
                         if (data.url) {
                             window.location.href = data.url;
@@ -120,7 +123,7 @@
                     }
                 },
                 error: function () {
-                    btn.button('reset');
+                    btn.prop('disabled', false).html(origHtml);
                 }
             });
         });

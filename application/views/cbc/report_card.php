@@ -66,7 +66,7 @@
 		<input type="hidden" id="saved_exam_id" value="<?=set_value('exam_id')?>">
 		<input type="hidden" id="saved_session_id" value="<?=set_value('session_id')?>">
 		<div class="table-responsive mt-md">
-			<table class="table table-bordered table-hover table-condensed">
+			<table class="table table-bordered table-hover table-sm">
 				<thead>
 					<tr>
 						<th width="30"><input type="checkbox" id="selectAll"></th>

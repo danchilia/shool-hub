@@ -13,6 +13,7 @@ class Homework_model extends MY_Model
 
     public function getList($classID, $sectionID, $subjectID, $branchID)
     {
+        $sessionId = get_session_id();
         $this->db->select('homework.*,subject.name as subject_name,class.name as class_name,section.name as section_name,staff.name as creator_name');
         $this->db->from('homework');
         $this->db->join('subject', 'subject.id = homework.subject_id', 'left');
@@ -23,7 +24,7 @@ class Homework_model extends MY_Model
         $this->db->where('homework.section_id', $sectionID);
         $this->db->where('homework.subject_id', $subjectID);
         $this->db->where('homework.branch_id', $branchID);
-        $this->db->where('homework.session_id', get_session_id());
+        $this->db->where('homework.session_id', $sessionId);
         $this->db->order_by('homework.id', 'desc');
         return $this->db->get()->result_array();
     }
@@ -38,6 +39,7 @@ class Homework_model extends MY_Model
 
     public function getEvaluate($homeworkID)
     {
+        $sessionId = get_session_id();
         $this->db->select('homework.*,CONCAT(s.first_name, " ",s.last_name) as fullname,s.register_no,e.student_id, e.roll,subject.name as subject_name,class.name as class_name,section.name as section_name,he.id as ev_id,he.status as ev_status,he.remark as ev_remarks,he.rank');
         $this->db->from('homework');
         $this->db->join('enroll as e', 'e.class_id=homework.class_id and e.section_id = homework.section_id and e.session_id = homework.session_id', 'inner');
@@ -50,7 +52,7 @@ class Homework_model extends MY_Model
         if (!is_superadmin_loggedin()) {
             $this->db->where('homework.branch_id', get_loggedin_branch_id());
         }
-        $this->db->where('homework.session_id', get_session_id());
+        $this->db->where('homework.session_id', $sessionId);
         $this->db->order_by('homework.id', 'desc');
         return $this->db->get()->result_array();
     }

@@ -129,29 +129,28 @@
 							<td><?php echo get_table_custom_field_value($fields['id'], $row['id']);?></td>
 						<?php } } ?>
 							<td>
-								<div class="progress progress-xl m-none prb-mw">
-									<div class="progress-bar text-dark" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: <?=$fee_progress?>%;"><?=$fee_progress?>%</div>
+								<?php if ($fee_progress > 0): ?>
+								<div class="progress progress-xl m-none prb-mw" style="min-width:80px;">
+									<div class="progress-bar text-dark" role="progressbar" aria-valuenow="<?=$fee_progress?>" aria-valuemin="0" aria-valuemax="100" style="width:<?=$fee_progress?>%;"><?=$fee_progress?>%</div>
 								</div>
+								<?php else: ?>
+								<span class="text-muted small">No fees</span>
+								<?php endif; ?>
 							</td>
-							<td class="min-w-lg">
-								<!-- quick view -->
-								<a href="javascript:void(0);" onclick="studentQuickView('<?=$row['id']?>');" class="btn btn-default btn-circle icon" data-toggle="tooltip"
-								data-original-title="<?=translate('quick_view')?>">
-									<i class="fas fa-qrcode"></i>
+							<td class="min-w-lg" style="white-space:nowrap;">
+								<a href="javascript:void(0);" onclick="studentQuickView('<?=$row['id']?>');" class="btn btn-default btn-xs" title="Quick View">
+									<i class="fas fa-eye"></i> View
 								</a>
 							<?php if (get_permission('student', 'is_edit')): ?>
-								<!-- update link -->
-								<a href="<?php echo base_url('student/profile/' . $row['student_id']);?>" class="btn btn-default btn-circle icon" data-toggle="tooltip"
-								data-original-title="<?=translate('details')?>">
-									<i class="far fa-arrow-alt-circle-right"></i>
+								<a href="<?php echo base_url('student/profile/' . $row['student_id']);?>" class="btn btn-default btn-xs" title="Profile">
+									<i class="fas fa-user"></i> Profile
 								</a>
 								<?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
-								<a href="<?=base_url('student/leaving_certificate/' . $row['student_id'])?>" class="btn btn-default btn-circle icon" data-toggle="tooltip" data-original-title="Leaving Certificate">
-									<i class="fas fa-file-alt"></i>
+								<a href="<?=base_url('student/leaving_certificate/' . $row['student_id'])?>" class="btn btn-info btn-xs" title="Leaving Certificate">
+									<i class="fas fa-file-alt"></i> Certificate
 								</a>
 								<?php endif; ?>
 							<?php endif; if (get_permission('student', 'is_delete')): ?>
-								<!-- delete link -->
 								<?php echo btn_delete('student/delete_data/' . $row['id'] . '/' . $row['student_id']);?>
 							<?php endif; ?>
 							</td>

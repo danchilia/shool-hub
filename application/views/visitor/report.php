@@ -1,3 +1,17 @@
+<style>
+@media (prefers-color-scheme:dark) {
+  .card { background:#2b2b3a; border-color:#3a3a50; }
+  .card-header { background:#232333; border-color:#3a3a50; }
+  .table-light { --bs-table-bg:#2b2b3a; }
+}
+:root[data-theme="dark"]  .card { background:#2b2b3a; border-color:#3a3a50; }
+:root[data-theme="dark"]  .card-header { background:#232333; border-color:#3a3a50; }
+:root[data-theme="dark"]  .table-light { --bs-table-bg:#2b2b3a; }
+:root[data-theme="light"] .card { background:#fff; border-color:#dee2e6; }
+:root[data-theme="light"] .card-header { background:#f8f9fa; border-color:#dee2e6; }
+:root[data-theme="light"] .table-light { --bs-table-bg:#f8f9fa; }
+</style>
+
 <div class="content-header">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <h4 class="mb-0"><i class="fas fa-chart-bar me-2 text-primary"></i>Visitor Report</h4>

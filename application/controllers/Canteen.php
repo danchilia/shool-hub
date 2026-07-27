@@ -7,6 +7,8 @@ class Canteen extends Admin_Controller {
         parent::__construct();
     }
 
+    public function index() { redirect(base_url('canteen/pos')); }
+
     private function _branchId() { return get_loggedin_branch_id(); }
 
     private function _getWallet($studentId) {

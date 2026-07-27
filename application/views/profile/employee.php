@@ -5,11 +5,13 @@
 			<div class="col-md-12 col-lg-4 col-xl-3">
 				<div class="image-content-center user-pro">
 					<div class="preview">
+						<?php if (!empty($staff['facebook_url']) || !empty($staff['twitter_url']) || !empty($staff['linkedin_url'])): ?>
 						<ul class="social-icon-one">
-							<li><a href="<?=empty($staff['facebook_url']) ? '#' : $staff['facebook_url']?>"><span class="fab fa-facebook-f"></span></a></li>
-							<li><a href="<?=empty($staff['twitter_url']) ? '#' : $staff['twitter_url']?>"><span class="fab fa-twitter"></span></a></li>
-							<li><a href="<?=empty($staff['linkedin_url']) ? '#' : $staff['linkedin_url']?>"><span class="fab fa-linkedin-in"></span></a></li>
+							<?php if (!empty($staff['facebook_url'])): ?><li><a href="<?=$staff['facebook_url']?>" target="_blank"><i class="fab fa-facebook-f"></i></a></li><?php endif; ?>
+							<?php if (!empty($staff['twitter_url'])): ?><li><a href="<?=$staff['twitter_url']?>" target="_blank"><i class="fab fa-twitter"></i></a></li><?php endif; ?>
+							<?php if (!empty($staff['linkedin_url'])): ?><li><a href="<?=$staff['linkedin_url']?>" target="_blank"><i class="fab fa-linkedin-in"></i></a></li><?php endif; ?>
 						</ul>
+						<?php endif; ?>
 						<img src="<?=get_image_url('staff', $staff['photo'])?>">
 					</div>
 				</div>

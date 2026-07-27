@@ -1,3 +1,10 @@
+<script>
+$(document).ready(function () {
+    if (typeof $.fn.dropify === 'function') {
+        $('.dropify').dropify();
+    }
+});
+</script>
 <section class="panel appear-animation" data-appear-animation="<?php echo $global_config['animations']; ?>" data-appear-animation-delay="100">
 	<div class="tabs-custom">
 		<ul class="nav nav-tabs">
@@ -17,7 +24,7 @@
 			</li>
 			<li <?=($this->session->flashdata('active') == 3 ? 'class="active"' : '');?>>
 				<a href="#upload" data-toggle="tab">
-				   <i class="fab fa-uikit"></i>
+				   <i class="fas fa-image"></i>
 				   <span class="hidden-xs"> <?=translate('logo')?></span>
 				</a>
 			</li>
@@ -166,7 +173,7 @@
 					<div class="row">
 						<div class="col-md-2 col-sm-offset-3">
 							<button type="submit" class="btn btn btn-default btn-block" name="submit" value="setting">
-								<i class="fas fa-plus-circle"></i> <?=translate('save');?>
+								<i class="fas fa-save"></i> <?=translate('save');?>
 							</button>
 						</div>
 					</div>
@@ -239,7 +246,7 @@
 					<div class="row">
 						<div class="col-md-2 col-sm-offset-3">
 							<button type="submit" class="btn btn btn-default btn-block" name="submit" value="theme">
-								<i class="fas fa-plus-circle"></i> <?=translate('save');?>
+								<i class="fas fa-save"></i> <?=translate('save');?>
 							</button>
 						</div>
 					</div>
@@ -286,7 +293,7 @@
 				<div class="headers-line mt-lg">
 					<i class="fas fa-sign-out-alt"></i> Login Background
 				</div>
-				<div class="row mb-ld">
+				<div class="row mb-lg">
 					<div class="col-md-4">
 						<div class="form-group">
 							<label class="control-label">Slider 1</label>

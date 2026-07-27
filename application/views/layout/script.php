@@ -1,7 +1,7 @@
 <?php /* Bottom-of-body JS includes */ ?>
 
-<!-- Bootstrap 5.3 JS bundle (includes Popper) — CDN -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmVGMzHBPdM0zOwNGNKpwHEGzKtV" crossorigin="anonymous"></script>
+<!-- Bootstrap 5.3 JS bundle (includes Popper) — local -->
+<script src="<?php echo base_url('assets/vendor/bootstrap5/js/bootstrap.bundle.min.js');?>"></script>
 
 <!-- jQuery Browser plugin (kept for legacy) -->
 <script src="<?php echo base_url('assets/vendor/jquery-browser-mobile/jquery.browser.mobile.js');?>"></script>

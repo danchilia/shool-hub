@@ -1,66 +1,81 @@
-<section class="panel">
-	<header class="panel-heading">
-		<div class="panel-btn">
-			<a class="btn btn-default btn-circle icon" data-toggle="tooltip" data-original-title="<?=translate('refresh_mail')?>" 
-			href="<?=base_url('communication/mailbox/sent')?>">
-				<i class="fas fa-sync"></i>
-			</a>
-			<button class="btn btn-circle btn-danger icon" id="msgAction" data-type="delete"><i class="far fa-trash-alt"></i></button>
-		</div>
-		<h4 class="panel-title">
-			<i class="far fa-envelope"></i> <?=translate('sent')?>
-		</h4>
-	</header>
-	<div class="panel-body">
-		<table class="table text-dark table-hover table-condensed mb-none table-export">
-			<thead>
-				<tr>
-					<th>
-						<div class="checkbox-replace">
-							<label class="i-checks"><input type="checkbox" id="selectAllchkbox"><i></i></label>
-						</div>
-					</th>
-					<th><?=translate('receiver')?></th>
-					<th><?=translate('subjects')?></th>
-					<th><?=translate('message')?></th>
-					<th><?=translate('time')?></th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php
-			$this->db->order_by('id', 'desc');
-			$messages = $this->db->get_where('message', array('sender' => $active_user, 'trash_sent' => 0))->result();
-			foreach ($messages as $message):
-				$get_sender 	= explode('-', $message->reciever);
-				$recieverRoleID = $get_sender[0];
-				$recieverUserID = $get_sender[1];
-			?>
-				<tr <?=($message->reply_status == 1 ? 'class="text-weight-bold"' : '');?>>
-					<td class="checked-area" width="30px">
-						<div class="checkbox-replace">
-							<label class="i-checks">
-								<input type="checkbox" class="msg_checkbox" id="<?=$message->id?>"><i></i>
-							</label>
-						</div>
-					</td>
-					<td width="20%">
-						<a data-id="<?=$message->id?>" href="javascript:void(0);" class="mailbox-fav" data-toggle="tooltip"
-						data-original-title="Click to teach if this conversation is important"><i class="text-warning <?=($message->fav_sent == 0 ? 'far fa-bell' : 'fas fa-bell');?>"></i></a><?='&nbsp;&nbsp;&nbsp;'. $this->application_model->getUserNameByRoleID($recieverRoleID, $recieverUserID)['name']?>
-					</td>
-					<td>
-						<?php echo (!empty($message->file_name) ? '<i class="fas fa-paperclip"></i>' : ''); ?> 
-						<a href="<?=base_url('communication/mailbox/read?type=sent&id='.$message->id)?>" class="text-dark mail-subj"><?php echo $message->subject; ?></a>
-					</td>
-					<td>
-						<?php
-						$body = strip_tags($message->body);
-						echo mb_strimwidth($body, 0, 60, "...");
-						?>
-					</td>
-					<td><?php echo get_nicetime($message->created_at);?></td>
-				</tr>
-			<?php endforeach; ?>
-			</tbody>
-		</table>
-	</div>
-</section>
+<style>
+@media (prefers-color-scheme:dark) {
+    .card        { background:#2b2b3a; border-color:#3a3a50; }
+    .card-header { background:#232333; border-color:#3a3a50; }
+    .table-light { --bs-table-bg:#232333; }
+}
+:root[data-theme="dark"]  .card        { background:#2b2b3a; border-color:#3a3a50; }
+:root[data-theme="dark"]  .card-header { background:#232333; border-color:#3a3a50; }
+:root[data-theme="dark"]  .table-light { --bs-table-bg:#232333; }
+:root[data-theme="light"] .card        { background:#fff;    border-color:#dee2e6; }
+:root[data-theme="light"] .card-header { background:#f8f9fa; border-color:#dee2e6; }
+:root[data-theme="light"] .table-light { --bs-table-bg:#f8f9fa; }
+</style>
+
+<div class="card">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h6 class="mb-0"><i class="fas fa-share-square me-1"></i><?php echo translate('sent'); ?></h6>
+        <div class="d-flex gap-2">
+            <a href="<?php echo base_url('communication/mailbox/sent'); ?>" class="btn btn-sm btn-outline-secondary"
+               data-bs-toggle="tooltip" title="<?php echo translate('refresh_mail'); ?>">
+                <i class="fas fa-sync"></i>
+            </a>
+            <button class="btn btn-sm btn-danger" id="msgAction" data-type="delete"
+                    data-bs-toggle="tooltip" title="<?php echo translate('delete'); ?>">
+                <i class="far fa-trash-alt"></i>
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-sm mb-0 table-export">
+                <thead class="table-light">
+                    <tr>
+                        <th width="30">
+                            <div class="form-check mb-0">
+                                <input class="form-check-input" type="checkbox" id="selectAllchkbox">
+                            </div>
+                        </th>
+                        <th><?php echo translate('receiver'); ?></th>
+                        <th><?php echo translate('subjects'); ?></th>
+                        <th><?php echo translate('message'); ?></th>
+                        <th><?php echo translate('time'); ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                $this->db->order_by('id', 'desc');
+                $messages = $this->db->get_where('message', array('sender' => $active_user, 'trash_sent' => 0))->result();
+                foreach ($messages as $message):
+                    $get_receiver   = explode('-', $message->reciever);
+                    $recieverRoleID = $get_receiver[0];
+                    $recieverUserID = $get_receiver[1];
+                ?>
+                <tr class="<?php echo ($message->reply_status == 1 ? 'fw-bold' : ''); ?>">
+                    <td>
+                        <div class="form-check mb-0">
+                            <input class="form-check-input msg_checkbox" type="checkbox" id="<?php echo $message->id; ?>">
+                        </div>
+                    </td>
+                    <td>
+                        <a data-id="<?php echo $message->id; ?>" href="javascript:void(0);" class="mailbox-fav text-warning me-1"
+                           data-bs-toggle="tooltip" title="<?php echo translate('important'); ?>">
+                            <i class="<?php echo ($message->fav_sent == 0 ? 'far fa-bell' : 'fas fa-bell'); ?>"></i>
+                        </a>
+                        <?php echo html_escape($this->application_model->getUserNameByRoleID($recieverRoleID, $recieverUserID)['name']); ?>
+                    </td>
+                    <td>
+                        <?php echo (!empty($message->file_name) ? '<i class="fas fa-paperclip me-1"></i>' : ''); ?>
+                        <a href="<?php echo base_url('communication/mailbox/read?type=sent&id=' . $message->id); ?>" class="mail-subj">
+                            <?php echo html_escape($message->subject); ?>
+                        </a>
+                    </td>
+                    <td class="text-muted small"><?php echo html_escape(mb_strimwidth(strip_tags($message->body), 0, 60, '...')); ?></td>
+                    <td class="text-nowrap small text-muted"><?php echo get_nicetime($message->created_at); ?></td>
+                </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

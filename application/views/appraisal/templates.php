@@ -13,7 +13,7 @@
         <?php if (empty($templates)): ?>
         <div class="col-12"><div class="alert alert-info">No templates yet. Create one to begin appraisals.</div></div>
         <?php else: foreach ($templates as $t):
-            $criteriaCount = $this->db->where('template_id',$t->id)->count_all_results('appraisal_criteria');
+            $criteriaCount = isset($criteriaCounts[$t->id]) ? $criteriaCounts[$t->id] : 0;
         ?>
         <div class="col-md-4">
             <div class="card h-100">

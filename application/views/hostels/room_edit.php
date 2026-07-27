@@ -1,15 +1,15 @@
 <section class="panel">
 	<div class="tabs-custom">
 		<ul class="nav nav-tabs">
-			<li>
-				<a href="<?=base_url('hostels/room')?>"><i class="fas fa-list-ul"></i> <?=translate('room_list')?></a>
+			<li class="nav-item">
+				<a href="<?=base_url('hostels/room')?>" class="nav-link"><i class="fas fa-list-ul"></i> <?=translate('room_list')?></a>
 			</li>
-			<li class="active">
-				<a href="#edit" data-toggle="tab"><i class="far fa-edit"></i> <?=translate('edit_room')?></a>
+			<li class="nav-item">
+				<a href="#edit" class="nav-link active" data-bs-toggle="tab"><i class="far fa-edit"></i> <?=translate('edit_room')?></a>
 			</li>
 		</ul>
 		<div class="tab-content">
-			<div class="tab-pane active" id="edit">
+			<div class="tab-pane active show" id="edit">
 				<?php echo form_open($this->uri->uri_string(), array('class' => 'form-horizontal form-bordered frm-submit')); ?>
 				<input type="hidden" name="room_id" value="<?=$room['id']?>">
 					<?php if (is_superadmin_loggedin()): ?>
@@ -76,7 +76,7 @@
 					</div>
 					<footer class="panel-footer">
 						<div class="row">
-							<div class="col-md-offset-3 col-md-2">
+							<div class="col-md-2 offset-md-3">
 								<button type="submit" class="btn btn-default btn-block" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing">
 									<i class="fas fa-plus-circle"></i> <?=translate('update')?>
 								</button>
@@ -95,15 +95,15 @@
 		$(document).on('change', '#branch_id', function() {
 			var branchID = $(this).val();
 			$.ajax({
-				url: "<?=base_url('hostels/get_hostel_branch_based')?>",
+				url: "<?=base_url('ajax/getDataByBranch')?>",
 				type: 'POST',
-				data: {branch_id: branchID},
+				data: {branch_id: branchID, table: 'hostel'},
 				success: function (data) {
 					$('#hostel_id').html(data);
 				}
 			});
 			$.ajax({
-				url: "<?=base_url('hostels/get_category_branch_based')?>",
+				url: "<?=base_url('hostels/getCategoryByBranch')?>",
 				type: 'POST',
 				data: {branch_id: branchID, type: 'room'},
 				success: function (data) {

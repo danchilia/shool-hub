@@ -197,18 +197,6 @@
 	    $('#user_id').append('<option value=""><?=translate('select')?></option>');
     	var user_role = $('#role_id').val();
     	var branch_id = ($( "#branch_id" ).length ? $('#branch_id').val() : "");
-        $.ajax({
-            url: base_url + 'leave/getCategory',
-            type: "POST",
-            data:{ 
-            	role_id: user_role,
-            	branch_id: branch_id 
-            },
-            success: function (data) {
-            	$('#leave_category').html(data);
-            }
-        });
-
     	if (user_role != "") {
 	        if (user_role == 7) {
 	        	$("#classDiv").show("slow");

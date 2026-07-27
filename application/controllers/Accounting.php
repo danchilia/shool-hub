@@ -103,8 +103,9 @@ class Accounting extends Admin_Controller
     // delete account from database
     public function delete($id = '')
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (!get_permission('account', 'is_delete')) {
-            access_denied();
+            ajax_access_denied();
         }
         if (!is_superadmin_loggedin()) {
             $this->db->where('branch_id', get_loggedin_branch_id());
@@ -115,6 +116,7 @@ class Accounting extends Admin_Controller
             $this->db->where('account_id', $id);
             $this->db->delete('transactions');
         }
+        echo json_encode(array('status' => 'success'));
     }
 
     // add new voucher head for voucher
@@ -151,6 +153,7 @@ class Accounting extends Admin_Controller
     // update existing voucher head if passed id
     public function voucher_head_edit()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if ($_POST) {
             if (!get_permission('voucher_head', 'is_edit')) {
                 ajax_access_denied();
@@ -180,6 +183,7 @@ class Accounting extends Admin_Controller
 
     public function voucherHeadDetails()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (get_permission('voucher_head', 'is_edit')) {
             $id = $this->input->post('id');
             $this->db->where('id', $id);
@@ -192,14 +196,16 @@ class Accounting extends Admin_Controller
     // delete voucher head from database
     public function voucher_head_delete($id)
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (!get_permission('voucher_head', 'is_delete')) {
-            access_denied();
+            ajax_access_denied();
         }
         if (!is_superadmin_loggedin()) {
             $this->db->where('branch_id', get_loggedin_branch_id());
         }
         $this->db->where('id', $id);
         $this->db->delete('voucher_head');
+        echo json_encode(array('status' => 'success'));
     }
 
     // this function is used to add voucher data
@@ -250,6 +256,7 @@ class Accounting extends Admin_Controller
 
     public function voucher_save()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if ($_POST) {
             $type = $this->input->post('voucher_type');
             if ($type == 'deposit') {
@@ -383,19 +390,22 @@ class Accounting extends Admin_Controller
     // delete into voucher table by voucher id
     public function voucher_delete($id)
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $q = $this->db->where('id', $id)->get('transactions')->row_array();
         if ($q['type'] == 'expense') {
             if (!get_permission('expense', 'is_delete')) {
-                access_denied();
+                ajax_access_denied();
             }
-            $sql = "UPDATE accounts SET balance = balance + " . $q['amount'] . " WHERE id = " . $this->db->escape($q['account_id']);
-            $this->db->query($sql);
+            $this->db->where('id', $q['account_id'])
+                ->set('balance', 'balance + ' . (float)$q['amount'], false)
+                ->update('accounts');
         } elseif ($q['type'] == 'deposit') {
             if (!get_permission('deposit', 'is_delete')) {
-                access_denied();
+                ajax_access_denied();
             }
-            $sql = "UPDATE accounts SET balance = balance - " . $q['amount'] . " WHERE id = " . $this->db->escape($q['account_id']);
-            $this->db->query($sql);
+            $this->db->where('id', $q['account_id'])
+                ->set('balance', 'balance - ' . (float)$q['amount'], false)
+                ->update('accounts');
         }
         $filepath = FCPATH . 'uploads/attachments/voucher/' . $q['attachments'];
         if (file_exists($filepath)) {
@@ -403,6 +413,7 @@ class Accounting extends Admin_Controller
         }
         $this->db->where('id', $id);
         $this->db->delete('transactions');
+        echo json_encode(array('status' => 'success'));
     }
 
     // account statement by date to date
@@ -523,6 +534,7 @@ class Accounting extends Admin_Controller
 
     public function getVoucherHead()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $html = "";
         $branch_id = $this->application_model->get_branch_id();
         $type = $this->input->post('type');

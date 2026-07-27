@@ -43,11 +43,16 @@ class VirtualClass extends Admin_Controller {
             echo json_encode(['status'=>'error','msg'=>validation_errors()]); return;
         }
 
+        $link = $this->input->post('meeting_link');
+        if (!preg_match('/^https?:\/\//i', $link)) {
+            echo json_encode(['status'=>'error','msg'=>'Meeting link must start with http:// or https://']); return;
+        }
+
         $data = [
             'title'          => $this->input->post('title'),
             'description'    => $this->input->post('description'),
             'platform'       => $this->input->post('platform') ?: 'meet',
-            'meeting_link'   => $this->input->post('meeting_link'),
+            'meeting_link'   => $link,
             'meeting_id'     => $this->input->post('meeting_id'),
             'password'       => $this->input->post('password'),
             'class_id'       => $this->input->post('class_id') ?: null,
@@ -56,14 +61,17 @@ class VirtualClass extends Admin_Controller {
             'teacher_id'     => $this->input->post('teacher_id') ?: get_loggedin_user_id(),
             'scheduled_at'   => $this->input->post('scheduled_at'),
             'duration_mins'  => $this->input->post('duration_mins') ?: 45,
-            'status'         => 'upcoming',
             'recording_link' => $this->input->post('recording_link'),
             'branch_id'      => $branchId,
         ];
 
         $id = $this->input->post('id');
-        $id ? $this->db->where('id',$id)->where('branch_id',$branchId)->update('virtual_classes',$data)
-            : $this->db->insert('virtual_classes',$data);
+        if ($id) {
+            $this->db->where('id',$id)->where('branch_id',$branchId)->update('virtual_classes',$data);
+        } else {
+            $data['status'] = 'upcoming';
+            $this->db->insert('virtual_classes',$data);
+        }
         echo json_encode(['status'=>'success','url'=>base_url('virtual_class')]);
     }
 
@@ -76,10 +84,11 @@ class VirtualClass extends Admin_Controller {
         if (!in_array($status, $allowed)) {
             echo json_encode(['status'=>'error','msg'=>'Invalid status']); return;
         }
-        $this->db->where('id',$id)->where('branch_id',$branchId)->update('virtual_classes',['status'=>$status]);
+        $update = ['status' => $status];
         if ($this->input->post('recording_link')) {
-            $this->db->where('id',$id)->update('virtual_classes',['recording_link'=>$this->input->post('recording_link')]);
+            $update['recording_link'] = $this->input->post('recording_link');
         }
+        $this->db->where('id',$id)->where('branch_id',$branchId)->update('virtual_classes', $update);
         echo json_encode(['status'=>'success','url'=>base_url('virtual_class')]);
     }
 

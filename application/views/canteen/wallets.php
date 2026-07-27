@@ -52,7 +52,7 @@
             <input type="hidden" name="student_id" id="topup-student-id">
             <div class="mb-3">
                 <label class="form-label">Student</label>
-                <select id="topup-student-select" name="student_id_sel" class="form-select select2">
+                <select id="topup-student-select" name="student_id_sel" class="form-select" data-plugin-selectTwo data-width="100%">
                     <option value="">-- Select Student --</option>
                     <?php foreach ($students as $s): ?>
                     <option value="<?php echo $s->id; ?>"><?php echo html_escape($s->first_name.' '.$s->last_name); ?> (<?php echo html_escape($s->register_no); ?>)</option>

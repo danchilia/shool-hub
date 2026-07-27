@@ -41,9 +41,12 @@ class Biometric extends Admin_Controller
 
     public function device_delete($id = '')
     {
-        if (get_permission('biometric_devices', 'is_delete')) {
-            $this->db->where('id', $id)->delete('biometric_devices');
+        if (!$this->input->is_ajax_request()) show_404();
+        if (!get_permission('biometric_devices', 'is_delete')) {
+            ajax_access_denied();
         }
+        $this->db->where('id', $id)->delete('biometric_devices');
+        echo json_encode(array('status' => 'success'));
     }
 
     public function mapping()
@@ -76,13 +79,17 @@ class Biometric extends Admin_Controller
 
     public function mapping_delete($id = '')
     {
-        if (get_permission('biometric_mapping', 'is_delete')) {
-            $this->biometric_model->deleteMapping($id, get_loggedin_branch_id());
+        if (!$this->input->is_ajax_request()) show_404();
+        if (!get_permission('biometric_mapping', 'is_delete')) {
+            ajax_access_denied();
         }
+        $this->biometric_model->deleteMapping($id, get_loggedin_branch_id());
+        echo json_encode(array('status' => 'success'));
     }
 
     public function get_students_by_class()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $classId = $this->input->post('class_id');
         $sectionId = $this->input->post('section_id');
         $branchId = $this->application_model->get_branch_id();

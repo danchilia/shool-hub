@@ -2,7 +2,9 @@
 .alumni-card { border:1px solid #e2e8f0; border-radius:10px; padding:16px; background:#fff; }
 .alumni-avatar { width:52px; height:52px; border-radius:50%; object-fit:cover; background:#e0e7ff; display:flex; align-items:center; justify-content:center; font-size:1.3rem; color:#6366f1; flex-shrink:0; }
 .alumni-avatar img { width:52px; height:52px; border-radius:50%; object-fit:cover; }
-@media(prefers-color-scheme:dark){ .alumni-card{ background:#2b2b3a; border-color:#3a3a50; } }
+@media(prefers-color-scheme:dark){ .alumni-card { background:#2b2b3a; border-color:#3a3a50; } }
+:root[data-theme="dark"]  .alumni-card { background:#2b2b3a; border-color:#3a3a50; }
+:root[data-theme="light"] .alumni-card { background:#fff;     border-color:#e2e8f0; }
 </style>
 
 <div class="content-header">
@@ -12,7 +14,7 @@
             <button class="btn btn-sm btn-outline-info" onclick="mfp_modal('#modal-import')">
                 <i class="fas fa-file-import me-1"></i>Import Students
             </button>
-            <button class="btn btn-sm btn-primary" onclick="mfp_modal('#modal-alumni')">
+            <button class="btn btn-sm btn-primary" onclick="resetAlumniForm(); mfp_modal('#modal-alumni')">
                 <i class="fas fa-plus me-1"></i>Add Alumni
             </button>
         </div>
@@ -78,7 +80,27 @@
                 <?php if ($al->achievements): ?>
                 <div class="mt-2 small" style="font-style:italic; color:#6b7280;"><?php echo nl2br(html_escape($al->achievements)); ?></div>
                 <?php endif; ?>
-                <div class="mt-3">
+                <div class="mt-3 d-flex gap-2">
+                    <button class="btn btn-xs btn-outline-primary" onclick="editAlumni(this)"
+                        data-json="<?php echo htmlspecialchars(json_encode([
+                            'id'               => (int)$al->id,
+                            'full_name'        => $al->full_name,
+                            'admission_no'     => $al->admission_no,
+                            'graduation_year'  => $al->graduation_year,
+                            'class_completed'  => $al->class_completed,
+                            'email'            => $al->email,
+                            'phone'            => $al->phone,
+                            'current_location' => $al->current_location,
+                            'occupation'       => $al->occupation,
+                            'employer'         => $al->employer,
+                            'university_joined'=> $al->university_joined,
+                            'course_studied'   => $al->course_studied,
+                            'achievements'     => $al->achievements,
+                            'is_verified'      => (int)$al->is_verified,
+                        ]), ENT_QUOTES); ?>"
+                        title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
                     <?php echo btn_delete('alumni/delete/'.$al->id); ?>
                 </div>
             </div>
@@ -91,9 +113,10 @@
 <!-- Add Alumni Modal -->
 <div id="modal-alumni" class="mfp-hide">
     <div class="card mb-0" style="min-width:540px; max-width:620px; max-height:90vh; overflow-y:auto;">
-        <div class="card-header d-flex align-items-center justify-content-between"><h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Add Alumni</h5><button type="button" class="btn-close ms-2" onclick="$.magnificPopup.close()" title="Close"></button></div>
+        <div class="card-header d-flex align-items-center justify-content-between"><h5 class="mb-0" id="alumni-modal-title"><i class="fas fa-graduation-cap me-2"></i>Add Alumni</h5><button type="button" class="btn-close ms-2" onclick="$.magnificPopup.close()" title="Close"></button></div>
         <div class="card-body">
-            <?php echo form_open('alumni/save', ['class'=>'frm-submit']); ?>
+            <?php echo form_open('alumni/save', ['class'=>'frm-submit','id'=>'alumni-form']); ?>
+            <input type="hidden" name="id" id="alumni-edit-id" value="">
             <div class="row g-3">
                 <div class="col-sm-8">
                     <label class="form-label">Full Name <span class="text-danger">*</span></label>
@@ -156,6 +179,37 @@
     </div>
 </div>
 
+<script>
+function resetAlumniForm() {
+    var f = document.getElementById('alumni-form');
+    f.reset();
+    document.getElementById('alumni-edit-id').value = '';
+    document.getElementById('alumni-modal-title').innerHTML = '<i class="fas fa-graduation-cap me-2"></i>Add Alumni';
+}
+
+function editAlumni(btn) {
+    var d = JSON.parse(btn.getAttribute('data-json'));
+    var f = document.getElementById('alumni-form');
+    f.reset();
+    document.getElementById('alumni-edit-id').value                  = d.id;
+    f.querySelector('[name="full_name"]').value                       = d.full_name        || '';
+    f.querySelector('[name="admission_no"]').value                    = d.admission_no     || '';
+    f.querySelector('[name="graduation_year"]').value                 = d.graduation_year  || '';
+    f.querySelector('[name="class_completed"]').value                 = d.class_completed  || '';
+    f.querySelector('[name="email"]').value                           = d.email            || '';
+    f.querySelector('[name="phone"]').value                           = d.phone            || '';
+    f.querySelector('[name="current_location"]').value               = d.current_location || '';
+    f.querySelector('[name="occupation"]').value                      = d.occupation       || '';
+    f.querySelector('[name="employer"]').value                        = d.employer         || '';
+    f.querySelector('[name="university_joined"]').value               = d.university_joined|| '';
+    f.querySelector('[name="course_studied"]').value                  = d.course_studied   || '';
+    f.querySelector('[name="achievements"]').value                    = d.achievements     || '';
+    f.querySelector('[name="is_verified"]').checked                   = d.is_verified === 1;
+    document.getElementById('alumni-modal-title').innerHTML = '<i class="fas fa-edit me-2"></i>Edit Alumni';
+    mfp_modal('#modal-alumni');
+}
+</script>
+
 <!-- Import Modal -->
 <div id="modal-import" class="mfp-hide">
     <div class="card mb-0" style="min-width:400px; max-width:460px;">
@@ -169,11 +223,9 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Class <span class="text-danger">*</span></label>
-                <select name="class_id" class="form-select select2" required>
+                <select name="class_id" class="form-select" data-plugin-selectTwo data-width="100%" required>
                     <option value="">-- Select Class --</option>
-                    <?php
-                    $allClasses = $this->db->where('branch_id',get_loggedin_branch_id())->get('class')->result();
-                    foreach ($allClasses as $c): ?>
+                    <?php foreach ($classes as $c): ?>
                     <option value="<?php echo $c->id; ?>"><?php echo html_escape($c->name); ?></option>
                     <?php endforeach; ?>
                 </select>

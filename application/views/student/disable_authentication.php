@@ -1,3 +1,4 @@
+<?php $widget = (is_superadmin_loggedin() ? 4 : 6); ?>
 <div class="row">
 	<div class="col-md-12">
 		<section class="panel">
@@ -7,7 +8,8 @@
 			<?php echo form_open('student/disable_authentication', array('class' => 'validate')); ?>
 			<div class="panel-body">
 				<div class="row mb-sm">
-					<div class="col-md-4">
+				<?php if (is_superadmin_loggedin()): ?>
+					<div class="col-md-<?=$widget?>">
 						<div class="form-group">
 							<label class="control-label"><?=translate('branch')?> <span class="required">*</span></label>
 							<?php
@@ -17,7 +19,8 @@
 							?>
 						</div>
 					</div>
-					<div class="col-md-4 mb-sm">
+				<?php endif; ?>
+					<div class="col-md-<?=$widget?> mb-sm">
 						<div class="form-group">
 							<label class="control-label"><?=translate('class')?> <span class="required">*</span></label>
 							<?php
@@ -27,7 +30,7 @@
 							?>
 						</div>
 					</div>
-					<div class="col-md-4 mb-sm">
+					<div class="col-md-<?=$widget?> mb-sm">
 						<div class="form-group">
 							<label class="control-label"><?=translate('section')?> <span class="required">*</span></label>
 							<?php

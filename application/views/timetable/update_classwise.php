@@ -1,4 +1,4 @@
-<section class="panel appear-animation" data-appear-animation="<?=$global_config['animations'] ?>">
+﻿<section class="panel appear-animation" data-appear-animation="<?=$global_config['animations'] ?>">
 	<?php echo form_open('timetable/class_save/update', array('class' => 'frm-submit')); ?>
 	<header class="panel-heading">
 		<h4 class="panel-title"><i class="far fa-clock"></i>
@@ -13,34 +13,44 @@
 	</header>
 	<div class="panel-body" >
 		<?php if(count($timetables) > 0){ ?>
-		<div class="table-responsive mb-md">
-			<table class="table table-condensed table-bordered mt-md">
+		<div class="table-responsive mb-3">
+			<table class="table table-sm table-bordered mt-3" style="table-layout:fixed;width:100%">
+				<colgroup>
+					<col style="width:6%">
+					<col style="width:18%">
+					<col style="width:18%">
+					<col style="width:15%">
+					<col style="width:15%">
+					<col>
+				</colgroup>
 				<thead>
+				<tr>
 					<th> - BREAK</th>
 					<th><?=translate('subject')?> <span class="required">*</span></th>
 					<th><?=translate('teacher')?> <span class="required">*</span></th>
 					<th><?=translate('starting_time')?> <span class="required">*</span></th>
 					<th><?=translate('ending_time')?> <span class="required">*</span></th>
 					<th><?=translate('class_room')?></th>
+				</tr>
 				</thead>
 				<tbody id="timetable_entry">
 						<?php
-						foreach ($timetables as $key => $timetable){ 
+						foreach ($timetables as $key => $timetable){
 						$id = $timetable->id;
 						$break = ($timetable->break == 1 ? 'disabled' : '');
 						?>
 						<tr>
 							<?php echo form_hidden(array('i[]' => $timetable->id)); ?>
-							<td class="center" width="90">
-								<div class="checkbox-replace"> 
+							<td class="text-center align-middle">
+								<div class="checkbox-replace">
 									<label class="i-checks">
 										<input type="checkbox" name="timetable[<?=$key?>][break]" <?=($timetable->break == 1 ? 'checked' : ''); ?>>
 										<i></i>
 									</label>
 								</div>
 							</td>
-							<td width="20%">
-								<div class="form-group">
+							<td>
+								<div class="form-group mb-0">
 									<?php
 										$array = array("" => translate('select'));
 										$subjects = $this->db->get_where('subject', array('branch_id' => $branch_id))->result();
@@ -53,8 +63,8 @@
 									<span class="error"></span>
 								</div>
 							</td>
-							<td width="20%">
-								<div class="form-group">
+							<td>
+								<div class="form-group mb-0">
 									<?php
 										$arrayTeacher = $this->app_lib->getStaffList($branch_id, 3);
 										echo form_dropdown("timetable[$key][teacher]", $arrayTeacher, $timetable->teacher_id, "class='form-control'
@@ -64,30 +74,30 @@
 								</div>
 							</td>
 							<td>
-								<div class="form-group">
+								<div class="form-group mb-0">
 									<div class="input-group">
-										<span class="input-group-addon"><i class="far fa-clock"></i></span>
+										<span class="input-group-text"><i class="far fa-clock"></i></span>
 										<input type="text" name="timetable[<?=$key?>][time_start]" data-plugin-timepicker class="form-control" value="<?=$timetable->time_start?>"
-										data-plugin-options='{ "minuteStep": 5 }'>
+										data-plugin-options='{"minuteStep":5,"timeFormat":"HH:mm:ss"}'>
 									</div>
 									<span class="error"></span>
 								</div>
 							</td>
 							<td>
-								<div class="form-group">
+								<div class="form-group mb-0">
 									<div class="input-group">
-										<span class="input-group-addon">
-										<i class="far fa-clock"></i>
-										</span>
+										<span class="input-group-text"><i class="far fa-clock"></i></span>
 										<input type="text" name="timetable[<?=$key?>][time_end]" data-plugin-timepicker class="form-control" value="<?=$timetable->time_end?>"
-										data-plugin-options='{ "minuteStep": 5 }'>
+										data-plugin-options='{"minuteStep":5,"timeFormat":"HH:mm:ss"}'>
 									</div>
 									<span class="error"></span>
 								</div>
 							</td>
-							<td class="timet-td">
-								<input type="text" class="form-control" name="timetable[<?=$key?>][class_room]" value="<?=$timetable->class_room?>">
-								<button type="button" class="btn btn-danger removeTR"><i class="fas fa-times"></i> </button>
+							<td>
+								<div class="d-flex gap-1 align-items-center">
+									<input type="text" class="form-control" name="timetable[<?=$key?>][class_room]" value="<?=$timetable->class_room?>">
+									<button type="button" class="btn btn-danger btn-sm removeTR flex-shrink-0"><i class="fas fa-times"></i> Remove</button>
+								</div>
 							</td>
 						</tr>				
 					<?php } ?>

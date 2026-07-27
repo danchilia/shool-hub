@@ -1,22 +1,22 @@
 <section class="panel">
 	<div class="tabs-custom">
 		<ul class="nav nav-tabs">
-			<li class="active">
-                <a href="#list" data-toggle="tab">
+			<li class="nav-item">
+                <a href="#list" class="nav-link active" data-bs-toggle="tab">
                     <i class="fas fa-list-ul"></i> <?=translate('event_list')?>
                 </a>
 			</li>
 <?php if (get_permission('event', 'is_add')): ?>
-			<li>
-                <a href="#add" data-toggle="tab">
+			<li class="nav-item">
+                <a href="#add" class="nav-link" data-bs-toggle="tab">
                    <i class="far fa-edit"></i> <?=translate('create_event')?>
                 </a>
 			</li>
 <?php endif; ?>
 		</ul>
 		<div class="tab-content">
-			<div class="tab-pane box active mb-md" id="list">
-				<table class="table table-bordered table-hover mb-none tbr-top table-export">
+			<div class="tab-pane active show" id="list">
+				<table class="table table-bordered table-hover mb-0 tbr-top table-export">
 					<thead>
 						<tr>
 							<th>#</th>
@@ -60,22 +60,25 @@
 									"2" => "class",
 									"3" => "section",
 								);
-								$audition = $auditions[$event->audition];
+								$audition = isset($auditions[$event->audition]) ? $auditions[$event->audition] : 'everybody';
 								echo translate($audition);
 								if($event->audition != 1){
-									$selecteds = json_decode($event->selected_list); 
-									foreach ($selecteds as $selected) {
-										echo "<br> <small> - " . $this->db->get_where($audition , array('id' => $selected))->row()->name . '</small>' ;
+									$selecteds = json_decode($event->selected_list);
+									if (!empty($selecteds)) {
+										foreach ($selecteds as $selected) {
+											$row = $this->db->get_where($audition, array('id' => $selected))->row();
+											if ($row) echo "<br><small> - " . html_escape($row->name) . '</small>';
+										}
 									}
 								}
 							?></td>
 							<td><?php echo get_type_name_by_id('staff', $event->created_by); ?></td>
 							<td>
 							<?php if (get_permission('event', 'is_edit')) { ?>
-								<div class="material-switch ml-xs">
-									<input class="event-switch" id="switch_<?=$event->id?>" data-id="<?=$event->id?>" name="evt_switch<?=$event->id?>" 
-									type="checkbox" <?php echo ($event->status == 1 ? 'checked' : ''); ?> />
-									<label for="switch_<?=$event->id?>" class="label-primary"></label>
+								<div class="form-check form-switch ms-2">
+									<input class="form-check-input event-switch" type="checkbox" role="switch"
+									id="switch_<?=$event->id?>" data-id="<?=$event->id?>"
+									<?php echo ($event->status == 1 ? 'checked' : ''); ?>>
 								</div>
 							<?php } ?>
 							</td>
@@ -118,23 +121,21 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<div class="col-md-offset-3">
-							<div class="ml-md checkbox-replace">
+						<div class="col-md-9 offset-md-3">
+							<div class="ms-2 checkbox-replace">
 								<label class="i-checks"><input type="checkbox" name="holiday" id="chk_holiday"><i></i> Holiday</label>
 							</div>
 						</div>
-						<div id="typeDiv">
-							<div class="mt-md">
-								<label class="col-md-3 control-label"><?=translate('type')?> <span class="required">*</span></label>
-								<div class="col-md-6">
-									<?php
-										$array = $this->app_lib->getSelectByBranch('event_types', $branch_id);
-										echo form_dropdown("type_id", $array, set_value('type_id'), "class='form-control' id='type_id'
-										data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity' ");
-									?>
-									<span class="error"></span>
-								</div>
-							</div>
+					</div>
+					<div class="form-group" id="typeDiv">
+						<label class="col-md-3 control-label"><?=translate('type')?> <span class="required">*</span></label>
+						<div class="col-md-6">
+							<?php
+								$array = $this->app_lib->getSelectByBranch('event_types', $branch_id);
+								echo form_dropdown("type_id", $array, set_value('type_id'), "class='form-control' id='type_id'
+								data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity' ");
+							?>
+							<span class="error"></span>
 						</div>
 					</div>
 					<div class="form-group">
@@ -168,7 +169,7 @@
 						<label class="col-md-3 control-label"><?=translate('date')?> <span class="required">*</span></label>
 						<div class="col-md-6">
 							<div class="input-group">
-								<span class="input-group-addon"><i class="far fa-calendar-alt"></i></span>
+								<span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
 								<input type="text" class="form-control" name="daterange" id="daterange" 
 								value="<?=set_value('daterange', date("Y/m/d") . ' - ' . date("Y/m/d", strtotime("+2 day")))?>" />
 							</div>
@@ -184,7 +185,7 @@
 				
 					<footer class="panel-footer">
 						<div class="row">
-							<div class="col-md-offset-3 col-md-2">
+							<div class="col-md-2 offset-md-3">
 								<button type="submit" class="btn btn-default btn-block" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing">
 									<i class="fas fa-plus-circle"></i> <?=translate('save')?>
 								</button>
@@ -208,13 +209,13 @@
 		<div class="panel-body">
 			<div id="printResult" class="pt-sm pb-sm">
 				<div class="table-responsive">						
-					<table class="table table-bordered table-condensed text-dark tbr-top" id="ev_table"></table>
+					<table class="table table-bordered table-sm tbr-top" id="ev_table"></table>
 				</div>
 			</div>
 		</div>
 		<footer class="panel-footer">
 			<div class="row">
-				<div class="col-md-12 text-right">
+				<div class="col-md-12 text-end">
 					<button class="btn btn-default modal-dismiss">
 						<?=translate('close')?>
 					</button>
@@ -226,6 +227,38 @@
 
 <script type="text/javascript">
 	$(document).ready(function () {
+		// Tab switching — delegate from .tabs-custom to intercept before doc-level shim/BS5
+		$('.tabs-custom').on('click', '.nav-link[data-bs-toggle="tab"]', function(e) {
+			e.preventDefault();
+			e.stopImmediatePropagation();
+			var tgt = $(this).attr('href');
+			if (!tgt || !$(tgt).length) return;
+			$('.tabs-custom .nav-link').removeClass('active');
+			$(this).addClass('active');
+			$('.tabs-custom .tab-pane').removeClass('active show');
+			$(tgt).addClass('active show');
+			// Reinitialise Select2 inside the newly shown pane
+			$(tgt).find('[data-plugin-selectTwo]').each(function() {
+				if (!$(this).data('select2')) {
+					$(this).select2({ width: '100%' });
+				}
+			});
+		});
+
+		$(document).on('change', '.event-switch', function() {
+			var id    = $(this).data('id');
+			var state = $(this).prop('checked');
+			$.ajax({
+				type: 'POST',
+				url: base_url + 'event/status',
+				data: { id: id, status: state },
+				dataType: 'json',
+				success: function(data) {
+					if (data.status) alertMsg(data.msg);
+				}
+			});
+		});
+
 		$('#daterange').daterangepicker({
 			opens: 'left',
 		    locale: {format: 'YYYY/MM/DD'}
@@ -247,11 +280,34 @@
 			$("#selected_audience").empty();
 		});
 		
+		// Holiday toggle — hide/show Type field
+		$('#chk_holiday').on('change', function() {
+			if ($(this).is(':checked')) {
+				$('#typeDiv').hide('slow');
+			} else {
+				$('#typeDiv').show('slow');
+			}
+		});
+
+		// Summernote richtext editor
+		if (typeof $.fn.summernote !== 'undefined' && $('.summernote').length) {
+			$('.summernote').summernote({
+				height: 220,
+				toolbar: [
+					['style',  ['style']],
+					['font',   ['bold','italic','underline','clear']],
+					['color',  ['color']],
+					['para',   ['ul','ol','paragraph']],
+					['insert', ['link','table']],
+					['misc',   ['fullscreen','undo','codeview']]
+				]
+			});
+		}
+
 		$('#audition').on('change', function() {
 			var audition = $(this).val();
 			var branchID = ($('#branch_id').length ? $('#branch_id').val() : "");
-			if(audition == "1" || audition == null)
-			{
+			if(!audition || audition == "1") {
 				$("#selected_user").hide("slow");
 			}
 			if(audition == "2") {

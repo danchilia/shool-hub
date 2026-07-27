@@ -20,15 +20,20 @@ class School_model extends MY_Model
     public function branchUpdate($data)
     {
         $arrayBranch = array(
-            'name' => $data['branch_name'],
-            'school_name' => $data['school_name'],
-            'email' => $data['email'],
-            'mobileno' => $data['mobileno'],
-            'currency' => $data['currency'],
-            'symbol' => $data['currency_symbol'],
-            'city' => $data['city'],
-            'state' => $data['state'],
-            'address' => $data['address'],
+            'name'          => $data['branch_name'],
+            'school_name'   => $data['school_name'],
+            'email'         => $data['email'],
+            'mobileno'      => $data['mobileno'],
+            'currency'      => $data['currency'],
+            'symbol'        => $data['currency_symbol'],
+            'city'          => $data['city'],
+            'state'         => $data['state'],
+            'address'       => $data['address'],
+            'nemis_code'    => isset($data['nemis_code'])    ? $data['nemis_code']    : '',
+            'website_url'   => isset($data['website_url'])   ? $data['website_url']   : '',
+            'mpesa_paybill' => isset($data['mpesa_paybill']) ? $data['mpesa_paybill'] : '',
+            'instagram_url' => isset($data['instagram_url']) ? $data['instagram_url'] : '',
+            'whatsapp_no'   => isset($data['whatsapp_no'])   ? $data['whatsapp_no']   : '',
         );
         $this->db->where('id', $data['brance_id']);
         $this->db->update('branch', $arrayBranch);

@@ -103,14 +103,16 @@ class Exam extends Admin_Controller
     // exam information delete stored in the database here
     public function delete($id)
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (!get_permission('exam', 'is_delete')) {
-            access_denied();
+            ajax_access_denied();
         }
         if (!is_superadmin_loggedin()) {
             $this->db->where('branch_id', get_loggedin_branch_id());
         }
         $this->db->where('id', $id);
         $this->db->delete('exam');
+        echo json_encode(array('status' => 'success'));
     }
 
     /* term form validation rules */
@@ -167,14 +169,16 @@ class Exam extends Admin_Controller
 
     public function term_delete($id)
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (!get_permission('exam_term', 'is_delete')) {
-            access_denied();
+            ajax_access_denied();
         }
         if (!is_superadmin_loggedin()) {
             $this->db->where('branch_id', get_loggedin_branch_id());
         }
         $this->db->where('id', $id);
         $this->db->delete('exam_term');
+        echo json_encode(array('status' => 'success'));
     }
 
     /* unique valid exam term name verification is done here */
@@ -254,14 +258,16 @@ class Exam extends Admin_Controller
 
     public function mark_distribution_delete($id)
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (!get_permission('mark_distribution', 'is_delete')) {
-            access_denied();
+            ajax_access_denied();
         }
         if (!is_superadmin_loggedin()) {
             $this->db->where('branch_id', get_loggedin_branch_id());
         }
         $this->db->where('id', $id);
         $this->db->delete('exam_mark_distribution');
+        echo json_encode(array('status' => 'success'));
     }
 
     /* hall form validation rules */
@@ -319,14 +325,16 @@ class Exam extends Admin_Controller
 
     public function hall_delete($id)
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (!get_permission('exam_hall', 'is_delete')) {
-            access_denied();
+            ajax_access_denied();
         }
         if (!is_superadmin_loggedin()) {
             $this->db->where('branch_id', get_loggedin_branch_id());
         }
         $this->db->where('id', $id);
         $this->db->delete('exam_hall');
+        echo json_encode(array('status' => 'success'));
     }
 
     /* exam hall number exists validation */
@@ -386,6 +394,7 @@ class Exam extends Admin_Controller
 
     public function mark_save()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if ($_POST) {
             if (!get_permission('exam_mark', 'is_add')) {
                 ajax_access_denied();
@@ -490,7 +499,7 @@ class Exam extends Admin_Controller
     public function grade_edit($id = '')
     {
         if (!get_permission('exam_grade', 'is_edit')) {
-            ajax_access_denied();
+            access_denied();
         }
 
         if ($_POST) {
@@ -517,13 +526,16 @@ class Exam extends Admin_Controller
 
     public function grade_delete($id = '')
     {
-        if (get_permission('exam_grade', 'is_delete')) {
-            if (!is_superadmin_loggedin()) {
-                $this->db->where('branch_id', get_loggedin_branch_id());
-            }
-            $this->db->where('id', $id);
-            $this->db->delete('grade');
+        if (!$this->input->is_ajax_request()) show_404();
+        if (!get_permission('exam_grade', 'is_delete')) {
+            ajax_access_denied();
         }
+        if (!is_superadmin_loggedin()) {
+            $this->db->where('branch_id', get_loggedin_branch_id());
+        }
+        $this->db->where('id', $id);
+        $this->db->delete('grade');
+        echo json_encode(array('status' => 'success'));
     }
 
     public function marksheet()
@@ -560,6 +572,7 @@ class Exam extends Admin_Controller
 
     public function reportCardPrint()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if ($_POST) {
             if (!get_permission('report_card', 'is_view')) {
                 ajax_access_denied();
@@ -597,6 +610,7 @@ class Exam extends Admin_Controller
 
     public function getDistributionByBranch()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $html = "";
         $table = $this->input->post('table');
         $branch_id = $this->application_model->get_branch_id();

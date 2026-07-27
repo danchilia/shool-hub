@@ -17,6 +17,7 @@ class Visitor extends Admin_Controller {
         $visitors = $this->db->get('visitor_log')->result();
 
         $still_in = $this->db->where('branch_id', $branchId)
+                              ->where('DATE(check_in)', $date)
                               ->where('check_out IS NULL', null, false)
                               ->count_all_results('visitor_log');
 
@@ -80,6 +81,7 @@ class Visitor extends Admin_Controller {
     }
 
     public function delete($id) {
+        if (!$this->input->is_ajax_request()) show_404();
         if (!is_admin_loggedin() && !is_superadmin_loggedin()) show_404();
         $branchId = get_loggedin_branch_id();
         $this->db->where('id', $id)->where('branch_id', $branchId)->delete('visitor_log');

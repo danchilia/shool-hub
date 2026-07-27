@@ -7,11 +7,13 @@ $widget = (is_superadmin_loggedin() ? 3 : 4);
 			<div class="col-md-12 col-lg-4 col-xl-3">
 				<div class="image-content-center user-pro">
 					<div class="preview">
+						<?php if (!empty($parent['facebook_url']) || !empty($parent['twitter_url']) || !empty($parent['linkedin_url'])): ?>
 						<ul class="social-icon-one">
-							<li><a href="<?=empty($parent['facebook_url']) ? '#' : $parent['facebook_url']?>"><span class="fab fa-facebook-f"></span></a></li>
-							<li><a href="<?=empty($parent['twitter_url']) ? '#' : $parent['twitter_url']?>"><span class="fab fa-twitter"></span></a></li>
-							<li><a href="<?=empty($parent['linkedin_url']) ? '#' : $parent['linkedin_url']?>"><span class="fab fa-linkedin-in"></span></a></li>
+							<?php if (!empty($parent['facebook_url'])): ?><li><a href="<?=$parent['facebook_url']?>" target="_blank"><i class="fab fa-facebook-f"></i></a></li><?php endif; ?>
+							<?php if (!empty($parent['twitter_url'])): ?><li><a href="<?=$parent['twitter_url']?>" target="_blank"><i class="fab fa-twitter"></i></a></li><?php endif; ?>
+							<?php if (!empty($parent['linkedin_url'])): ?><li><a href="<?=$parent['linkedin_url']?>" target="_blank"><i class="fab fa-linkedin-in"></i></a></li><?php endif; ?>
 						</ul>
+						<?php endif; ?>
 						<img src="<?=get_image_url('parent', $parent['photo'])?>">
 					</div>
 				</div>

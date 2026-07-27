@@ -3,7 +3,18 @@
 .score-slider::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:#6366f1; cursor:pointer; }
 .score-cell { font-size:1.3rem; font-weight:700; color:#6366f1; min-width:40px; text-align:center; }
 .cat-header { background:#f8fafc; border-left:4px solid #6366f1; padding:10px 16px; margin:0; }
+.grade-A { background:#d1fae5; color:#065f46; }
+.grade-B { background:#dbeafe; color:#1e40af; }
+.grade-C { background:#fef3c7; color:#92400e; }
+.grade-D { background:#fed7aa; color:#9a3412; }
+.grade-E { background:#fee2e2; color:#991b1b; }
+.status-draft     { background:#f3f4f6; color:#374151; }
+.status-submitted { background:#dbeafe; color:#1e40af; }
+.status-reviewed  { background:#fef3c7; color:#92400e; }
+.status-approved  { background:#d1fae5; color:#065f46; }
 @media(prefers-color-scheme:dark){ .cat-header { background:#1e2030; } }
+:root[data-theme="dark"]  .cat-header { background:#1e2030; }
+:root[data-theme="light"] .cat-header { background:#f8fafc; }
 </style>
 
 <div class="content-header">

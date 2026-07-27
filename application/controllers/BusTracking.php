@@ -11,13 +11,15 @@ class BusTracking extends Admin_Controller {
         $branchId = get_loggedin_branch_id();
         $buses = $this->db->where('branch_id', $branchId)->where('is_active', 1)->get('school_buses')->result();
 
-        // Get last known location for each bus
-        foreach ($buses as $bus) {
-            $loc = $this->db->where('bus_id', $bus->id)
-                            ->order_by('recorded_at', 'DESC')
-                            ->limit(1)->get('bus_locations')->row();
-            $bus->last_location = $loc;
-        }
+        // Single query: latest location per bus (avoids N+1)
+        $locs = $this->db->query(
+            'SELECT bl.* FROM bus_locations bl
+             INNER JOIN (SELECT bus_id, MAX(recorded_at) AS max_at FROM bus_locations GROUP BY bus_id) x
+             ON bl.bus_id = x.bus_id AND bl.recorded_at = x.max_at'
+        )->result();
+        $locMap = [];
+        foreach ($locs as $l) { $locMap[$l->bus_id] = $l; }
+        foreach ($buses as $bus) { $bus->last_location = $locMap[$bus->id] ?? null; }
 
         $this->data['buses']     = $buses;
         $this->data['title']     = 'GPS Bus Tracking';
@@ -62,8 +64,13 @@ class BusTracking extends Admin_Controller {
         ];
 
         $id = $this->input->post('id');
-        $id ? $this->db->where('id',$id)->where('branch_id',$branchId)->update('school_buses',$data)
-            : $this->db->insert('school_buses',$data);
+        if ($id) {
+            $this->db->where('id', $id)->where('branch_id', $branchId)->update('school_buses', $data);
+        } else {
+            // Generate a unique token for this bus so the GPS endpoint can authenticate it
+            $data['gps_token'] = bin2hex(random_bytes(16));
+            $this->db->insert('school_buses', $data);
+        }
         echo json_encode(['status'=>'success','url'=>base_url('bus_tracking/manage')]);
     }
 
@@ -74,40 +81,23 @@ class BusTracking extends Admin_Controller {
         echo json_encode(['status'=>'success','url'=>base_url('bus_tracking/manage')]);
     }
 
-    // Driver app / GPS device calls this to update location
-    public function update_location() {
-        // Accepts GET or POST — GPS devices use GET with token
-        $busId = $this->input->get_post('bus_id');
-        $lat   = $this->input->get_post('lat');
-        $lng   = $this->input->get_post('lng');
-        $speed = $this->input->get_post('speed');
-
-        if (!$busId || !$lat || !$lng) {
-            echo json_encode(['status'=>'error','msg'=>'Missing data']); return;
-        }
-
-        $bus = $this->db->where('id',$busId)->get('school_buses')->row();
-        if (!$bus) { echo json_encode(['status'=>'error','msg'=>'Bus not found']); return; }
-
-        $this->db->insert('bus_locations',[
-            'bus_id'      => $busId,
-            'latitude'    => $lat,
-            'longitude'   => $lng,
-            'speed'       => $speed ?: null,
-            'recorded_at' => date('Y-m-d H:i:s'),
-            'branch_id'   => $bus->branch_id,
-        ]);
-        echo json_encode(['status'=>'success']);
-    }
-
     // AJAX: get latest location for all active buses (parent live view)
     public function live_positions() {
         $branchId = get_loggedin_branch_id();
         $buses    = $this->db->where('branch_id',$branchId)->where('is_active',1)->get('school_buses')->result();
         $result   = [];
 
+        // Single query: latest location per bus (avoids N+1)
+        $locs = $this->db->query(
+            'SELECT bl.* FROM bus_locations bl
+             INNER JOIN (SELECT bus_id, MAX(recorded_at) AS max_at FROM bus_locations GROUP BY bus_id) x
+             ON bl.bus_id = x.bus_id AND bl.recorded_at = x.max_at'
+        )->result();
+        $locMap = [];
+        foreach ($locs as $l) { $locMap[$l->bus_id] = $l; }
+
         foreach ($buses as $bus) {
-            $loc = $this->db->where('bus_id',$bus->id)->order_by('recorded_at','DESC')->limit(1)->get('bus_locations')->row();
+            $loc = $locMap[$bus->id] ?? null;
             $result[] = [
                 'id'          => $bus->id,
                 'name'        => $bus->bus_name,

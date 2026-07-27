@@ -23,6 +23,7 @@ class Alumni extends Admin_Controller {
         $this->data['alumni']      = $alumni;
         $this->data['years']       = $years;
         $this->data['filter_year'] = $year;
+        $this->data['classes']     = $this->db->where('branch_id', $branchId)->order_by('name')->get('class')->result();
         $this->data['title']       = 'Alumni Management';
         $this->data['main_menu']   = 'alumni';
         $this->data['sub_page']    = 'alumni/index';
@@ -68,6 +69,7 @@ class Alumni extends Admin_Controller {
     }
 
     public function import_from_students() {
+        if (!$this->input->is_ajax_request()) show_404();
         $branchId = get_loggedin_branch_id();
         $year     = $this->input->post('graduation_year') ?: date('Y');
         $classId  = $this->input->post('class_id');
@@ -84,10 +86,18 @@ class Alumni extends Admin_Controller {
             ->group_by('s.id')
             ->get()->result();
 
+        // Single batch query instead of N+1 existence checks
+        $regNos = array_filter(array_column(array_map('get_object_vars', $students), 'register_no'));
+        $existingNos = [];
+        if (!empty($regNos)) {
+            $rows = $this->db->select('admission_no')->where('branch_id', $branchId)
+                             ->where_in('admission_no', $regNos)->get('alumni')->result();
+            $existingNos = array_column(array_map('get_object_vars', $rows), 'admission_no');
+        }
+
         $imported = 0;
         foreach ($students as $s) {
-            $exists = $this->db->where('admission_no', $s->register_no)->where('branch_id', $branchId)->count_all_results('alumni');
-            if ($exists) continue;
+            if (in_array($s->register_no, $existingNos)) continue;
 
             $this->db->insert('alumni', [
                 'student_id'      => $s->id,

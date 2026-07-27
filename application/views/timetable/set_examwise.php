@@ -119,7 +119,7 @@ foreach ($distribution as $id) {
 							<td class="min-w-sm">
 								<div class="form-group mb-none">
 									<div class="input-group">
-										<span class="input-group-addon"><i class="far fa-clock"></i></span>
+										<span class="input-group-text"><i class="far fa-clock"></i></span>
 										<input type="text" name="timetable[<?=$key?>][time_start]" data-plugin-timepicker class="form-control" autocomplete="off"
 										data-plugin-options='{ "minuteStep": 5 }' value="<?=$row['time_start']?>">
 										<span class="error"></span>
@@ -130,7 +130,7 @@ foreach ($distribution as $id) {
 							<td class="min-w-sm">
 								<div class="form-group mb-none">
 									<div class="input-group">
-										<span class="input-group-addon"><i class="far fa-clock"></i></span>
+										<span class="input-group-text"><i class="far fa-clock"></i></span>
 										<input type="text" name="timetable[<?=$key?>][time_end]" data-plugin-timepicker class="form-control" autocomplete="off"
 										data-plugin-options='{ "minuteStep": 5 }' value="<?=$row['time_end']?>">
 									</div>

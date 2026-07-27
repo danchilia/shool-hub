@@ -5,7 +5,9 @@
 .option-mark { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700; }
 .opt-correct { background:#d1fae5; color:#065f46; }
 .opt-wrong   { background:#f3f4f6; color:#6b7280; }
-@media(prefers-color-scheme:dark){ .q-card{background:#2b2b3a; border-color:#3a3a50;} }
+@media(prefers-color-scheme:dark)  { .q-card { background:#2b2b3a; border-color:#3a3a50; } }
+:root[data-theme="dark"]  .q-card  { background:#2b2b3a; border-color:#3a3a50; }
+:root[data-theme="light"] .q-card  { background:#fff;     border-color:#e2e8f0; }
 </style>
 
 <div class="content-header">
@@ -18,7 +20,7 @@
             <a href="<?php echo base_url('cbt/results/'.$quiz->id); ?>" class="btn btn-sm btn-outline-success">
                 <i class="fas fa-chart-bar me-1"></i>Results
             </a>
-            <button class="btn btn-sm btn-primary" onclick="mfp_modal('#modal-question')">
+            <button class="btn btn-sm btn-primary" onclick="resetQForm(); mfp_modal('#modal-question')">
                 <i class="fas fa-plus me-1"></i>Add Question
             </button>
         </div>
@@ -76,7 +78,21 @@
                 <div class="text-muted small">Answer: <strong><?php echo html_escape($q->correct_answer); ?></strong></div>
                 <?php endif; ?>
             </div>
-            <div class="flex-shrink-0">
+            <div class="flex-shrink-0 d-flex gap-1">
+                <button class="btn btn-xs btn-outline-warning" onclick="editQ(this)" title="Edit"
+                    data-json="<?php echo htmlspecialchars(json_encode([
+                        'id'            => (int)$q->id,
+                        'question_type' => $q->question_type,
+                        'marks'         => (int)$q->marks,
+                        'question_text' => $q->question_text,
+                        'option_a'      => $q->option_a,
+                        'option_b'      => $q->option_b,
+                        'option_c'      => $q->option_c,
+                        'option_d'      => $q->option_d,
+                        'correct_answer'=> $q->correct_answer,
+                    ]), ENT_QUOTES); ?>">
+                    <i class="fas fa-edit"></i>
+                </button>
                 <?php echo btn_delete('cbt/delete_question/'.$q->id); ?>
             </div>
         </div>
@@ -88,10 +104,11 @@
 <!-- Add Question Modal -->
 <div id="modal-question" class="mfp-hide">
     <div class="card mb-0" style="min-width:540px; max-width:620px;">
-        <div class="card-header d-flex align-items-center justify-content-between"><h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Add Question</h5><button type="button" class="btn-close ms-2" onclick="$.magnificPopup.close()" title="Close"></button></div>
+        <div class="card-header d-flex align-items-center justify-content-between"><h5 class="mb-0" id="q-modal-title"><i class="fas fa-plus-circle me-2"></i>Add Question</h5><button type="button" class="btn-close ms-2" onclick="$.magnificPopup.close()" title="Close"></button></div>
         <div class="card-body">
             <?php echo form_open('cbt/save_question', ['class'=>'frm-submit','id'=>'q-form']); ?>
             <input type="hidden" name="quiz_id" value="<?php echo $quiz->id; ?>">
+            <input type="hidden" name="id" id="q-edit-id" value="">
             <div class="row g-3">
                 <div class="col-sm-6">
                     <label class="form-label">Type</label>
@@ -148,6 +165,38 @@
 </div>
 
 <script>
+function resetQForm() {
+    var f = document.getElementById('q-form');
+    f.reset();
+    document.getElementById('q-edit-id').value = '';
+    document.getElementById('q-modal-title').innerHTML = '<i class="fas fa-plus-circle me-2"></i>Add Question';
+    f.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-plus me-1"></i>Add Question';
+    toggleOptions();
+}
+
+function editQ(btn) {
+    var d = JSON.parse(btn.getAttribute('data-json'));
+    var f = document.getElementById('q-form');
+    f.reset();
+    document.getElementById('q-edit-id').value              = d.id;
+    document.getElementById('q-type').value                 = d.question_type || 'mcq';
+    f.querySelector('[name="marks"]').value                 = d.marks || 1;
+    f.querySelector('[name="question_text"]').value         = d.question_text || '';
+    ['a','b','c','d'].forEach(function(o) {
+        var el = f.querySelector('[name="option_'+o+'"]');
+        if (el) el.value = d['option_'+o] || '';
+    });
+    toggleOptions(); // fix panel visibility + rename name attrs before setting values
+    document.getElementById('correct-mcq').value            = d.correct_answer || 'a';
+    var tfSel = document.querySelector('#tf-options select');
+    if (tfSel) tfSel.value = d.correct_answer || 'true';
+    var saIn  = document.querySelector('#sa-answer input[type="text"]');
+    if (saIn)  saIn.value  = d.correct_answer || '';
+    document.getElementById('q-modal-title').innerHTML = '<i class="fas fa-edit me-2"></i>Edit Question';
+    f.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save me-1"></i>Save Changes';
+    mfp_modal('#modal-question');
+}
+
 function toggleOptions() {
     var t = document.getElementById('q-type').value;
     document.getElementById('mcq-options').style.display = t==='mcq' ? '' : 'none';

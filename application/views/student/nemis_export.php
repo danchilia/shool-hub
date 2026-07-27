@@ -1,10 +1,12 @@
 <?php
-/** @var array $classes @var array $sections @var array $students @var string $class_id @var string $section_id */
+/** @var array $classes @var array $sections @var array $students @var string $class_id @var string $section_id @var string $branch_id @var array $branches */
 $classes    = isset($classes)    ? $classes    : array();
 $sections   = isset($sections)   ? $sections   : array();
 $students   = isset($students)   ? $students   : array();
+$branches   = isset($branches)   ? $branches   : array();
 $class_id   = isset($class_id)   ? $class_id   : '';
 $section_id = isset($section_id) ? $section_id : '';
+$branch_id  = isset($branch_id)  ? $branch_id  : '';
 ?>
 <div class="row">
     <div class="col-md-12">
@@ -25,6 +27,19 @@ $section_id = isset($section_id) ? $section_id : '';
 
                 <!-- Filter Form -->
                 <form method="get" action="<?=base_url('student/nemis_export')?>" class="form-inline" style="gap:12px;display:flex;flex-wrap:wrap;margin-bottom:20px;">
+                    <?php if (is_superadmin_loggedin()): ?>
+                    <div class="form-group">
+                        <label class="control-label mr-sm">Branch <span class="required">*</span></label>
+                        <select name="branch_id" id="nemis_branch" class="form-control" required>
+                            <option value="">— Select Branch —</option>
+                            <?php foreach ($branches as $b): ?>
+                            <option value="<?=$b['id']?>" <?=$branch_id == $b['id'] ? 'selected' : ''?>>
+                                <?=htmlspecialchars($b['name'])?>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <?php endif; ?>
                     <div class="form-group">
                         <label class="control-label mr-sm">Class <span class="required">*</span></label>
                         <select name="class_id" id="nemis_class" class="form-control" required>
@@ -56,6 +71,7 @@ $section_id = isset($section_id) ? $section_id : '';
                 <!-- Download button -->
                 <form method="post" action="<?=base_url('student/nemis_download')?>" style="margin-bottom:16px;">
                     <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
+                    <input type="hidden" name="branch_id" value="<?=$branch_id?>">
                     <input type="hidden" name="class_id" value="<?=$class_id?>">
                     <input type="hidden" name="section_id" value="<?=$section_id?>">
                     <button type="submit" class="btn btn-success">
@@ -133,16 +149,23 @@ $section_id = isset($section_id) ? $section_id : '';
 
 <script>
 $(function() {
+    // Superadmin: reload page with new branch so class list updates server-side
+    $('#nemis_branch').on('change', function() {
+        var bid = $(this).val();
+        if (!bid) return;
+        window.location.href = base_url + 'student/nemis_export?branch_id=' + bid;
+    });
+
+    // When class changes, reload section dropdown via AJAX
     $('#nemis_class').on('change', function() {
         var cid = $(this).val();
         var $sec = $('#nemis_section');
         $sec.html('<option value="">All Streams</option>');
         if (!cid) return;
-        $.get(base_url + 'classes/get_section/' + cid, function(data) {
-            $.each(data, function(i, s) {
-                $sec.append('<option value="'+s.id+'">'+s.name+'</option>');
-            });
-        }, 'json');
+        $.post(base_url + 'ajax/getSectionByClass', {class_id: cid, all: 0, multi: 0}, function(html) {
+            var $opts = $('<div>').html(html).find('option').filter(function() { return $(this).val() !== ''; });
+            $sec.append($opts);
+        });
     });
 });
 </script>

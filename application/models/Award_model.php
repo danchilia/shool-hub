@@ -13,13 +13,14 @@ class Award_model extends MY_Model
 
     public function getList($id='', $row = false)
     {
+        $sessionId = get_session_id();
         $this->db->select('award.*,roles.name as role_name');
         $this->db->from('award');
         $this->db->join('roles', 'roles.id = award.role_id', 'left');
         if (!is_superadmin_loggedin()) {
             $this->db->where('branch_id', get_loggedin_branch_id());
         }
-        $this->db->where('session_id', get_session_id());
+        $this->db->where('session_id', $sessionId);
         if ($row == false) {
             $result = $this->db->get()->result_array();
         } else {

@@ -123,6 +123,7 @@ class Mpesa extends Admin_Controller
 
     public function reconcile_all()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $branchId = get_loggedin_branch_id();
         $pending  = $this->db->get_where('mpesa_transactions', array(
             'branch_id' => $branchId,

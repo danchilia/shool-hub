@@ -12,14 +12,14 @@
 					<div class="form-group mb-sm">
 						<label class="control-label"><?=translate('date')?> <span class="required">*</span></label>
 						<div class="input-group">
-							<span class="input-group-addon"><i class="far fa-calendar-alt"></i></span>
+							<span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
 							<input type="text" class="form-control" name="date" id="date" value="<?=set_value('date', $evaDate[0])?>" autocomplete="off" data-plugin-datepicker
 							data-plugin-options='{ "todayHighlight" : true }' />
 						</div>
 						<span class="error"></span>
 					</div>
 				</div>
-				<div class="col-md-offset-6 col-md-3">
+				<div class="col-md-3 offset-md-6">
 					<div class="form-group mb-sm">
 						<label class="control-label"><?=translate('select_for_everyone')?> <span class="required">*</span></label>
 						<?php
@@ -35,7 +35,7 @@
 				</div>
 			</div>
 		<div class="table-responsive mb-sm mt-xs">
-			<table class="table table-bordered table-hover table-condensed mb-none">
+			<table class="table table-bordered table-hover table-sm mb-0">
 				<thead>
 					<tr>
 						<th><?=translate('sl')?></th>
@@ -54,13 +54,15 @@
 				<tbody>
 					<?php 
 					$count = 1; 
-					if (count($homeworklist)) {
+					if (!empty($homeworklist)) {
 						foreach ($homeworklist as $key => $row) {
 							?>
 					<tr>
-						<input type="hidden" name="evaluate[<?=$key?>][evaluation_id]" value="<?=$row['ev_id']?>">
-						<input type="hidden" name="evaluate[<?=$key?>][student_id]" value="<?=$row['student_id']?>">
-						<td><?php echo $count++; ?></td>
+						<td>
+							<input type="hidden" name="evaluate[<?=$key?>][evaluation_id]" value="<?=$row['ev_id']?>">
+							<input type="hidden" name="evaluate[<?=$key?>][student_id]" value="<?=$row['student_id']?>">
+							<?php echo $count++; ?>
+						</td>
 						<td><?php echo $row['fullname']; ?></td>
 						<td><?php echo $row['register_no']; ?></td>
 						<td><?php echo $row['roll']; ?></td>
@@ -105,7 +107,7 @@
 	</div>
 	<div class="panel-footer">
 		<div class="row">
-			<div class="col-md-offset-10 col-md-2">
+			<div class="col-md-2 offset-md-10">
 				<button type="submit" class="btn btn-default btn-block" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing">
 					<i class="fas fa-plus-circle"></i> <?=translate('save')?>
 				</button>

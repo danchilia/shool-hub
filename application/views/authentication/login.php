@@ -131,15 +131,15 @@
 			$alert_message = $this->session->flashdata('alert-message-'. $alertclass);
 		?>
 			<script type="text/javascript">
-				swal({
+				Swal.fire({
 					toast: true,
 					position: 'top-end',
-					type: '<?php echo $alertclass;?>',
-					title: '<?php echo $alert_message;?>',
-					confirmButtonClass: 'btn btn-default',
-					buttonsStyling: false,
-					timer: 8000
-				})
+					icon: '<?php echo $alertclass;?>',
+					title: '<?php echo addslashes(html_escape($alert_message));?>',
+					showConfirmButton: false,
+					timer: 5000,
+					timerProgressBar: true
+				});
 			</script>
 		<?php endif; ?>
 	</body>

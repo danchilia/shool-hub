@@ -65,6 +65,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="col-md-3 control-label">NEMIS Code</label>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="nemis_code" placeholder="e.g. 12345678" value="<?=isset($school['nemis_code']) ? $school['nemis_code'] : ''?>" />
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="col-md-3 control-label"><?=translate('school_name')?> <span class="required">*</span></label>
                         <div class="col-md-6">
                             <input type="text" class="form-control" name="school_name" value="<?=$school['school_name']?>" />
@@ -112,8 +118,32 @@
                     </div>
                     <div class="form-group">
                         <label  class="col-md-3 control-label"><?=translate('address')?></label>
-                        <div class="col-md-6 mb-md">
+                        <div class="col-md-6">
                             <textarea type="text" rows="3" class="form-control" name="address"><?=$school['address']?></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">School Website</label>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="website_url" placeholder="https://www.yourschool.ac.ke" value="<?=isset($school['website_url']) ? $school['website_url'] : ''?>" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">M-Pesa PayBill No.</label>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="mpesa_paybill" placeholder="e.g. 522533" value="<?=isset($school['mpesa_paybill']) ? $school['mpesa_paybill'] : ''?>" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">Instagram URL</label>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="instagram_url" placeholder="https://www.instagram.com/yourschool" value="<?=isset($school['instagram_url']) ? $school['instagram_url'] : ''?>" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label">WhatsApp Number</label>
+                        <div class="col-md-6 mb-md">
+                            <input type="text" class="form-control" name="whatsapp_no" placeholder="e.g. +254712345678" value="<?=isset($school['whatsapp_no']) ? $school['whatsapp_no'] : ''?>" />
                         </div>
                     </div>
                 </div>
@@ -149,7 +179,7 @@
                     <div class="row">
                         <div class="col-md-3 col-sm-offset-3">
                             <button type="submit" class="btn btn btn-default btn-block" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing">
-                                <i class="fas fa-plus-circle"></i> <?=translate('save');?>
+                                <i class="fas fa-save"></i> <?=translate('save');?>
                             </button>
                         </div>
                     </div>

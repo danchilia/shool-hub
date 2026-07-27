@@ -4,15 +4,15 @@
 .quiz-status-draft     { background:#fef3c7; color:#92400e; }
 .quiz-status-published { background:#d1fae5; color:#065f46; }
 .quiz-status-closed    { background:#f3f4f6; color:#6b7280; }
-@media(prefers-color-scheme:dark){
-  .quiz-card { background:#2b2b3a; border-color:#3a3a50; }
-}
+@media(prefers-color-scheme:dark)   { .quiz-card { background:#2b2b3a; border-color:#3a3a50; } }
+:root[data-theme="dark"]  .quiz-card { background:#2b2b3a; border-color:#3a3a50; }
+:root[data-theme="light"] .quiz-card { background:#fff;     border-color:#e2e8f0; }
 </style>
 
 <div class="content-header">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <h4 class="mb-0"><i class="fas fa-laptop-code me-2 text-primary"></i>CBT Examinations</h4>
-        <button class="btn btn-sm btn-primary" onclick="mfp_modal('#modal-quiz')">
+        <button class="btn btn-sm btn-primary" onclick="resetQuizForm(); mfp_modal('#modal-quiz')">
             <i class="fas fa-plus me-1"></i>New Quiz / Exam
         </button>
     </div>
@@ -24,8 +24,8 @@
     <?php else: ?>
     <div class="row g-3">
         <?php foreach ($quizzes as $q):
-            $qCount = $this->db->where('quiz_id',$q->id)->count_all_results('cbt_questions');
-            $aCount = $this->db->where('quiz_id',$q->id)->where('status','submitted')->count_all_results('cbt_attempts');
+            $qCount = isset($qCounts[$q->id]) ? $qCounts[$q->id] : 0;
+            $aCount = isset($aCounts[$q->id]) ? $aCounts[$q->id] : 0;
         ?>
         <div class="col-md-4">
             <div class="quiz-card h-100 d-flex flex-column">
@@ -49,6 +49,25 @@
                     <a href="<?php echo base_url('cbt/results/'.$q->id); ?>" class="btn btn-sm btn-outline-success">
                         <i class="fas fa-chart-bar me-1"></i>Results
                     </a>
+                    <button class="btn btn-sm btn-outline-warning" onclick="editQuiz(this)" title="Edit Quiz"
+                        data-json="<?php echo htmlspecialchars(json_encode([
+                            'id'               => (int)$q->id,
+                            'title'            => $q->title,
+                            'subject_id'       => $q->subject_id,
+                            'class_id'         => $q->class_id,
+                            'duration_mins'    => (int)$q->duration_mins,
+                            'total_marks'      => (int)$q->total_marks,
+                            'pass_marks'       => $q->pass_marks,
+                            'start_datetime'   => $q->start_datetime ? date('Y-m-d\TH:i', strtotime($q->start_datetime)) : '',
+                            'end_datetime'     => $q->end_datetime   ? date('Y-m-d\TH:i', strtotime($q->end_datetime))   : '',
+                            'instructions'     => $q->instructions,
+                            'shuffle_questions'=> (int)$q->shuffle_questions,
+                            'shuffle_options'  => (int)$q->shuffle_options,
+                            'show_result'      => (int)$q->show_result,
+                            'status'           => $q->status,
+                        ]), ENT_QUOTES); ?>">
+                        <i class="fas fa-edit"></i>
+                    </button>
                     <?php echo btn_delete('cbt/delete_quiz/'.$q->id); ?>
                 </div>
             </div>
@@ -58,12 +77,47 @@
     <?php endif; ?>
 </div>
 
+<script>
+function resetQuizForm() {
+    var f = document.getElementById('quiz-form');
+    f.reset();
+    document.getElementById('quiz-edit-id').value = '';
+    document.getElementById('quiz-modal-title').innerHTML = '<i class="fas fa-laptop-code me-2"></i>New Quiz / Exam';
+    f.querySelector('button[type="submit"]').innerHTML = 'Create &amp; Add Questions <i class="fas fa-arrow-right ms-1"></i>';
+    $('#quiz-form [name="subject_id"], #quiz-form [name="class_id"]').val('').trigger('change');
+}
+
+function editQuiz(btn) {
+    var d = JSON.parse(btn.getAttribute('data-json'));
+    var f = document.getElementById('quiz-form');
+    f.reset();
+    document.getElementById('quiz-edit-id').value              = d.id;
+    f.querySelector('[name="title"]').value                     = d.title            || '';
+    f.querySelector('[name="duration_mins"]').value             = d.duration_mins    || 60;
+    f.querySelector('[name="total_marks"]').value               = d.total_marks      || 100;
+    f.querySelector('[name="pass_marks"]').value                = d.pass_marks       || '';
+    f.querySelector('[name="start_datetime"]').value            = d.start_datetime   || '';
+    f.querySelector('[name="end_datetime"]').value              = d.end_datetime     || '';
+    f.querySelector('[name="instructions"]').value              = d.instructions     || '';
+    f.querySelector('[name="shuffle_questions"]').checked       = d.shuffle_questions === 1;
+    f.querySelector('[name="shuffle_options"]').checked         = d.shuffle_options  === 1;
+    f.querySelector('[name="show_result"]').checked             = d.show_result      === 1;
+    f.querySelector('[name="status"]').value                    = d.status           || 'draft';
+    $('#quiz-form [name="subject_id"]').val(d.subject_id || '').trigger('change');
+    $('#quiz-form [name="class_id"]').val(d.class_id     || '').trigger('change');
+    document.getElementById('quiz-modal-title').innerHTML = '<i class="fas fa-edit me-2"></i>Edit Quiz / Exam';
+    f.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save me-1"></i>Save Changes';
+    mfp_modal('#modal-quiz');
+}
+</script>
+
 <!-- New Quiz Modal -->
 <div id="modal-quiz" class="mfp-hide">
     <div class="card mb-0" style="min-width:540px; max-width:620px;">
-        <div class="card-header d-flex align-items-center justify-content-between"><h5 class="mb-0"><i class="fas fa-laptop-code me-2"></i>New Exam / Quiz</h5><button type="button" class="btn-close ms-2" onclick="$.magnificPopup.close()" title="Close"></button></div>
+        <div class="card-header d-flex align-items-center justify-content-between"><h5 class="mb-0" id="quiz-modal-title"><i class="fas fa-laptop-code me-2"></i>New Quiz / Exam</h5><button type="button" class="btn-close ms-2" onclick="$.magnificPopup.close()" title="Close"></button></div>
         <div class="card-body">
-            <?php echo form_open('cbt/save_quiz', ['class'=>'frm-submit']); ?>
+            <?php echo form_open('cbt/save_quiz', ['class'=>'frm-submit','id'=>'quiz-form']); ?>
+            <input type="hidden" name="id" id="quiz-edit-id" value="">
             <div class="row g-3">
                 <div class="col-12">
                     <label class="form-label">Title <span class="text-danger">*</span></label>
@@ -71,7 +125,7 @@
                 </div>
                 <div class="col-sm-6">
                     <label class="form-label">Subject</label>
-                    <select name="subject_id" class="form-select select2">
+                    <select name="subject_id" class="form-select" data-plugin-selectTwo data-width="100%">
                         <option value="">-- Select --</option>
                         <?php foreach ($subjects as $s): ?>
                         <option value="<?php echo $s->id; ?>"><?php echo html_escape($s->name); ?></option>
@@ -80,10 +134,10 @@
                 </div>
                 <div class="col-sm-6">
                     <label class="form-label">Class</label>
-                    <select name="class_id" class="form-select select2">
+                    <select name="class_id" class="form-select" data-plugin-selectTwo data-width="100%">
                         <option value="">-- All Classes --</option>
                         <?php foreach ($classes as $c): ?>
-                        <option value="<?php echo $c->id; ?>"><?php echo html_escape($c->class); ?></option>
+                        <option value="<?php echo $c->id; ?>"><?php echo html_escape($c->name); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>

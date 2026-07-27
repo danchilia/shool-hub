@@ -73,7 +73,7 @@
 						</div>
 						<div class="id-card-holder">
 							<header class="id-card-heading">
-								<center><img class="img-fs" src="<?=get_branch_logo(get_loggedin_branch_id(), 'printing_logo')?>" alt="RamomCoder Img" /></center>
+								<img src="<?=get_branch_logo(get_loggedin_branch_id(), 'logo')?>" alt="School Logo" style="height:56px;width:auto;max-width:230px;display:block;margin:0 auto;" />
 							</header>
 							<div class="id-card">
 								<div class="photo">
@@ -141,32 +141,75 @@
 </div>
 
 <script type="text/javascript">
-	// print function
-	function printElem(elem)
-	{
+	$(function() {
+		// Master "Checked All" toggles every card checkbox + shows/hides card
+		$('#selectAllchkbox').on('change', function() {
+			var checked = $(this).is(':checked');
+			$('input[name="chk_idcard"]').each(function() {
+				$(this).prop('checked', checked);
+				$(this).closest('.idcard-col').toggle(checked);
+			});
+		});
+
+		// Individual card checkbox shows/hides that card; syncs master
+		$(document).on('change', 'input[name="chk_idcard"]', function() {
+			$(this).closest('.idcard-col').toggle($(this).is(':checked'));
+			var total   = $('input[name="chk_idcard"]').length;
+			var checked = $('input[name="chk_idcard"]:checked').length;
+			$('#selectAllchkbox').prop('checked', total === checked)
+			                     .prop('indeterminate', checked > 0 && checked < total);
+		});
+	});
+
+	// print function — waits for all images (including dynamic QR codes) to load
+	function printElem(elem) {
 	    var oContent = document.getElementById(elem).innerHTML;
-	    var frame1 = document.createElement('iframe');
-	    frame1.name = "frame1";
-	    frame1.style.position = "absolute";
-	    frame1.style.top = "-1000000px";
+	    var frame1   = document.createElement('iframe');
+	    frame1.name  = 'frame1';
+	    frame1.style.cssText = 'position:absolute;top:-9999px;left:-9999px;width:900px;height:600px;';
 	    document.body.appendChild(frame1);
-	    var frameDoc = frame1.contentWindow ? frame1.contentWindow : frame1.contentDocument.document ? frame1.contentDocument.document : frame1.contentDocument;
-	    frameDoc.document.open();
-	    //Create a new HTML document.
-	    frameDoc.document.write('<html><head><title></title>');
-	    frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'assets/vendor/bootstrap/css/bootstrap.min.css">');
-	    frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'assets/css/custom-style.css">');
-	    frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'assets/css/ramom.css">');
-	    frameDoc.document.write('<link rel="stylesheet" href="' + base_url + 'assets/css/idcard.css">');
-	    frameDoc.document.write('</head><body>');
-	    frameDoc.document.write(oContent);
-	    frameDoc.document.write('</body></html>');
-	    frameDoc.document.close();
-	    setTimeout(function () {
-	        window.frames["frame1"].focus();
-	        window.frames["frame1"].print();
-	        frame1.remove();
-	    }, 500);
+
+	    var fDoc = frame1.contentDocument || frame1.contentWindow.document;
+	    fDoc.open();
+	    fDoc.write('<!DOCTYPE html><html><head><title>ID Cards</title>');
+	    fDoc.write('<link rel="stylesheet" href="' + base_url + 'assets/vendor/bootstrap/css/bootstrap.min.css">');
+	    fDoc.write('<link rel="stylesheet" href="' + base_url + 'assets/css/idcard.css">');
+	    fDoc.write('<style>');
+	    fDoc.write('body{margin:10px;padding:0;background:#fff;}');
+	    fDoc.write('.row{display:block;}');
+	    fDoc.write('</style>');
+	    fDoc.write('</head><body>');
+	    fDoc.write('<div class="row">' + oContent + '</div>');
+	    fDoc.write('</body></html>');
+	    fDoc.close();
+
+	    // Wait for all images inside the frame to load before printing
+	    function doPrint() {
+	        frame1.contentWindow.focus();
+	        frame1.contentWindow.print();
+	        setTimeout(function() { frame1.remove(); }, 1000);
+	    }
+
+	    frame1.onload = function() {
+	        var imgs   = fDoc.images;
+	        var total  = imgs.length;
+	        if (total === 0) { doPrint(); return; }
+
+	        var loaded = 0;
+	        function imgDone() {
+	            loaded++;
+	            if (loaded >= total) doPrint();
+	        }
+	        for (var i = 0; i < total; i++) {
+	            if (imgs[i].complete) {
+	                imgDone();
+	            } else {
+	                imgs[i].onload  = imgDone;
+	                imgs[i].onerror = imgDone; // don't block on broken images
+	            }
+	        }
+	    };
+
 	    return true;
 	}
 </script>

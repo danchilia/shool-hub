@@ -12,7 +12,18 @@ class Cbt extends Admin_Controller {
         $branchId = get_loggedin_branch_id();
         $quizzes  = $this->db->where('branch_id', $branchId)->order_by('id','DESC')->get('cbt_quiz')->result();
 
+        // Pre-aggregate to avoid N+1 queries in the view
+        $qRows = $this->db->select('quiz_id, COUNT(*) AS cnt')->group_by('quiz_id')->get('cbt_questions')->result();
+        $qCounts = [];
+        foreach ($qRows as $r) { $qCounts[$r->quiz_id] = (int)$r->cnt; }
+
+        $aRows = $this->db->select('quiz_id, COUNT(*) AS cnt')->where('status','submitted')->group_by('quiz_id')->get('cbt_attempts')->result();
+        $aCounts = [];
+        foreach ($aRows as $r) { $aCounts[$r->quiz_id] = (int)$r->cnt; }
+
         $this->data['quizzes']   = $quizzes;
+        $this->data['qCounts']   = $qCounts;
+        $this->data['aCounts']   = $aCounts;
         $this->data['classes']   = $this->db->where('branch_id', $branchId)->get('class')->result();
         $this->data['subjects']  = $this->db->where('branch_id', $branchId)->get('subject')->result();
         $this->data['title']     = 'CBT Examinations';
@@ -58,15 +69,24 @@ class Cbt extends Admin_Controller {
         $id = $this->input->post('id');
         if ($id) {
             $this->db->where('id', $id)->where('branch_id', $branchId)->update('cbt_quiz', $data);
+            echo json_encode(['status'=>'success','url'=>base_url('cbt')]);
         } else {
             $this->db->insert('cbt_quiz', $data);
             $id = $this->db->insert_id();
+            echo json_encode(['status'=>'success','url'=>base_url('cbt/questions/'.$id)]);
         }
-        echo json_encode(['status'=>'success','url'=>base_url('cbt/questions/'.$id)]);
     }
 
     public function delete_quiz($id) {
-        $branchId = get_loggedin_branch_id();
+        $branchId   = get_loggedin_branch_id();
+        $attemptIds = array_column(
+            $this->db->select('id')->where('quiz_id', $id)->get('cbt_attempts')->result_array(),
+            'id'
+        );
+        if (!empty($attemptIds)) {
+            $this->db->where_in('attempt_id', $attemptIds)->delete('cbt_answers');
+            $this->db->where_in('id', $attemptIds)->delete('cbt_attempts');
+        }
         $this->db->where('quiz_id', $id)->delete('cbt_questions');
         $this->db->where('id', $id)->where('branch_id', $branchId)->delete('cbt_quiz');
         echo json_encode(['status'=>'success','url'=>base_url('cbt')]);
@@ -129,9 +149,9 @@ class Cbt extends Admin_Controller {
 
     public function delete_question($id) {
         $branchId = get_loggedin_branch_id();
-        $q = $this->db->where('id',$id)->get('cbt_questions')->row();
-        $quizId = $q ? $q->quiz_id : 0;
-        $this->db->where('id',$id)->delete('cbt_questions');
+        $q        = $this->db->where('id',$id)->where('branch_id',$branchId)->get('cbt_questions')->row();
+        $quizId   = $q ? $q->quiz_id : 0;
+        $this->db->where('id',$id)->where('branch_id',$branchId)->delete('cbt_questions');
         echo json_encode(['status'=>'success','url'=>base_url('cbt/questions/'.$quizId)]);
     }
 
@@ -220,6 +240,12 @@ class Cbt extends Admin_Controller {
         }
 
         $quiz      = $this->db->where('id',$attempt->quiz_id)->get('cbt_quiz')->row();
+
+        // Server-side time limit: reject if more than 2 minutes past the allowed duration
+        if ((time() - strtotime($attempt->started_at)) > ($quiz->duration_mins + 2) * 60) {
+            echo json_encode(['status'=>'error','msg'=>'Time limit exceeded. Contact your teacher.']); return;
+        }
+
         $questions = $this->db->where('quiz_id',$attempt->quiz_id)->get('cbt_questions')->result();
         $answers   = $this->input->post('answers'); // array: [question_id => answer]
         $totalScore = 0;
@@ -253,6 +279,8 @@ class Cbt extends Admin_Controller {
         $studentId = $this->session->userdata('student_id');
         $attempt   = $this->db->where('id',$attemptId)->get('cbt_attempts')->row();
         if (!$attempt) show_404();
+        // Students can only see their own result; admins/teachers (no student_id) can see any
+        if ($studentId && (int)$attempt->student_id !== (int)$studentId) show_404();
 
         $quiz    = $this->db->where('id',$attempt->quiz_id)->get('cbt_quiz')->row();
         $answers = $this->db->select('a.*, q.question_text, q.correct_answer, q.option_a, q.option_b, q.option_c, q.option_d, q.marks')

@@ -10,11 +10,14 @@
   .visitor-stat { background:#2b2b3a; }
   .visitor-stat .vs-lbl { color:#aaa; }
 }
+:root[data-theme="dark"]  .visitor-stat { background:#2b2b3a; }
+:root[data-theme="dark"]  .visitor-stat .vs-lbl { color:#aaa; }
+:root[data-theme="light"] .visitor-stat { background:#fff; }
+:root[data-theme="light"] .visitor-stat .vs-lbl { color:#888; }
 </style>
 
 <div class="content-header">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-        <h4 class="mb-0"><i class="fas fa-id-badge me-2 text-primary"></i>Visitor / Gate Log</h4>
+    <div class="d-flex align-items-center justify-content-end flex-wrap gap-2">
         <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
         <div class="d-flex gap-2">
             <a href="<?php echo base_url('visitor/report'); ?>" class="btn btn-sm btn-outline-secondary">
@@ -132,10 +135,8 @@
                             </td>
                             <td>
                                 <?php if (!$v->check_out): ?>
-                                <button class="btn btn-xs btn-warning frm-submit"
-                                        data-action="<?php echo base_url('visitor/checkout/' . $v->id); ?>"
-                                        data-method="POST"
-                                        data-confirm="Check out <?php echo html_escape($v->visitor_name); ?>?">
+                                <button class="btn btn-xs btn-warning" title="Check Out"
+                                        onclick="doCheckout(<?php echo (int)$v->id; ?>, <?php echo htmlspecialchars(json_encode($v->visitor_name), ENT_QUOTES); ?>)">
                                     <i class="fas fa-sign-out-alt"></i>
                                 </button>
                                 <?php endif; ?>
@@ -206,4 +207,13 @@ $(function(){
         columnDefs:[{orderable:false, targets:[11]}]
     });
 });
+
+function doCheckout(id, name) {
+    if (!confirm('Check out ' + name + '?')) return;
+    $.post(base_url + 'visitor/checkout/' + id, csrfData, function(r) {
+        if (typeof r === 'string') r = JSON.parse(r);
+        if (r.status === 'success') location.reload();
+        else alert(r.msg || 'Error checking out visitor');
+    });
+}
 </script>

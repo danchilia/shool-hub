@@ -138,7 +138,8 @@ class Parents extends Admin_Controller
             }
             redirect(base_url('parents/disable_authentication'));
         }
-        $this->data['parentslist'] = $this->parents_model->getParentList('', 0);
+        $branchID = $this->application_model->get_branch_id();
+        $this->data['parentslist'] = $this->parents_model->getParentList($branchID, 0);
         $this->data['title'] = translate('deactivate_account');
         $this->data['sub_page'] = 'parents/disable_authentication';
         $this->data['main_menu'] = 'parents';

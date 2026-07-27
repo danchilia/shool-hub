@@ -89,7 +89,7 @@
 				<div class="form-group">
 					<label class="col-md-3 control-label"><?=translate('cash_price')?></label>
 					<div class="col-md-6">
-						<input type="number" class="form-control" name="cash_price" id="cash_price" />
+						<input type="number" class="form-control" name="cash_price" id="cash_price" value="<?=set_value('cash_price', $award['award_amount'])?>" />
 						<span class="error"></span>
 					</div>
 				</div>
@@ -147,18 +147,6 @@
 	    $('#user_id').append('<option value=""><?=translate('select')?></option>');
     	var user_role = $('#role_id').val();
     	var branch_id = ($( "#branch_id" ).length ? $('#branch_id').val() : "");
-        $.ajax({
-            url: base_url + 'leave/getCategory',
-            type: "POST",
-            data:{ 
-            	role_id: user_role,
-            	branch_id: branch_id 
-            },
-            success: function (data) {
-            	$('#leave_category').html(data);
-            }
-        });
-
     	if (user_role != "") {
 	        if (user_role == 7) {
 	        	$("#classDiv").show("slow");

@@ -3,7 +3,7 @@ $currency_symbol = $global_config['currency_symbol'];
 $widget = (is_superadmin_loggedin() ? 3 : 4);
 $branchID = $student['branch_id'];
 $getParent = $this->student_model->get('parent', array('id' => $student['parent_id']), true);
-$previous_details = json_decode($student['previous_details'], true);
+$previous_details = json_decode($student['previous_details'], true) ?? [];
 ?>
 <div class="row appear-animation" data-appear-animation="<?=$global_config['animations'] ?>" data-appear-animation-delay="100">
 	<div class="col-md-12 mb-lg">
@@ -389,13 +389,13 @@ $previous_details = json_decode($student['previous_details'], true);
 							<div class="col-md-6 mb-sm">
 								<div class="form-group">
 									<label class="control-label"><?=translate('school_name')?></label>
-									<input type="text" class="form-control" name="school_name" value="<?=set_value('school_name', $previous_details['school_name'])?>" />
+									<input type="text" class="form-control" name="school_name" value="<?=set_value('school_name', $previous_details['school_name'] ?? '')?>" />
 								</div>
 							</div>
 							<div class="col-md-6 mb-sm">
 								<div class="form-group">
 									<label class="control-label"><?=translate('qualification')?></label>
-									<input type="text" class="form-control" name="qualification" value="<?=set_value('qualification', $previous_details['qualification'])?>" />
+									<input type="text" class="form-control" name="qualification" value="<?=set_value('qualification', $previous_details['qualification'] ?? '')?>" />
 								</div>
 							</div>
 						</div>
@@ -403,7 +403,7 @@ $previous_details = json_decode($student['previous_details'], true);
 							<div class="col-md-12">
 								<div class="form-group">
 									<label class="control-label"><?=translate('remarks')?></label>
-									<textarea name="previous_remarks" rows="2" class="form-control"><?=set_value('previous_remarks', $previous_details['remarks'])?></textarea>
+									<textarea name="previous_remarks" rows="2" class="form-control"><?=set_value('previous_remarks', $previous_details['remarks'] ?? '')?></textarea>
 								</div>
 							</div>
 						</div>
@@ -774,6 +774,7 @@ $previous_details = json_decode($student['previous_details'], true);
 				</div>
 				<div id="parent" class="accordion-body collapse">
 					<div class="panel-body">
+						<?php if (!empty($getParent)): ?>
 						<div class="table-responsive mt-md mb-md">
 							<table class="table table-striped table-bordered table-condensed mb-none">
 								<tbody>
@@ -812,6 +813,11 @@ $previous_details = json_decode($student['previous_details'], true);
 								</tbody>
 							</table>
 						</div>
+						<?php else: ?>
+						<div class="alert alert-subl mb-none text-center">
+							<i class="fas fa-exclamation-triangle"></i> <?=translate('no_information_available')?>
+						</div>
+						<?php endif; ?>
 					</div>
 				</div>
 			</div>
@@ -934,7 +940,7 @@ $previous_details = json_decode($student['previous_details'], true);
         </div>
         <?php echo form_open_multipart('student/document_create', array('class' => 'form-horizontal frm-submit-data')); ?>
             <div class="panel-body">
-                <input type="hidden" name="patient_id" value="<?php echo $student['id']; ?>">
+                <input type="hidden" name="student_id" value="<?php echo $student['id']; ?>">
                 <div class="form-group mt-md">
                     <label class="col-md-3 control-label"><?php echo translate('title'); ?> <span class="required">*</span></label>
                     <div class="col-md-9">

@@ -11,13 +11,15 @@
 .status-completed { background:#f3f4f6; color:#374151; }
 .status-cancelled { background:#fee2e2; color:#991b1b; }
 @media(prefers-color-scheme:dark){ .vc-card{ background:#2b2b3a; border-color:#3a3a50; } }
+:root[data-theme="dark"]  .vc-card { background:#2b2b3a; border-color:#3a3a50; }
+:root[data-theme="light"] .vc-card { background:#fff;     border-color:#e2e8f0; }
 </style>
 
 <div class="content-header">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <h4 class="mb-0"><i class="fas fa-video me-2 text-primary"></i>Virtual Classroom</h4>
         <?php if (is_admin_loggedin() || is_superadmin_loggedin() || is_teacher_loggedin()): ?>
-        <button class="btn btn-sm btn-primary" onclick="mfp_modal('#modal-vc')">
+        <button class="btn btn-sm btn-primary" onclick="resetVcForm(); mfp_modal('#modal-vc')">
             <i class="fas fa-plus me-1"></i>Schedule Class
         </button>
         <?php endif; ?>
@@ -63,12 +65,53 @@
     <?php endif; ?>
 </div>
 
+<script>
+function resetVcForm() {
+    var f = document.getElementById('vc-form');
+    f.reset();
+    document.getElementById('vc-edit-id').value = '';
+    f.closest('.card').querySelector('.card-header h5').innerHTML = '<i class="fas fa-video me-2"></i>Schedule Virtual Class';
+    $('#vc-form select[data-plugin-selectTwo]').val('').trigger('change');
+}
+
+function editVc(btn) {
+    var d = JSON.parse(btn.getAttribute('data-json'));
+    var f = document.getElementById('vc-form');
+    f.reset();
+    document.getElementById('vc-edit-id').value          = d.id;
+    f.querySelector('[name="title"]').value               = d.title        || '';
+    f.querySelector('[name="platform"]').value            = d.platform     || 'meet';
+    f.querySelector('[name="duration_mins"]').value       = d.duration     || 45;
+    f.querySelector('[name="meeting_link"]').value        = d.link         || '';
+    f.querySelector('[name="meeting_id"]').value          = d.meeting_id   || '';
+    f.querySelector('[name="password"]').value            = d.password     || '';
+    f.querySelector('[name="scheduled_at"]').value        = d.scheduled_at || '';
+    f.querySelector('[name="description"]').value         = d.description  || '';
+    $('#vc-form [name="class_id"]').val(d.class_id     || '').trigger('change');
+    $('#vc-form [name="subject_id"]').val(d.subject_id || '').trigger('change');
+    f.closest('.card').querySelector('.card-header h5').innerHTML = '<i class="fas fa-edit me-2"></i>Edit Virtual Class';
+    mfp_modal('#modal-vc');
+}
+
+function vcStatus(id, status) {
+    var labels = {ongoing:'Go Live',completed:'Mark Done',cancelled:'Cancel'};
+    if (!confirm('Set class to "' + (labels[status] || status) + '"?')) return;
+    $.post(
+        '<?php echo base_url("virtual_class/update_status/"); ?>' + id,
+        $.extend({status: status}, csrfData),
+        function(r) { r.status === 'success' ? location.reload() : alert(r.msg || 'Error updating status.'); },
+        'json'
+    );
+}
+</script>
+
 <!-- Schedule Modal -->
 <div id="modal-vc" class="mfp-hide">
     <div class="card mb-0" style="min-width:540px; max-width:620px; max-height:90vh; overflow-y:auto;">
         <div class="card-header d-flex align-items-center justify-content-between"><h5 class="mb-0"><i class="fas fa-video me-2"></i>Schedule Virtual Class</h5><button type="button" class="btn-close ms-2" onclick="$.magnificPopup.close()" title="Close"></button></div>
         <div class="card-body">
-            <?php echo form_open('virtual_class/save', ['class'=>'frm-submit']); ?>
+            <?php echo form_open('virtual_class/save', ['class'=>'frm-submit','id'=>'vc-form']); ?>
+            <input type="hidden" name="id" id="vc-edit-id" value="">
             <div class="row g-3">
                 <div class="col-12">
                     <label class="form-label">Title <span class="text-danger">*</span></label>
@@ -106,16 +149,16 @@
                 </div>
                 <div class="col-sm-6">
                     <label class="form-label">Class</label>
-                    <select name="class_id" class="form-select select2">
+                    <select name="class_id" class="form-select" data-plugin-selectTwo data-width="100%">
                         <option value="">-- All / Not specified --</option>
                         <?php foreach ($classes as $c): ?>
-                        <option value="<?php echo $c->id; ?>"><?php echo html_escape($c->class); ?></option>
+                        <option value="<?php echo $c->id; ?>"><?php echo html_escape($c->name); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="col-sm-6">
                     <label class="form-label">Subject</label>
-                    <select name="subject_id" class="form-select select2">
+                    <select name="subject_id" class="form-select" data-plugin-selectTwo data-width="100%">
                         <option value="">-- All / Not specified --</option>
                         <?php foreach ($subjects as $s): ?>
                         <option value="<?php echo $s->id; ?>"><?php echo html_escape($s->name); ?></option>

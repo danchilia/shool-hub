@@ -1,21 +1,16 @@
 <?php
 /*
  * stylesheet.php — loaded inside <head> by header.php
- * Provides: Inter font · Bootstrap 5 · Font Awesome 6
- *           jQuery (early, for CSRF setup) · DataTables CSS · Select2 CSS
+ * Provides: Bootstrap 5 · Font Awesome 5 · all local (no CDN)
+ *           jQuery · DataTables CSS · Select2 CSS
  *           Bootstrap Datepicker CSS · SweetAlert CSS · dck-theme.css
  */
 ?>
-<!-- Inter font (Google Fonts CDN) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+<!-- Bootstrap 5.3 CSS (local) -->
+<link rel="stylesheet" href="<?php echo base_url('assets/vendor/bootstrap5/css/bootstrap.min.css');?>">
 
-<!-- Bootstrap 5.3 CSS (CDN) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-<!-- Font Awesome 6.5 Free (CDN) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<!-- Font Awesome 5.12 Free (local) -->
+<link rel="stylesheet" href="<?php echo base_url('assets/vendor/font-awesome/css/all.min.css');?>">
 
 <!-- Simple Line Icons (keep for existing sidebar icons) -->
 <link rel="stylesheet" href="<?php echo base_url('assets/vendor/simple-line-icons/css/simple-line-icons.css');?>?v=2026">
@@ -36,7 +31,8 @@
 <link rel="stylesheet" href="<?php echo base_url('assets/vendor/magnific-popup/magnific-popup.css');?>">
 
 <!-- DCK Premium Theme (must come last to override everything) -->
-<link rel="stylesheet" href="<?php echo base_url('assets/css/dck-theme.css');?>?v=20260719e">
+<link rel="stylesheet" href="<?php echo base_url('assets/css/dck-theme.css');?>?v=20260726a">
+<style>@keyframes sg-pulse{0%,100%{opacity:1}50%{opacity:.35}}</style>
 
 <!-- jQuery (loaded in <head> — required for CSRF setup below) -->
 <script src="<?php echo base_url('assets/vendor/jquery/jquery.min.js');?>"></script>

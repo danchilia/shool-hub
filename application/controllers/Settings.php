@@ -69,15 +69,28 @@ class Settings extends Admin_Controller
         }
 
         if ($this->input->post('submit') == 'logo') {
-            move_uploaded_file($_FILES['logo_file']['tmp_name'], 'uploads/app_image/logo.png');
-            move_uploaded_file($_FILES['text_logo']['tmp_name'], 'uploads/app_image/logo-small.png');
-            move_uploaded_file($_FILES['print_file']['tmp_name'], 'uploads/app_image/printing-logo.png');
-            move_uploaded_file($_FILES['report_card']['tmp_name'], 'uploads/app_image/report-card-logo.png');
-
-            move_uploaded_file($_FILES['slider_1']['tmp_name'], 'uploads/login_image/slider_1.jpg');
-            move_uploaded_file($_FILES['slider_2']['tmp_name'], 'uploads/login_image/slider_2.jpg');
-            move_uploaded_file($_FILES['slider_3']['tmp_name'], 'uploads/login_image/slider_3.jpg');
-
+            $logo_slots = array(
+                'logo_file'   => array('dest' => FCPATH . 'uploads/app_image/logo.png',           'ext' => array('png')),
+                'text_logo'   => array('dest' => FCPATH . 'uploads/app_image/logo-small.png',     'ext' => array('png')),
+                'print_file'  => array('dest' => FCPATH . 'uploads/app_image/printing-logo.png',  'ext' => array('png')),
+                'report_card' => array('dest' => FCPATH . 'uploads/app_image/report-card-logo.png', 'ext' => array('png')),
+                'slider_1'    => array('dest' => FCPATH . 'uploads/login_image/slider_1.jpg',     'ext' => array('jpg', 'jpeg', 'png')),
+                'slider_2'    => array('dest' => FCPATH . 'uploads/login_image/slider_2.jpg',     'ext' => array('jpg', 'jpeg', 'png')),
+                'slider_3'    => array('dest' => FCPATH . 'uploads/login_image/slider_3.jpg',     'ext' => array('jpg', 'jpeg', 'png')),
+            );
+            foreach ($logo_slots as $field => $slot) {
+                if (!isset($_FILES[$field]) || $_FILES[$field]['error'] !== UPLOAD_ERR_OK) {
+                    continue;
+                }
+                $ext = strtolower(pathinfo($_FILES[$field]['name'], PATHINFO_EXTENSION));
+                if (!in_array($ext, $slot['ext'], true)) {
+                    set_alert('error', 'Invalid file type for ' . $field . '. Allowed: ' . implode(', ', $slot['ext']));
+                    $this->session->set_flashdata('active', 3);
+                    redirect(current_url());
+                    return;
+                }
+                move_uploaded_file($_FILES[$field]['tmp_name'], $slot['dest']);
+            }
             set_alert('success', translate('the_configuration_has_been_updated'));
             $this->session->set_flashdata('active', 3);
             redirect(current_url());

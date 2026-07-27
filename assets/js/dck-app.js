@@ -57,15 +57,15 @@
     }
   });
 
-  /* ── 3b. BS3 TAB COMPAT ──────────────────────────────────────────────── */
+  /* ── 3b. TAB COMPAT (BS3 data-toggle and BS5 data-bs-toggle) ────────── */
   // BS3 markup puts class="active" on <li>, not <a>. BS5's Tab JS can't find
-  // the currently active tab and silently fails. Handle it with jQuery instead.
-  $(document).on('click', '[data-toggle="tab"]', function (e) {
+  // the currently active tab and silently fails. Handle both with jQuery.
+  $(document).on('click', '[data-toggle="tab"],[data-bs-toggle="tab"]', function (e) {
     e.preventDefault();
     e.stopImmediatePropagation(); // stop BS5 handler also firing
 
     var $a  = $(this);
-    var tgt = $a.attr('href') || $a.data('target') || $a.data('bs-target');
+    var tgt = $a.attr('href') || $a.data('bs-target') || $a.data('target');
     if (!tgt || !$(tgt).length) return;
 
     var $nav = $a.closest('ul.nav-tabs, ul.nav-pills');
@@ -75,13 +75,45 @@
 
     // Deactivate all
     $nav.children('li').removeClass('active');
-    $nav.find('a').removeClass('active');
+    $nav.find('a, button').removeClass('active');
     $tc.children('.tab-pane').removeClass('active show');
 
     // Activate selected
     $a.parent('li').addClass('active');
     $a.addClass('active');
     $(tgt).addClass('active show');
+
+    // Fix select2 widths that were initialized while the pane was hidden
+    $(tgt).find('.select2-container').css('width', '100%');
+  });
+
+  /* ── 3c. CONTENT ACCORDION (BS3 data-toggle="collapse") ─────────────── */
+  // Bootstrap 5 data-bs-toggle collapse doesn't always fire on BS3 markup.
+  // Handle panel-group accordions directly with jQuery.
+  $(function () {
+    // Hide all non-"in" accordion bodies on load
+    $('.panel-group .accordion-body.collapse').each(function () {
+      if (!$(this).hasClass('in')) {
+        $(this).hide();
+      }
+    });
+
+    $(document).on('click', '.panel-group .accordion-toggle', function (e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      var targetId = $(this).attr('href') || $(this).data('target') || $(this).data('bsTarget');
+      if (!targetId) return;
+      var $target = $(targetId);
+      if (!$target.length) return;
+      var $group = $target.closest('.panel-group');
+
+      if ($target.is(':visible')) {
+        $target.slideUp(300);
+      } else {
+        $group.find('.accordion-body:visible').slideUp(300);
+        $target.slideDown(300);
+      }
+    });
   });
 
   /* ── 4. SIDEBAR ACCORDION ─────────────────────────────────────────────── */

@@ -38,6 +38,7 @@ class Assets extends Admin_Controller {
     }
 
     public function delete_category($id) {
+        $this->db->where('category_id', $id)->update('assets', ['category_id' => null]);
         $this->db->where('id',$id)->where('branch_id',$this->_branchId())->delete('asset_categories');
         echo json_encode(['status'=>'success','url'=>base_url('assets/categories')]);
     }
@@ -248,7 +249,7 @@ class Assets extends Admin_Controller {
         if ($type === 'stock_in')  $newQty += $qty;
         if ($type === 'stock_out') {
             if ($qty > $item->quantity_in_stock) {
-                echo json_encode(['status'=>'error','msg'=>'Insufficient stock (available: '.$item->quantity_in_stock.']']); return;
+                echo json_encode(['status'=>'error','msg'=>'Insufficient stock (available: '.$item->quantity_in_stock.')']); return;
             }
             $newQty -= $qty;
         }

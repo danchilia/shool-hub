@@ -12,6 +12,11 @@ $color  = $pct >= 70 ? '#10b981' : ($pct >= 40 ? '#f59e0b' : '#ef4444');
 .ans-row:last-child { border-bottom:none; }
 .ans-correct { color:#10b981; }
 .ans-wrong   { color:#ef4444; }
+@media(prefers-color-scheme:dark) {
+    .ans-row { border-bottom-color:#3a3a50; }
+}
+:root[data-theme="dark"]  .ans-row { border-bottom-color:#3a3a50; }
+:root[data-theme="light"] .ans-row { border-bottom-color:#f1f5f9; }
 </style>
 
 <div class="container" style="max-width:700px; padding-top:30px;">

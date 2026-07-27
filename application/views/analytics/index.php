@@ -181,7 +181,6 @@ $trend           = isset($trend)           ? $trend           : array();
 </div>
 
 <?php if (!empty($trend)): ?>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script>
 (function() {
     var trend = <?= json_encode($trend) ?>;
@@ -198,15 +197,15 @@ $trend           = isset($trend)           ? $trend           : array();
                 borderColor: '#2e86c1',
                 backgroundColor: 'rgba(46,134,193,.1)',
                 fill: true,
-                tension: 0.3,
                 pointRadius: 4
             }]
         },
         options: {
+            legend: { display: false },
             scales: {
-                y: { min: 0, max: 100, ticks: { callback: function(v){ return v + '%'; } } }
-            },
-            plugins: { legend: { display: false } }
+                yAxes: [{ ticks: { min: 0, max: 100, callback: function(v){ return v + '%'; } } }],
+                xAxes: [{ gridLines: { display: false } }]
+            }
         }
     });
 })();

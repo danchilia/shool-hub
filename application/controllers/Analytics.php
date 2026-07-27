@@ -10,7 +10,9 @@ class Analytics extends Admin_Controller
 
     public function index()
     {
-        $branchId = get_loggedin_branch_id();
+        if (!is_loggedin()) { redirect(base_url('login')); }
+
+        $branchId = (int) get_loggedin_branch_id();
 
         // Students via enroll (branch filtering through enroll table)
         $students = $this->db
@@ -43,7 +45,7 @@ class Analytics extends Admin_Controller
             $attendanceRisk = ($totalDays > 0) ? min(40, (int)round(($absentDays / $totalDays) * 40)) : 0;
 
             // ── Performance risk (avg mark across all subjects) ────────────
-            $markRow = $this->db->query("
+            $markQ   = $this->db->query("
                 SELECT AVG(CAST(m.mark AS DECIMAL(10,2))) AS avg_mark
                 FROM `mark` m
                 WHERE m.student_id = {$sid}
@@ -51,12 +53,13 @@ class Analytics extends Admin_Controller
                   AND m.mark IS NOT NULL
                   AND m.mark != ''
                   AND m.mark REGEXP '^[0-9]'
-            ")->row_array();
+            ");
+            $markRow     = $markQ ? $markQ->row_array() : array();
             $avgMark     = isset($markRow['avg_mark']) && $markRow['avg_mark'] !== null ? (float)$markRow['avg_mark'] : null;
             $performRisk = ($avgMark !== null && $avgMark < 40) ? min(40, (int)round(40 - $avgMark)) : 0;
 
             // ── Fee risk ────────────────────────────────────────────────────
-            $feeRow = $this->db->query("
+            $feeQ   = $this->db->query("
                 SELECT
                     COALESCE((SELECT SUM(fgd.amount)
                               FROM fee_groups_details fgd
@@ -66,9 +69,10 @@ class Analytics extends Admin_Controller
                               FROM fee_payment_history fph
                               JOIN fee_allocation fa ON fa.id = fph.allocation_id
                               WHERE fa.student_id = {$sid} AND fa.branch_id = {$branchId}), 0) AS paid
-            ")->row_array();
-            $totalFee    = (float)($feeRow['total_fee'] ?? 0);
-            $paid        = (float)($feeRow['paid'] ?? 0);
+            ");
+            $feeRow   = $feeQ ? $feeQ->row_array() : array();
+            $totalFee = (float)($feeRow['total_fee'] ?? 0);
+            $paid     = (float)($feeRow['paid'] ?? 0);
             $outstanding = max(0, $totalFee - $paid);
             $feeRisk     = $outstanding > 0 ? min(20, (int)round($outstanding / 500)) : 0;
 
@@ -95,7 +99,7 @@ class Analytics extends Admin_Controller
         usort($feeDefaulters, function($a, $b) { return $b['outstanding'] - $a['outstanding']; });
 
         // Attendance trend (last 14 days)
-        $trend = $this->db->query("
+        $trendQ = $this->db->query("
             SELECT `date` AS attendance_date,
                    COUNT(*) AS total,
                    SUM(CASE WHEN status = 'P' THEN 1 ELSE 0 END) AS present
@@ -104,7 +108,8 @@ class Analytics extends Admin_Controller
               AND `date` >= CURDATE() - INTERVAL 14 DAY
             GROUP BY `date`
             ORDER BY `date`
-        ")->result_array();
+        ");
+        $trend = $trendQ ? $trendQ->result_array() : array();
 
         $this->data['atRisk']           = array_slice($atRisk, 0, 50);
         $this->data['feeDefaulters']    = array_slice($feeDefaulters, 0, 50);

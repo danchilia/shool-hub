@@ -78,26 +78,36 @@
 			</header>
 			<div class="panel-body" >
 				<div class="table-responsive">
-					<table class="table table-bordered table-condensed mt-md">
+					<table class="table table-bordered table-sm mt-3" style="table-layout:fixed;width:100%">
+						<colgroup>
+							<col style="width:6%">
+							<col style="width:18%">
+							<col style="width:18%">
+							<col style="width:15%">
+							<col style="width:15%">
+							<col>
+						</colgroup>
 						<thead>
+						<tr>
 							<th> - BREAK</th>
 							<th><?=translate('subject')?> <span class="required">*</span></th>
 							<th><?=translate('teacher')?> <span class="required">*</span></th>
 							<th><?=translate('starting_time')?> <span class="required">*</span></th>
 							<th><?=translate('ending_time')?> <span class="required">*</span></th>
 							<th><?=translate('class_room')?></th>
+						</tr>
 						</thead>
 						<tbody id="timetable_entry_append">
 							<tr class="iadd">
-								<td class="center" width="90">
-									<div class="checkbox-replace"> 
+								<td class="text-center align-middle">
+									<div class="checkbox-replace">
 										<label class="i-checks">
 											<input type="checkbox" name="timetable[0][break]"><i></i>
 										</label>
 									</div>
 								</td>
-								<td width="20%">
-									<div class="form-group">
+								<td>
+									<div class="form-group mb-0">
 										<?php
 											$arraySubject = array("" => translate('select'));
 											$subjectAssign = $this->db->get_where('subject_assign', array(
@@ -115,8 +125,8 @@
 										<span class="error"></span>
 									</div>
 								</td>
-								<td width="20%">
-									<div class="form-group">
+								<td>
+									<div class="form-group mb-0">
 										<?php
 											$arrayTeacher = $this->app_lib->getStaffList($branch_id, 3);
 											echo form_dropdown("timetable[0][teacher]", $arrayTeacher, "", "class='form-control'
@@ -126,19 +136,19 @@
 									</div>
 								</td>
 								<td>
-									<div class="form-group">
+									<div class="form-group mb-0">
 										<div class="input-group">
-											<span class="input-group-addon"><i class="far fa-clock"></i></span>
-											<input type="text" name="timetable[0][time_start]" data-plugin-timepicker data-plugin-options ="{'timeFormat': 'HH:mm:ss'}" class="form-control" />
+											<span class="input-group-text"><i class="far fa-clock"></i></span>
+											<input type="text" name="timetable[0][time_start]" data-plugin-timepicker data-plugin-options='{"timeFormat":"HH:mm:ss"}' class="form-control" />
 										</div>
 										<span class="error"></span>
 									</div>
 								</td>
 								<td>
-									<div class="form-group">
+									<div class="form-group mb-0">
 										<div class="input-group">
-											<span class="input-group-addon"><i class="far fa-clock"></i></span>
-											<input type="text" name="timetable[0][time_end]" data-plugin-timepicker class="form-control" />
+											<span class="input-group-text"><i class="far fa-clock"></i></span>
+											<input type="text" name="timetable[0][time_end]" data-plugin-timepicker data-plugin-options='{"timeFormat":"HH:mm:ss"}' class="form-control" />
 										</div>
 										<span class="error"></span>
 									</div>
@@ -177,25 +187,24 @@
 			
 			function append_timetable_entry(){
            		var lenght_div = $('#timetable_entry_append .iadd').length;
-				$("#timetable_entry_append").append(getDynamicInput(lenght_div));
-				
-				$(".selectTwo").each(function() {
-					var $this = $(this);
-					$this.themePluginSelect2({});
+				var $newRow = $(getDynamicInput(lenght_div));
+				$("#timetable_entry_append").append($newRow);
+
+				$newRow.find(".selectTwo").each(function() {
+					$(this).select2({ theme: 'bootstrap', width: '100%' });
 				});
-				$(".timepicker").each(function() {
-					var $this = $(this);
-					$this.themePluginTimePicker({});
+				$newRow.find(".timepicker").each(function() {
+					$(this).themePluginTimePicker({});
 				});
 			}
 			
 			function getDynamicInput(value) {
 				var row = "";
 				row += '<tr class="iadd">';
-				row += '<td class="center" width="90"><div class="checkbox-replace">';
+				row += '<td class="text-center align-middle"><div class="checkbox-replace">';
 				row += '<label class="i-checks"><input type="checkbox" name="timetable[' + value + '][break]" id="' + value + '"><i></i>';
 				row += '</label></div></td>';
-				row += '<td width="20%"><div class="form-group">';
+				row += '<td><div class="form-group mb-0">';
 				row += '<select id="subject_id_' + value + '" name="timetable[' + value + '][subject]" class="form-control selectTwo" data-width="100%">';
 				row += '<option value=""><?php echo translate('select'); ?></option>';
 <?php foreach ($subjectAssign as $assign): ?>
@@ -203,26 +212,28 @@
 <?php endforeach; ?>
 				row += '</select>';
 				row += '<span class="error"></span></div></td>';
-				row += '<td width="20%"><div class="form-group">';
-				row += '<select  id="teacher_id_' + value + '" name="timetable[' + value + '][teacher]" class="form-control selectTwo" data-width="100%">';
+				row += '<td><div class="form-group mb-0">';
+				row += '<select id="teacher_id_' + value + '" name="timetable[' + value + '][teacher]" class="form-control selectTwo" data-width="100%">';
 <?php foreach ($arrayTeacher as $key => $value): ?>
 				row += '<option value="<?php echo $key ?>"><?php echo $value ?></option>';
 <?php endforeach; ?>
 				row += '</select>';
 				row += '<span class="error"></span></div></td>';
-				row += '<td><div class="form-group">';
+				row += '<td><div class="form-group mb-0">';
 				row += '<div class="input-group">';
-				row += '<span class="input-group-addon"><i class="far fa-clock"></i></span>';
-				row += '<input type="text" name="timetable[' + value + '][time_start]" class="form-control timepicker" >';
+				row += '<span class="input-group-text"><i class="far fa-clock"></i></span>';
+				row += '<input type="text" name="timetable[' + value + '][time_start]" class="form-control timepicker">';
 				row += '</div><span class="error"></span></div></td>';
-				row += '<td><div class="form-group">';
+				row += '<td><div class="form-group mb-0">';
 				row += '<div class="input-group">';
-				row += '<span class="input-group-addon"><i class="far fa-clock"></i></span>';
-				row += '<input type="text" name="timetable[' + value + '][time_end]" class="form-control timepicker" >';
+				row += '<span class="input-group-text"><i class="far fa-clock"></i></span>';
+				row += '<input type="text" name="timetable[' + value + '][time_end]" class="form-control timepicker">';
 				row += '</div><span class="error"></span></div></td>';
-				row += '<td class="timet-td">';
+				row += '<td>';
+				row += '<div class="d-flex gap-1 align-items-center">';
 				row += '<input type="text" class="form-control" name="timetable[' + value + '][class_room]" value="">';
-				row += '<button type="button" class="btn btn-danger removeTR"><i class="fas fa-times"></i> </button>';
+				row += '<button type="button" class="btn btn-danger btn-sm removeTR flex-shrink-0"><i class="fas fa-times"></i> Remove</button>';
+				row += '</div>';
 				row += '</td>';
 				row += '</tr>';
 				return row;

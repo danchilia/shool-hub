@@ -74,5 +74,6 @@ $route['virtual_class'] = 'VirtualClass/index';
 $route['virtual_class/(:any)'] = 'VirtualClass/$1';
 $route['bus_tracking'] = 'BusTracking/index';
 $route['bus_tracking/(:any)'] = 'BusTracking/$1';
+$route['bus-api/location'] = 'Bus_api/location';
 $route['attendance/save_student_ajax'] = 'attendance/save_student_ajax';
 $route['attendance/save_staff_ajax'] = 'attendance/save_staff_ajax';

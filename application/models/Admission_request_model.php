@@ -110,72 +110,102 @@ class Admission_request_model extends MY_Model
         $guardianData = json_decode($request['guardian_data'], true);
         $branchId = $request['branch_id'];
 
+        // Normalise guardian keys — portal uses parent_name/parent_email/parent_phone,
+        // the admin form uses grd_name/grd_email/grd_mobileno
+        $grdName     = isset($guardianData['grd_name'])     ? $guardianData['grd_name']     : (isset($guardianData['parent_name'])       ? $guardianData['parent_name']       : '');
+        $grdRelation = isset($guardianData['grd_relation']) ? $guardianData['grd_relation'] : (isset($guardianData['relation'])           ? $guardianData['relation']           : '');
+        $grdEmail    = isset($guardianData['grd_email'])    ? $guardianData['grd_email']    : (isset($guardianData['parent_email'])       ? $guardianData['parent_email']       : '');
+        $grdPhone    = isset($guardianData['grd_mobileno']) ? $guardianData['grd_mobileno'] : (isset($guardianData['parent_phone'])       ? $guardianData['parent_phone']       : '');
+        $grdOccup    = isset($guardianData['grd_occupation'])? $guardianData['grd_occupation']:(isset($guardianData['parent_occupation']) ? $guardianData['parent_occupation']  : '');
+        $grdAddress  = isset($guardianData['grd_address'])  ? $guardianData['grd_address']  : (isset($guardianData['address'])           ? $guardianData['address']            : '');
+        $grdPassword = isset($guardianData['grd_password']) ? $guardianData['grd_password'] : 'parent123';
+
+        // Normalise student keys — portal may use dob instead of birthday
+        $birthday     = isset($studentData['birthday'])     ? $studentData['birthday']     : (isset($studentData['dob'])          ? $studentData['dob']          : '');
+        $stuEmail     = isset($studentData['email'])        ? $studentData['email']        : '';
+        $stuPassword  = isset($studentData['password'])     ? $studentData['password']     : 'student123';
+        $admDate      = isset($studentData['admission_date'])? $studentData['admission_date'] : date('Y-m-d');
+
         $parentId = 0;
         if (isset($guardianData['guardian_chk']) && $guardianData['guardian_chk']) {
             $parentId = $guardianData['parent_id'];
         } else {
             $parentInsert = array(
-                'name' => $guardianData['grd_name'],
-                'relation' => $guardianData['grd_relation'],
-                'father_name' => isset($guardianData['grd_father_name']) ? $guardianData['grd_father_name'] : '',
-                'mother_name' => isset($guardianData['grd_mother_name']) ? $guardianData['grd_mother_name'] : '',
-                'occupation' => $guardianData['grd_occupation'],
-                'mobileno' => $guardianData['grd_mobileno'],
-                'email' => $guardianData['grd_email'],
-                'address' => isset($guardianData['grd_address']) ? $guardianData['grd_address'] : '',
-                'photo' => 'defualt.png',
+                'name'       => $grdName,
+                'relation'   => $grdRelation,
+                'father_name'=> isset($guardianData['grd_father_name']) ? $guardianData['grd_father_name'] : '',
+                'mother_name'=> isset($guardianData['grd_mother_name']) ? $guardianData['grd_mother_name'] : '',
+                'occupation' => $grdOccup,
+                'income'     => '',
+                'education'  => '',
+                'mobileno'   => $grdPhone,
+                'email'      => $grdEmail,
+                'address'    => $grdAddress,
+                'city'       => '',
+                'state'      => '',
+                'branch_id'  => $branchId,
+                'photo'      => 'defualt.png',
             );
             $this->db->insert('parent', $parentInsert);
             $parentId = $this->db->insert_id();
 
-            $grdCredential = array(
-                'user_id' => $parentId,
-                'username' => $guardianData['grd_email'],
-                'password' => $this->app_lib->pass_hashed($guardianData['grd_password']),
-                'role' => 6,
-                'active' => 1,
-            );
-            $this->db->insert('login_credential', $grdCredential);
+            if (!empty($grdEmail)) {
+                $existingCred = $this->db->where('username', $grdEmail)->get('login_credential')->num_rows();
+                if ($existingCred == 0) {
+                    $this->db->insert('login_credential', array(
+                        'user_id'  => $parentId,
+                        'username' => $grdEmail,
+                        'password' => $this->app_lib->pass_hashed($grdPassword),
+                        'role'     => 6,
+                        'active'   => 1,
+                    ));
+                }
+            }
         }
 
         $studentInsert = array(
-            'register_no' => $studentData['register_no'],
-            'admission_date' => $studentData['admission_date'],
-            'first_name' => $studentData['first_name'],
-            'last_name' => $studentData['last_name'],
-            'gender' => $studentData['gender'],
-            'birthday' => $studentData['birthday'],
-            'religion' => $studentData['religion'],
-            'caste' => $studentData['caste'],
-            'blood_group' => $studentData['blood_group'],
-            'mother_tongue' => $studentData['mother_tongue'],
-            'mobileno' => $studentData['mobileno'],
-            'email' => $studentData['email'],
-            'current_address' => $studentData['current_address'],
-            'permanent_address' => $studentData['permanent_address'],
-            'city' => $studentData['city'],
-            'state' => $studentData['state'],
-            'category_id' => $studentData['category_id'],
-            'parent_id' => $parentId,
-            'upi_number' => isset($studentData['upi_number']) ? $studentData['upi_number'] : '',
+            'register_no'      => isset($studentData['register_no']) ? $studentData['register_no'] : '',
+            'admission_date'   => $admDate,
+            'first_name'       => $studentData['first_name'],
+            'last_name'        => $studentData['last_name'],
+            'gender'           => isset($studentData['gender']) ? $studentData['gender'] : '',
+            'birthday'         => $birthday,
+            'religion'         => isset($studentData['religion']) ? $studentData['religion'] : '',
+            'caste'            => isset($studentData['caste']) ? $studentData['caste'] : '',
+            'blood_group'      => isset($studentData['blood_group']) ? $studentData['blood_group'] : '',
+            'mother_tongue'    => isset($studentData['mother_tongue']) ? $studentData['mother_tongue'] : '',
+            'mobileno'         => isset($studentData['mobileno']) ? $studentData['mobileno'] : '',
+            'email'            => $stuEmail,
+            'current_address'  => isset($studentData['current_address']) ? $studentData['current_address'] : (isset($studentData['address']) ? $studentData['address'] : ''),
+            'permanent_address'=> isset($studentData['permanent_address']) ? $studentData['permanent_address'] : '',
+            'city'             => isset($studentData['city']) ? $studentData['city'] : '',
+            'state'            => isset($studentData['state']) ? $studentData['state'] : '',
+            'category_id'      => isset($studentData['category_id']) ? $studentData['category_id'] : 0,
+            'parent_id'        => $parentId,
+            'upi_number'       => isset($studentData['upi_number']) ? $studentData['upi_number'] : '',
+            'previous_details' => '',
         );
         $this->db->insert('student', $studentInsert);
         $studentId = $this->db->insert_id();
 
-        $stuCredential = array(
-            'user_id' => $studentId,
-            'username' => $studentData['email'],
-            'password' => $this->app_lib->pass_hashed($studentData['password']),
-            'role' => 7,
-            'active' => 1,
-        );
-        $this->db->insert('login_credential', $stuCredential);
+        if (!empty($stuEmail)) {
+            $existingStu = $this->db->where('username', $stuEmail)->get('login_credential')->num_rows();
+            if ($existingStu == 0) {
+                $this->db->insert('login_credential', array(
+                    'user_id'  => $studentId,
+                    'username' => $stuEmail,
+                    'password' => $this->app_lib->pass_hashed($stuPassword),
+                    'role'     => 7,
+                    'active'   => 1,
+                ));
+            }
+        }
 
         $enrollInsert = array(
             'student_id' => $studentId,
             'class_id' => $request['class_id'],
             'section_id' => $request['section_id'],
-            'roll' => $request['roll'],
+            'roll' => $request['roll'] ?? 0,
             'session_id' => $request['session_id'],
             'branch_id' => $branchId,
         );

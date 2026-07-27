@@ -67,13 +67,16 @@ class Sendsmsmail extends Admin_Controller
 
     public function delete($id)
     {
-        if (get_permission('sendsmsmail', 'is_delete')) {
-            if (!is_superadmin_loggedin()) {
-                $this->db->where('branch_id', get_loggedin_branch_id());
-            }
-            $this->db->where('id', $id);
-            $this->db->delete('bulk_sms_email');
+        if (!$this->input->is_ajax_request()) show_404();
+        if (!get_permission('sendsmsmail', 'is_delete')) {
+            ajax_access_denied();
         }
+        if (!is_superadmin_loggedin()) {
+            $this->db->where('branch_id', get_loggedin_branch_id());
+        }
+        $this->db->where('id', $id);
+        $this->db->delete('bulk_sms_email');
+        echo json_encode(array('status' => 'success', 'url' => base_url('sendsmsmail/campaign_reports')));
     }
 
     public function campaign_reports()
@@ -114,13 +117,14 @@ class Sendsmsmail extends Admin_Controller
         $this->load->view('layout/index', $this->data);
     }
 
-    function save() 
+    function save()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (!get_permission('sendsmsmail', 'is_add')) {
             ajax_access_denied();
         }
 
-        if ($_POST) {
+        {
             $messageType = ($this->input->post('message_type') == 'sms' ? 1 : 2);
             $branchID = $this->application_model->get_branch_id();
             $recipientType = $this->input->post('recipient_type');
@@ -288,7 +292,9 @@ class Sendsmsmail extends Admin_Controller
                     'recipient_type'        => $recipientType,
                     'recipients_details'    => $receivedDetails,
                     'additional'            => $additional,
-                    'schedule_time'         => date('Y-m-d H:i:s', strtotime($scheduleDate . ' ' . $scheduleTime)),
+                    'schedule_time'         => ($sendLater == 1 && $scheduleDate && $scheduleTime)
+                                                ? date('Y-m-d H:i:s', strtotime($scheduleDate . ' ' . $scheduleTime))
+                                                : date('Y-m-d H:i:s'),
                     'posting_status'        => $sendLater,
                     'total_thread'          => count($user_array),
                     'successfully_sent'     => $sCount,
@@ -306,10 +312,9 @@ class Sendsmsmail extends Admin_Controller
                 } else {
                     $url = base_url('sendsmsmail/email');
                 }
-                $array = array('status' => 'success', 'url' => $url, 'error' => '');
+                $array = array('status' => 'success', 'url' => $url);
             } else {
-                $error = $this->form_validation->error_array();
-                $array = array('status' => 'fail', 'url' => '', 'error' => $error);
+                $array = array('status' => 'error', 'msg' => validation_errors());
             }
             echo json_encode($array);
         }
@@ -325,9 +330,11 @@ class Sendsmsmail extends Admin_Controller
         if (!get_permission('sendsmsmail_template', 'is_view') || !$result) {
             access_denied();
         }
-        if ($_POST) {
+        if ($this->input->is_ajax_request()) {
+            if (!get_permission('sendsmsmail_template', 'is_add')) {
+                ajax_access_denied();
+            }
             if (get_permission('sendsmsmail_template', 'is_add')) {
-                // validate inputs
                 if (is_superadmin_loggedin()) {
                     $this->form_validation->set_rules('branch_id', translate('branch'), 'required');
                 }
@@ -337,12 +344,10 @@ class Sendsmsmail extends Admin_Controller
                     $post = $this->input->post();
                     $post['type'] = $type_n;
                     $this->sendsmsmail_model->saveTemplate($post);
-                    $url = current_url();
-                    $array = array('status' => 'success', 'url' => $url, 'error' => '');
                     set_alert('success', translate('information_has_been_saved_successfully'));
+                    $array = array('status' => 'success', 'url' => current_url());
                 } else {
-                    $error = $this->form_validation->error_array();
-                    $array = array('status' => 'fail', 'url' => '', 'error' => $error);
+                    $array = array('status' => 'error', 'msg' => validation_errors());
                 }
                 echo json_encode($array);
                 exit();
@@ -375,8 +380,7 @@ class Sendsmsmail extends Admin_Controller
             access_denied();
         }
 
-        if ($_POST) {
-            // validate inputs
+        if ($this->input->is_ajax_request()) {
             if (is_superadmin_loggedin()) {
                 $this->form_validation->set_rules('branch_id', translate('branch'), 'required');
             }
@@ -386,12 +390,10 @@ class Sendsmsmail extends Admin_Controller
                 $post = $this->input->post();
                 $post['type'] = $type_n;
                 $this->sendsmsmail_model->saveTemplate($post);
-                $url = base_url('sendsmsmail/template/' . $type);
-                $array = array('status' => 'success', 'url' => $url, 'error' => '');
                 set_alert('success', translate('information_has_been_updated_successfully'));
+                $array = array('status' => 'success', 'url' => base_url('sendsmsmail/template/' . $type));
             } else {
-                $error = $this->form_validation->error_array();
-                $array = array('status' => 'fail', 'url' => '', 'error' => $error);
+                $array = array('status' => 'error', 'msg' => validation_errors());
             }
             echo json_encode($array);
             exit();
@@ -414,18 +416,24 @@ class Sendsmsmail extends Admin_Controller
 
     public function template_delete($id)
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (!get_permission('sendsmsmail_template', 'is_delete')) {
-            access_denied();
+            echo json_encode(array('status' => 'error', 'msg' => 'Access denied'));
+            return;
         }
+        $row = $this->db->where('id', $id)->get('bulk_msg_category')->row_array();
+        $type = (!empty($row) && $row['type'] == 1) ? 'sms' : 'email';
         $this->db->where('id', $id);
         if (!is_superadmin_loggedin()) {
             $this->db->where('branch_id', get_loggedin_branch_id());
         }
         $this->db->delete('bulk_msg_category');
+        echo json_encode(array('status' => 'success', 'url' => base_url('sendsmsmail/template/' . $type)));
     }
 
     public function getRecipientsByRole()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $html = "";
         $branchID = $this->application_model->get_branch_id();
         $roleID = $this->input->post('role_id');
@@ -466,6 +474,7 @@ class Sendsmsmail extends Admin_Controller
 
     public function getSectionByClass()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $html = "";
         $classID = $this->input->post("class_id");
         if (!empty($classID)) {
@@ -485,6 +494,7 @@ class Sendsmsmail extends Admin_Controller
 
     public function getSmsGateway()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $html = "";
         $branchID = $this->application_model->get_branch_id();
         if (!empty($branchID)) {
@@ -511,6 +521,7 @@ class Sendsmsmail extends Admin_Controller
 
     public function getTemplateByBranch()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $html = "";
         $type = $this->input->post('type');
         $type = ($type == 'sms' ? 1 : 2);
@@ -533,6 +544,7 @@ class Sendsmsmail extends Admin_Controller
 
     public function getSmsTemplateText()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $id = $this->input->post('id');
         $row = $this->db->where(array('id' => $id))->get('bulk_msg_category')->row_array();
         echo $row['body'];
@@ -540,6 +552,7 @@ class Sendsmsmail extends Admin_Controller
 
     public function getDetails()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (get_permission('sendsmsmail', 'is_view')) {
             $id = $this->input->post('id');
             $this->db->where('id', $id);

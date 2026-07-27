@@ -1,17 +1,17 @@
 <section class="panel">
 	<div class="tabs-custom">
 		<ul class="nav nav-tabs">
-			<li class="active">
-				<a href="#list" data-toggle="tab"><i class="fas fa-list-ul"></i> <?=translate('room_list')?></a>
+			<li class="nav-item">
+				<a href="#list" class="nav-link active" data-bs-toggle="tab"><i class="fas fa-list-ul"></i> <?=translate('room_list')?></a>
 			</li>
 <?php if (get_permission('hostel_room', 'is_add')): ?>
-			<li>
-				<a href="#create" data-toggle="tab"><i class="far fa-edit"></i> <?=translate('create') . " " . translate('room')?></a>
+			<li class="nav-item">
+				<a href="#create" class="nav-link" data-bs-toggle="tab"><i class="far fa-edit"></i> <?=translate('create') . " " . translate('room')?></a>
 			</li>
 <?php endif; ?>
 		</ul>
 		<div class="tab-content">
-			<div id="list" class="tab-pane active">
+			<div id="list" class="tab-pane active show">
 				<table class="table table-bordered table-hover table-export">
 					<thead>
 						<tr>
@@ -124,7 +124,7 @@
 					</div>
 					<footer class="panel-footer">
 						<div class="row">
-							<div class="col-md-offset-3 col-md-2">
+							<div class="col-md-2 offset-md-3">
 								<button type="submit" class="btn btn-default btn-block" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing">
 									<i class="fas fa-plus-circle"></i> <?=translate('save')?>
 								</button>

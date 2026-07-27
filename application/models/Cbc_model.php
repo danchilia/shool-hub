@@ -136,13 +136,14 @@ class Cbc_model extends MY_Model
 
     public function getStudentsForAssessment($classId, $sectionId, $branchId)
     {
+        $sessionId = get_session_id();
         $this->db->select('e.id as enroll_id, e.roll, s.id as student_id, s.first_name, s.last_name, s.photo, s.register_no');
         $this->db->from('enroll as e');
         $this->db->join('student as s', 's.id = e.student_id', 'inner');
         $this->db->where('e.class_id', $classId);
         $this->db->where('e.section_id', $sectionId);
         $this->db->where('e.branch_id', $branchId);
-        $this->db->where('e.session_id', get_session_id());
+        $this->db->where('e.session_id', $sessionId);
         $this->db->order_by('e.roll', 'ASC');
         return $this->db->get()->result_array();
     }
@@ -201,11 +202,12 @@ class Cbc_model extends MY_Model
 
     public function getCbcExams($branchId)
     {
+        $sessionId = get_session_id();
         $this->db->select('e.*, et.name as term_name');
         $this->db->from('exam as e');
         $this->db->join('exam_term as et', 'et.id = e.term_id', 'left');
         $this->db->where('e.grading_system', 'cbc');
-        $this->db->where('e.session_id', get_session_id());
+        $this->db->where('e.session_id', $sessionId);
         if (!empty($branchId)) {
             $this->db->where('e.branch_id', $branchId);
         }

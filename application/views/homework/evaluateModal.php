@@ -1,4 +1,5 @@
-<?php 
+<?php
+$sessionId = get_session_id();
 $this->db->select('homework.*,staff.name as creator_name');
 $this->db->from('homework');
 $this->db->join('staff', 'staff.id = homework.evaluated_by', 'left');
@@ -6,10 +7,10 @@ if (!is_superadmin_loggedin()) {
 	$this->db->where('homework.branch_id', get_loggedin_branch_id());
 }
 $this->db->where('homework.id', $homeworkID);
-$this->db->where('homework.session_id', get_session_id());
+$this->db->where('homework.session_id', $sessionId);
 $this->db->order_by('homework.id', 'desc');
 $row = $this->db->get()->row_array();
- ?>
+?>
 <div class="row">
 	<div class="col-md-8">
 		<label><span class="text-weight-semibold"><?=translate('homework')?> :</span></label>

@@ -185,9 +185,6 @@ class Event extends Admin_Controller
         if (!is_superadmin_loggedin()) {
             $this->db->where('branch_id', get_loggedin_branch_id());
         }
-        if (!is_superadmin_loggedin()) {
-            $this->db->where('branch_id', get_loggedin_branch_id());
-        }
         $this->db->where('id', $id);
         $this->db->delete('event_types');
     }
@@ -242,11 +239,16 @@ class Event extends Admin_Controller
         }
         $this->db->where('id', $id);
         $ev = $this->db->get('event')->row_array();
+        if (empty($ev)) {
+            echo '<tbody><tr><td colspan="2">Event not found.</td></tr></tbody>';
+            return;
+        }
         $type = $ev['type'] == 'holiday' ? translate('holiday') : get_type_name_by_id('event_types', $ev['type']);
         $remark = (empty($ev['remark']) ? 'N/A' : $ev['remark']);
+        $auditions = array("1" => "everybody", "2" => "class", "3" => "section");
         $html = "<tbody><tr>";
         $html .= "<td>" . translate('title') . "</td>";
-        $html .= "<td>" . $ev['title'] . "</td>";
+        $html .= "<td>" . html_escape($ev['title']) . "</td>";
         $html .= "</tr><tr>";
         $html .= "<td>" . translate('type') . "</td>";
         $html .= "<td>" . $type . "</td>";
@@ -262,8 +264,11 @@ class Event extends Admin_Controller
         $html .= "<td>" . translate($audition);
         if ($ev['audition'] != 1) {
             $selecteds = json_decode($ev['selected_list']);
-            foreach ($selecteds as $selected) {
-                $html .= "<br> <small> - " . $this->db->get_where($audition, array('id' => $selected))->row()->name . '</small>';
+            if (!empty($selecteds)) {
+                foreach ($selecteds as $selected) {
+                    $row = $this->db->get_where($audition, array('id' => $selected))->row();
+                    if ($row) $html .= "<br><small> - " . html_escape($row->name) . '</small>';
+                }
             }
         }
         $html .= "</td>";
@@ -310,6 +315,7 @@ class Event extends Admin_Controller
             }
             $this->db->where('status', 1);
             $events = $this->db->get('event')->result();
+            $eventdata = array();
             foreach ($events as $row) {
                 $arrayData = array(
                     'id' => $row->id,

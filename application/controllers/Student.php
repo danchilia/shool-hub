@@ -471,7 +471,7 @@ class Student extends Admin_Controller
         }
         if ($this->form_validation->run() !== false) {
             $insert_doc = array(
-                'student_id' => $this->input->post('patient_id'),
+                'student_id' => $this->input->post('student_id'),
                 'title' => $this->input->post('document_title'),
                 'type' => $this->input->post('document_category'),
                 'remarks' => $this->input->post('remarks'),
@@ -866,7 +866,7 @@ class Student extends Admin_Controller
         $this->db->select('student.*,enroll.student_id,enroll.roll,student_category.name as cname');
         $this->db->from('enroll');
         $this->db->join('student', 'student.id = enroll.student_id', 'inner');
-        $this->db->join('student_category', 'student_category.id = student.category_id', 'inner');
+        $this->db->join('student_category', 'student_category.id = student.category_id', 'left');
         $this->db->where('enroll.id', $id);
         $row = $this->db->get()->row();
         $data['photo'] = get_image_url('student', $row->photo);
@@ -897,13 +897,13 @@ class Student extends Admin_Controller
         $branchId = $this->application_model->get_branch_id();
 
         $this->db->select('s.*, e.roll, e.class_id, e.section_id, c.name as class_name, sec.name as section_name,
-            CONCAT(g.first_name," ",g.last_name) as guardian_name, g.mobileno as guardian_phone,
-            g.address as guardian_address, g.national_id as guardian_id_no')
+            p.name as guardian_name, p.mobileno as guardian_phone,
+            p.address as guardian_address')
             ->from('student s')
             ->join('enroll e', 'e.student_id = s.id')
             ->join('class c', 'c.id = e.class_id')
             ->join('section sec', 'sec.id = e.section_id', 'left')
-            ->join('guardian g', 'g.id = s.guardian_id', 'left')
+            ->join('parent p', 'p.id = s.parent_id', 'left')
             ->where('s.id', $studentId)
             ->where('e.branch_id', $branchId)
             ->order_by('e.id', 'DESC')
@@ -917,18 +917,17 @@ class Student extends Admin_Controller
 
         $branch = $this->db->where('id', $branchId)->get('branch')->row_array();
 
-        // Calculate fee clearance
-        $totalFees = $this->db->select_sum('amount')
-            ->where('student_id', $studentId)
-            ->where('session_id', get_session_id())
-            ->get('fee_allocation')->row_array();
-        $totalPaid = $this->db->select_sum('amount')
-            ->join('fee_allocation fa', 'fa.id = fee_payment_history.allocation_id')
-            ->where('fa.student_id', $studentId)
-            ->where('fa.session_id', get_session_id())
-            ->get('fee_payment_history')->row_array();
+        // Calculate fee clearance — amounts live in fee_groups_details, not fee_allocation
+        $feeRow = $this->db
+            ->select('IFNULL(SUM(gd.amount),0) as totalfees, IFNULL(SUM(p.amount),0) as totalpay, IFNULL(SUM(p.discount),0) as totaldiscount')
+            ->from('fee_allocation a')
+            ->join('fee_groups_details gd', 'gd.fee_groups_id = a.group_id', 'left')
+            ->join('fee_payment_history p', 'p.allocation_id = a.id AND p.type_id = gd.fee_type_id', 'left')
+            ->where('a.student_id', $studentId)
+            ->where('a.session_id', get_session_id())
+            ->get()->row_array();
 
-        $feesBalance = (floatval($totalFees['amount'] ?? 0)) - (floatval($totalPaid['amount'] ?? 0));
+        $feesBalance = floatval($feeRow['totalfees']) - floatval($feeRow['totalpay'] + $feeRow['totaldiscount']);
 
         $this->data['student']      = $student;
         $this->data['branch']       = $branch;
@@ -944,27 +943,42 @@ class Student extends Admin_Controller
         if (!is_admin_loggedin() && !is_superadmin_loggedin()) {
             access_denied();
         }
-        $branchId  = $this->application_model->get_branch_id();
+
+        // Filter form uses GET, so superadmins must read branch from GET (not POST)
+        if (is_superadmin_loggedin()) {
+            $branchId = $this->input->get('branch_id') ?: '';
+            $this->data['branches'] = $this->db->order_by('name')->get('branch')->result_array();
+        } else {
+            $branchId = get_loggedin_branch_id();
+            $this->data['branches'] = array();
+        }
+
         $classId   = $this->input->get('class_id') ?: '';
         $sectionId = $this->input->get('section_id') ?: '';
 
-        $this->data['classes']     = $this->db->where('branch_id', $branchId)->order_by('name')->get('class')->result_array();
+        $this->data['branch_id']   = $branchId;
+        $this->data['classes']     = $branchId ? $this->db->where('branch_id', $branchId)->order_by('name')->get('class')->result_array() : array();
         $this->data['class_id']    = $classId;
         $this->data['section_id']  = $sectionId;
-        $this->data['sections']    = $classId ? $this->db->where('class_id', $classId)->get('section')->result_array() : array();
+        $this->data['sections']    = $classId
+            ? $this->db->select('s.id, s.name')->from('section s')
+                ->join('sections_allocation sa', 'sa.section_id = s.id')
+                ->where('sa.class_id', $classId)->get()->result_array()
+            : array();
         $this->data['students']    = array();
 
-        if ($classId) {
+        if ($classId && $branchId) {
+            $sessionId = get_session_id();
             $this->db->select('s.*, e.roll, e.class_id, c.name as class_name, sec.name as section_name,
-                CONCAT(g.first_name," ",g.last_name) as guardian_name, g.mobileno as guardian_phone,
-                g.email as guardian_email, g.address as guardian_address')
+                p.name as guardian_name, p.mobileno as guardian_phone,
+                p.email as guardian_email, p.address as guardian_address')
                 ->from('student s')
                 ->join('enroll e', 'e.student_id = s.id')
                 ->join('class c', 'c.id = e.class_id')
                 ->join('section sec', 'sec.id = e.section_id', 'left')
-                ->join('guardian g', 'g.id = s.guardian_id', 'left')
+                ->join('parent p', 'p.id = s.parent_id', 'left')
                 ->where('e.branch_id', $branchId)
-                ->where('e.session_id', get_session_id())
+                ->where('e.session_id', $sessionId)
                 ->where('e.class_id', $classId);
             if ($sectionId) {
                 $this->db->where('e.section_id', $sectionId);
@@ -973,7 +987,7 @@ class Student extends Admin_Controller
         }
 
         $this->data['sub_page']    = 'student/nemis_export';
-        $this->data['main_menu']   = 'students';
+        $this->data['main_menu']   = 'student';
         $this->data['page_title']  = 'NEMIS Export';
         $this->load->view('layout/index', $this->data);
     }
@@ -987,18 +1001,19 @@ class Student extends Admin_Controller
         $classId   = $this->input->post('class_id');
         $sectionId = $this->input->post('section_id');
 
+        $sessionId = get_session_id();
         $this->db->select('s.first_name, s.last_name, s.birthday, s.gender, s.register_no,
             s.upi_number, e.roll, c.name as class_name, sec.name as section_name,
-            s.student_address, s.mobileno,
-            CONCAT(g.first_name," ",g.last_name) as guardian_name, g.mobileno as guardian_phone,
-            g.national_id as guardian_id_no, g.address as guardian_address')
+            s.current_address as student_address, s.mobileno,
+            p.name as guardian_name, p.mobileno as guardian_phone,
+            p.address as guardian_address')
             ->from('student s')
             ->join('enroll e', 'e.student_id = s.id')
             ->join('class c', 'c.id = e.class_id')
             ->join('section sec', 'sec.id = e.section_id', 'left')
-            ->join('guardian g', 'g.id = s.guardian_id', 'left')
+            ->join('parent p', 'p.id = s.parent_id', 'left')
             ->where('e.branch_id', $branchId)
-            ->where('e.session_id', get_session_id())
+            ->where('e.session_id', $sessionId)
             ->where('e.class_id', $classId);
         if ($sectionId) {
             $this->db->where('e.section_id', $sectionId);
@@ -1033,7 +1048,7 @@ class Student extends Admin_Controller
             'STUDENT_ADDRESS',
         ));
 
-        $institutionCode = !empty($branch['school_code']) ? $branch['school_code'] : 'SCH000';
+        $institutionCode = isset($branch['school_code']) && !empty($branch['school_code']) ? $branch['school_code'] : '';
 
         foreach ($students as $s) {
             $gender = strtoupper(substr($s['gender'], 0, 1)); // M or F
@@ -1051,7 +1066,7 @@ class Student extends Admin_Controller
                 $s['roll'],
                 $s['guardian_name'] ?: '',
                 $s['guardian_phone'] ?: '',
-                $s['guardian_id_no'] ?: '',
+                '',
                 $s['student_address'] ?: '',
             ));
         }

@@ -44,7 +44,7 @@
 			</div>
 			<footer class="panel-footer">
 				<div class="row">
-					<div class="col-md-offset-10 col-md-2">
+					<div class="col-md-2 offset-md-10">
 						<button type="submit" name="search" value="1" class="btn btn-default btn-block"> <i class="fas fa-filter"></i> <?=translate('filter')?></button>
 					</div>
 				</div>
@@ -58,7 +58,7 @@
 				<h4 class="panel-title"><i class="fas fa-users"></i> <?=translate('student') . ' ' . translate('allocation_list')?></h4>
 			</header>
 			<div class="panel-body">
-				<table class="table table-bordered table-hover table-condensed table-export">
+				<table class="table table-bordered table-hover table-sm table-export">
 					<thead>
 						<tr>
 							<th width="50px">#</th>

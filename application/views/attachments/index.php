@@ -1,21 +1,21 @@
-<div class="row">
+﻿<div class="row">
 	<div class="col-md-12">
 		<section class="panel">
 			<div class="tabs-custom">
 				<ul class="nav nav-tabs">
-					<li class="active">
-						<a href="#attachments" data-toggle="tab"><i class="fas fa-list-ul"></i> <?=translate('attachments')?></a>
+					<li class="nav-item">
+						<a class="nav-link active" href="#attachments" data-bs-toggle="tab"><i class="fas fa-list-ul"></i> <?=translate('attachments')?></a>
 					</li>
 <?php if (get_permission('attachments', 'is_add')): ?>
-					<li >
-						<a href="#create" data-toggle="tab"><i class="far fa-edit"></i> <?=translate('create_attachments')?></a>
+					<li class="nav-item">
+						<a class="nav-link" href="#create" data-bs-toggle="tab"><i class="far fa-edit"></i> <?=translate('create_attachments')?></a>
 					</li>
 <?php endif; ?>
 				</ul>
 				<div class="tab-content">
-					<div id="attachments" class="tab-pane active">
+					<div id="attachments" class="tab-pane show active">
 						<div class="mb-md">
-							<table class="table table-bordered table-hover table-condensed mb-none table-export">
+							<table class="table table-bordered table-hover table-sm mb-0 table-export">
 								<thead>
 									<tr>
 										<th><?=translate('sl')?></th>
@@ -48,8 +48,8 @@
 										<td><?php echo _d($row['date']);?></td>
 										<td class="min-w-c">
 											<!--download link-->
-											<a href="<?=base_url('attachments/download?file=' . $row['enc_name'])?>" class="btn btn-default btn-circle icon" data-toggle="tooltip"
-											data-original-title="<?=translate('download')?>">
+											<a href="<?=base_url('attachments/download?file=' . $row['enc_name'])?>" class="btn btn-default btn-circle icon" data-bs-toggle="tooltip"
+											data-bs-title="<?=translate('download')?>">
 												<i class="fas fa-cloud-download-alt"></i>
 											</a>
 										<?php if (get_permission('attachments', 'is_edit')): ?>
@@ -102,42 +102,40 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<div class="col-md-offset-3">
-									<div class="ml-md checkbox-replace">
+								<div class="col-md-9 offset-md-3">
+									<div class="ms-1 checkbox-replace">
 										<label class="i-checks"><input type="checkbox" name="all_class_set" id="all_class_set"><i></i> Available For All Classes</label>
 									</div>
 								</div>
-								<div id="class_div">
-									<div class="mt-sm">
-										<label class="control-label col-md-3"><?=translate('class')?> <span class="required">*</span></label>
-										<div class="col-md-6">
-											<?php
-												$arrayClass = $this->app_lib->getClass($branch_id);
-												echo form_dropdown("class_id", $arrayClass, set_value('class_id'), "class='form-control' id='class_id' onchange='getSubjectByClass(this.value)'
-												data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity' ");
-											?>
-											<span class="error"></span>
-										</div>
-									</div>
+							</div>
+							<div class="form-group" id="class_div">
+								<label class="col-md-3 control-label"><?=translate('class')?> <span class="required">*</span></label>
+								<div class="col-md-6">
+									<?php
+										$arrayClass = $this->app_lib->getClass($branch_id);
+										echo form_dropdown("class_id", $arrayClass, set_value('class_id'), "class='form-control' id='class_id' onchange='getSubjectByClass(this.value)'
+										data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity' ");
+									?>
+									<span class="error"></span>
 								</div>
 							</div>
-							<div class="form-group" id="sub_div">
-								<div class="col-md-offset-3">
-									<div class="ml-md checkbox-replace">
-										<label class="i-checks"><input type="checkbox" name="subject_wise" id="subject_wise"><i></i> Not According Subject</label>
+							<div id="sub_div">
+								<div class="form-group">
+									<div class="col-md-9 offset-md-3">
+										<div class="ms-1 checkbox-replace">
+											<label class="i-checks"><input type="checkbox" name="subject_wise" id="subject_wise"><i></i> Not According Subject</label>
+										</div>
 									</div>
 								</div>
-								<div id="subject_div">
-									<div class="mt-sm">
-										<label class="control-label col-md-3"><?=translate('subject')?> <span class="required">*</span></label>
-										<div class="col-md-6">
-											<?php
-												$arraySubject = array("" => translate('select_class_first'));
-												echo form_dropdown("subject_id", $arraySubject, set_value('subject_id'), "class='form-control' id='subject_id'
-												data-plugin-selectTwo data-width='100%' ");
-											?>
-											<span class="error"></span>
-										</div>
+								<div class="form-group" id="subject_div">
+									<label class="col-md-3 control-label"><?=translate('subject')?> <span class="required">*</span></label>
+									<div class="col-md-6">
+										<?php
+											$arraySubject = array("" => translate('select_class_first'));
+											echo form_dropdown("subject_id", $arraySubject, set_value('subject_id'), "class='form-control' id='subject_id'
+											data-plugin-selectTwo data-width='100%' ");
+										?>
+										<span class="error"></span>
 									</div>
 								</div>
 							</div>
@@ -163,7 +161,7 @@
 							</div>
 							<footer class="panel-footer mt-lg">
 								<div class="row">
-									<div class="col-md-2 col-md-offset-3">
+									<div class="col-md-2 offset-md-3">
 										<button type="submit" class="btn btn-default btn-block" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing">
 											<i class="fas fa-plus-circle"></i> <?=translate('save')?>
 										</button>

@@ -1,4 +1,12 @@
-﻿<div class="content-header">
+﻿<style>
+.cond-good    { background:#d1fae5; color:#065f46; }
+.cond-fair    { background:#fef3c7; color:#92400e; }
+.cond-poor,
+.cond-damaged { background:#fee2e2; color:#991b1b; }
+.cond-disposed{ background:#f3f4f6; color:#6b7280; }
+</style>
+
+<div class="content-header">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>
             <a href="<?php echo base_url('assets'); ?>" class="text-muted small"><i class="fas fa-arrow-left me-1"></i>Asset Register</a>

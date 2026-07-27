@@ -1,9 +1,15 @@
-﻿<div class="content-header">
+﻿<style>
+@media(prefers-color-scheme:dark)   { .container-fluid .bg-light { background:#1e2030 !important; color:#cbd5e1; } }
+:root[data-theme="dark"]  .container-fluid .bg-light { background:#1e2030 !important; color:#cbd5e1; }
+:root[data-theme="light"] .container-fluid .bg-light { background:#f8fafc !important; }
+</style>
+
+<div class="content-header">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <h4 class="mb-0"><i class="fas fa-bus me-2 text-primary"></i>Manage School Buses</h4>
         <div class="d-flex gap-2">
             <a href="<?php echo base_url('bus_tracking'); ?>" class="btn btn-sm btn-outline-primary"><i class="fas fa-map me-1"></i>Live Map</a>
-            <button class="btn btn-sm btn-primary" onclick="mfp_modal('#modal-bus')"><i class="fas fa-plus me-1"></i>Add Bus</button>
+            <button class="btn btn-sm btn-primary" onclick="resetBusForm(); mfp_modal('#modal-bus')"><i class="fas fa-plus me-1"></i>Add Bus</button>
         </div>
     </div>
 </div>
@@ -33,7 +39,25 @@
                             <span class="badge" style="background:#f3f4f6;color:#6b7280;">Inactive</span>
                             <?php endif; ?>
                         </td>
-                        <td><?php echo btn_delete('bus_tracking/delete_bus/'.$bus->id); ?></td>
+                        <td>
+                            <button class="btn btn-xs btn-outline-warning" onclick="editBus(this)" title="Edit Bus"
+                                data-json="<?php echo htmlspecialchars(json_encode([
+                                    'id'               => (int)$bus->id,
+                                    'bus_name'         => $bus->bus_name,
+                                    'reg_number'       => $bus->reg_number,
+                                    'capacity'         => $bus->capacity,
+                                    'driver_name'      => $bus->driver_name,
+                                    'driver_phone'     => $bus->driver_phone,
+                                    'route_description'=> $bus->route_description,
+                                    'is_active'        => (int)$bus->is_active,
+                                ]), ENT_QUOTES); ?>">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-xs btn-outline-info" onclick="showGpsUrl(<?php echo $bus->id; ?>, '<?php echo html_escape($bus->bus_name); ?>', '<?php echo html_escape($bus->gps_token ?? ''); ?>')" title="GPS Setup URL">
+                                <i class="fas fa-satellite-dish"></i>
+                            </button>
+                            <?php echo btn_delete('bus_tracking/delete_bus/'.$bus->id); ?>
+                        </td>
                     </tr>
                     <?php endforeach; endif; ?>
                 </tbody>
@@ -42,20 +66,139 @@
     </div>
 
     <div class="card mt-3">
-        <div class="card-header d-flex align-items-center justify-content-between"><h6 class="mb-0"><i class="fas fa-code me-2"></i>GPS Device Integration</h6></div>
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h6 class="mb-0"><i class="fas fa-satellite-dish me-2"></i>GPS Device Integration</h6>
+        </div>
         <div class="card-body">
-            <p class="text-muted small mb-2">GPS devices or driver apps should send location updates to:</p>
-            <code class="d-block bg-light p-2 rounded"><?php echo base_url('bus_tracking/update_location'); ?>?bus_id=1&lat=-1.286&lng=36.817&speed=40</code>
-            <p class="text-muted small mt-2 mb-0">Recommended: update every 30 seconds. Supports GET and POST requests.</p>
+            <p class="text-muted small mb-3">
+                Each bus has a unique private URL. Click the <i class="fas fa-satellite-dish text-info"></i> button next to a bus to see its specific URL.
+                GPS devices and driver phone apps send location updates to that URL — no login required.
+            </p>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="border rounded p-3 bg-light">
+                        <div class="fw-semibold small mb-2"><i class="fas fa-mobile-alt me-1 text-primary"></i> Driver Phone App (recommended)</div>
+                        <p class="text-muted small mb-2">Share the bus URL with the driver. They open it in any browser or GPS app that supports HTTP callbacks. Recommended interval: every 30 seconds.</p>
+                        <p class="text-muted small mb-0">Apps that work: <strong>GPS Logger (Android)</strong>, <strong>OwnTracks</strong>, or any app that can POST to a custom URL.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded p-3 bg-light">
+                        <div class="fw-semibold small mb-2"><i class="fas fa-microchip me-1 text-success"></i> Hardware GPS Tracker</div>
+                        <p class="text-muted small mb-2">Configure the tracker's server URL in its admin panel. Use GET method. Parameters: <code>token</code>, <code>lat</code>, <code>lng</code>, <code>speed</code>.</p>
+                        <p class="text-muted small mb-0">Compatible with: <strong>Concox</strong>, <strong>Teltonika</strong>, <strong>Queclink</strong>, and most trackers with HTTP mode.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="alert alert-info small mt-3 mb-0">
+                <i class="fas fa-lock me-1"></i>
+                Each URL contains a private token unique to that bus. Keep it confidential — anyone with the URL can update that bus's location. If a token is compromised, delete the bus and re-add it to get a new token.
+            </div>
         </div>
     </div>
 </div>
 
+<!-- GPS URL Modal -->
+<div id="modal-gps-url" class="mfp-hide">
+    <div class="card mb-0" style="min-width:520px;max-width:620px;">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <h5 class="mb-0"><i class="fas fa-satellite-dish me-2"></i>GPS Setup — <span id="gps-bus-name"></span></h5>
+            <button type="button" class="btn-close ms-2" onclick="$.magnificPopup.close()"></button>
+        </div>
+        <div class="card-body">
+            <p class="text-muted small mb-3">Send this URL to your driver or configure it on the GPS hardware tracker. It is unique to this bus.</p>
+
+            <label class="form-label fw-semibold small">Bus GPS URL</label>
+            <div class="input-group mb-3">
+                <input type="text" id="gps-url-field" class="form-control form-control-sm font-monospace" readonly>
+                <button class="btn btn-outline-secondary btn-sm" onclick="copyGpsUrl()" title="Copy"><i class="fas fa-copy"></i></button>
+            </div>
+
+            <div class="border rounded p-3 mb-3 bg-light">
+                <div class="fw-semibold small mb-2">URL Parameters</div>
+                <table class="table table-sm table-borderless mb-0 small">
+                    <tr><td class="fw-semibold text-nowrap" style="width:80px">token</td><td class="text-muted">Required. Already included in the URL above — do not change it.</td></tr>
+                    <tr><td class="fw-semibold">lat</td><td class="text-muted">Required. GPS latitude (decimal degrees, e.g. -1.286389)</td></tr>
+                    <tr><td class="fw-semibold">lng</td><td class="text-muted">Required. GPS longitude (decimal degrees, e.g. 36.817223)</td></tr>
+                    <tr><td class="fw-semibold">speed</td><td class="text-muted">Optional. Speed in km/h</td></tr>
+                </table>
+            </div>
+
+            <div class="mb-3">
+                <div class="fw-semibold small mb-2"><i class="fas fa-mobile-alt me-1 text-primary"></i>GPS Logger App (Android — Free)</div>
+                <ol class="small text-muted ps-3 mb-0">
+                    <li>Install <strong>GPS Logger</strong> from Google Play Store</li>
+                    <li>Open app → Menu → <strong>Logging Details</strong> → Custom URL</li>
+                    <li>Paste the URL above into the <strong>URL</strong> field</li>
+                    <li>Replace <code>LAT</code> with <code>%LAT</code> and <code>LNG</code> with <code>%LON</code> and <code>SPEED</code> with <code>%SPD</code></li>
+                    <li>Set interval to <strong>30 seconds</strong> → Start Logging</li>
+                </ol>
+            </div>
+
+            <div>
+                <div class="fw-semibold small mb-2"><i class="fas fa-microchip me-1 text-success"></i>Hardware GPS Tracker</div>
+                <ol class="small text-muted ps-3 mb-0">
+                    <li>Log in to your tracker's admin panel or SMS it the server config command</li>
+                    <li>Set server type to <strong>HTTP GET</strong></li>
+                    <li>Enter the URL above as the reporting endpoint</li>
+                    <li>Replace <code>LAT</code> and <code>LNG</code> with the tracker's own location variables (check your tracker's manual)</li>
+                    <li>Set reporting interval to <strong>30 seconds</strong></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var baseUrl = '<?php echo base_url(); ?>';
+
+function showGpsUrl(busId, busName, token) {
+    document.getElementById('gps-bus-name').textContent = busName;
+    var url = baseUrl + 'bus-api/location?token=' + token + '&lat=LAT&lng=LNG&speed=SPEED';
+    document.getElementById('gps-url-field').value = url;
+    mfp_modal('#modal-gps-url');
+}
+
+function copyGpsUrl() {
+    var field = document.getElementById('gps-url-field');
+    field.select();
+    document.execCommand('copy');
+    var btn = field.nextElementSibling;
+    btn.innerHTML = '<i class="fas fa-check text-success"></i>';
+    setTimeout(function(){ btn.innerHTML = '<i class="fas fa-copy"></i>'; }, 1500);
+}
+
+$(function(){ if (!$.fn.DataTable.isDataTable('#buses-table')) { $('#buses-table').DataTable({pageLength:25}); } });
+
+function resetBusForm() {
+    document.getElementById('bus-form').reset();
+    document.getElementById('bus-edit-id').value = '';
+    document.getElementById('bus-modal-title').innerHTML = '<i class="fas fa-plus me-2"></i>Register Bus';
+}
+
+function editBus(btn) {
+    var d = JSON.parse(btn.getAttribute('data-json'));
+    var f = document.getElementById('bus-form');
+    f.reset();
+    document.getElementById('bus-edit-id').value              = d.id;
+    f.querySelector('[name="bus_name"]').value                 = d.bus_name         || '';
+    f.querySelector('[name="reg_number"]').value               = d.reg_number       || '';
+    f.querySelector('[name="capacity"]').value                 = d.capacity         || '';
+    f.querySelector('[name="driver_name"]').value              = d.driver_name      || '';
+    f.querySelector('[name="driver_phone"]').value             = d.driver_phone     || '';
+    f.querySelector('[name="route_description"]').value        = d.route_description|| '';
+    f.querySelector('[name="is_active"]').checked              = d.is_active === 1;
+    document.getElementById('bus-modal-title').innerHTML = '<i class="fas fa-edit me-2"></i>Edit Bus';
+    mfp_modal('#modal-bus');
+}
+</script>
+
 <div id="modal-bus" class="mfp-hide">
     <div class="card mb-0" style="min-width:480px; max-width:560px;">
-        <div class="card-header d-flex align-items-center justify-content-between"><h5 class="mb-0"><i class="fas fa-plus me-2"></i>Register Bus</h5><button type="button" class="btn-close ms-2" onclick="$.magnificPopup.close()" title="Close"></button></div>
+        <div class="card-header d-flex align-items-center justify-content-between"><h5 class="mb-0" id="bus-modal-title"><i class="fas fa-plus me-2"></i>Register Bus</h5><button type="button" class="btn-close ms-2" onclick="$.magnificPopup.close()" title="Close"></button></div>
         <div class="card-body">
-            <?php echo form_open('bus_tracking/save_bus', ['class'=>'frm-submit']); ?>
+            <?php echo form_open('bus_tracking/save_bus', ['class'=>'frm-submit','id'=>'bus-form']); ?>
+            <input type="hidden" name="id" id="bus-edit-id" value="">
             <div class="row g-3">
                 <div class="col-sm-6">
                     <label class="form-label">Bus Name <span class="text-danger">*</span></label>
@@ -93,4 +236,3 @@
         </div>
     </div>
 </div>
-<script>$(function(){ $('#buses-table').DataTable({pageLength:25}); });</script>

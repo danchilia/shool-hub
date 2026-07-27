@@ -78,14 +78,14 @@ if ($this->session->flashdata('alert-message-success')) {
 if ($alertClass !== '' && $alertMessage !== ''):
 ?>
 <script>
-swal({
+Swal.fire({
     toast: true,
     position: 'top-end',
-    type: '<?php echo $alertClass; ?>',
+    icon: '<?php echo $alertClass; ?>',
     title: '<?php echo addslashes(html_escape($alertMessage)); ?>',
-    confirmButtonClass: 'btn btn-default',
-    buttonsStyling: false,
-    timer: 8000
+    showConfirmButton: false,
+    timer: 5000,
+    timerProgressBar: true
 });
 </script>
 <?php endif; ?>
@@ -106,14 +106,14 @@ var translate_cancel        = '<?php echo addslashes(translate('cancel')); ?>';
 
 <!-- ── LOADER DISMISS ────────────────────────────────────────────────────── -->
 <script>
-window.addEventListener('load', function () {
+(function () {
     var loader = document.getElementById('dckLoader');
     if (loader) {
         loader.style.opacity = '0';
         loader.style.transition = 'opacity .3s ease';
         setTimeout(function () { loader.style.display = 'none'; }, 320);
     }
-});
+})();
 </script>
 
 </body>

@@ -20,7 +20,7 @@
 </style>
 
 <?php
-if (count($student_array)) {
+if (!empty($student_array)) {
 	foreach ($student_array as $sc => $studentID) {
 		$result = $this->exam_model->getStudentReportCard($studentID, $examID, $sessionID);
 		$student = $result['student'];
@@ -38,11 +38,11 @@ if (count($student_array)) {
 				<td style="width:60%;vertical-align: top;">
 					<table align="right" class="table-head text-right" >
 						<tbody>
-							<tr><th style="font-size: 26px;" class="text-right"><?=$getSchool['school_name']?></th></tr>
-							<tr><th style="font-size: 14px; padding-top: 4px;" class="text-right">Academic Session : <?=$schoolYear?></th></tr>
-							<tr><td><?=$getSchool['address']?></td></tr>
-							<tr><td><?=$getSchool['mobileno']?></td></tr>
-							<tr><td><?=$getSchool['email']?></td></tr>
+							<tr><th style="font-size: 26px;" class="text-right"><?=htmlspecialchars($getSchool['school_name'])?></th></tr>
+							<tr><th style="font-size: 14px; padding-top: 4px;" class="text-right">Academic Session : <?=htmlspecialchars($schoolYear)?></th></tr>
+							<tr><td><?=htmlspecialchars($getSchool['address'])?></td></tr>
+							<tr><td><?=htmlspecialchars($getSchool['mobileno'])?></td></tr>
+							<tr><td><?=htmlspecialchars($getSchool['email'])?></td></tr>
 						</tbody>
 					</table>
 				</td>
@@ -52,32 +52,32 @@ if (count($student_array)) {
 		<table class="table table-bordered" style="margin-top: 20px;">
 			<tbody>
 				<tr>
-					<th>Name</td>
-					<td><?=$student['first_name'] . " " . $student['last_name']?></td>
-					<th>Register No</td>
-					<td><?=$student['register_no']?></td>
-					<th>Roll Number</td>
-					<td><?=$student['roll']?></td>
+					<th>Name</th>
+					<td><?=htmlspecialchars($student['first_name'] . " " . $student['last_name'])?></td>
+					<th>Register No</th>
+					<td><?=htmlspecialchars($student['register_no'])?></td>
+					<th>Roll Number</th>
+					<td><?=htmlspecialchars($student['roll'])?></td>
 				</tr>
 				<tr>
-					<th>Father Name</td>
-					<td><?=$student['father_name']?></td>
-					<th>Admission Date</td>
+					<th>Father Name</th>
+					<td><?=htmlspecialchars($student['father_name'])?></td>
+					<th>Admission Date</th>
 					<td><?=_d($student['admission_date'])?></td>
-					<th>Date of Birth</td>
+					<th>Date of Birth</th>
 					<td><?=_d($student['birthday'])?></td>
 				</tr>
 				<tr>
-					<th>Mother Name</td>
-					<td><?=$student['mother_name']?></td>
-					<th>Class</td>
-					<td><?=$student['class_name'] . " (" . $student['section_name'] . ")"?></td>
-					<th>Gender</td>
-					<td><?=ucfirst($student['gender'])?></td>
+					<th>Mother Name</th>
+					<td><?=htmlspecialchars($student['mother_name'])?></td>
+					<th>Class</th>
+					<td><?=htmlspecialchars($student['class_name'] . " (" . $student['section_name'] . ")")?></td>
+					<th>Gender</th>
+					<td><?=htmlspecialchars(ucfirst($student['gender']))?></td>
 				</tr>
 			</tbody>
 		</table>
-		<table class="table table-condensed table-bordered mt-lg">
+		<table class="table table-sm table-bordered mt-4">
 			<thead>
 				<tr>
 					<th>Subjects</th>
@@ -109,7 +109,7 @@ if (count($student_array)) {
 			foreach ($getMarksList as $row) {
 			?>
 				<tr>
-					<td valign="middle" width="35%"><?=$row['subject_name']?></td>
+					<td valign="middle" width="35%"><?=htmlspecialchars($row['subject_name'])?></td>
 				<?php 
 				$total_obtain_marks = 0;
 				$total_full_marks = 0;
@@ -143,7 +143,7 @@ if (count($student_array)) {
 							if ($row['get_abs'] == 'on') {
 								echo 'Absent';
 							} else {
-								$percentage_grade = ($obtained_mark * 100) / $fullMark;
+								$percentage_grade = $fullMark > 0 ? ($obtained_mark * 100) / $fullMark : 0;
 								$grade = $this->exam_model->get_grade($percentage_grade, $getExam['branch_id']);
 								echo $grade['name'];
 							}
@@ -157,8 +157,8 @@ if (count($student_array)) {
 				?>
 				<?php if($getExam['type_id'] == 1 || $getExam['type_id'] == 3) { ?>
 					<td valign="middle"><?=$total_obtain_marks . "/" . $total_full_marks?></td>
-				<?php } if($getExam['type_id'] == 2) { 
-					$percentage_grade = ($total_obtain_marks * 100) / $total_full_marks;
+				<?php } if($getExam['type_id'] == 2) {
+					$percentage_grade = $total_full_marks > 0 ? ($total_obtain_marks * 100) / $total_full_marks : 0;
 					$grade = $this->exam_model->get_grade($percentage_grade, $getExam['branch_id']);
 					$total_grade_point += $grade['grade_point'];
 					?>
@@ -166,7 +166,7 @@ if (count($student_array)) {
 					<td valign="middle"><?=number_format($grade['grade_point'], 2, '.', '')?></td>
 				<?php } if ($getExam['type_id'] == 3) {
 					$colspan += 2;
-					$percentage_grade = ($total_obtain_marks * 100) / $total_full_marks;
+					$percentage_grade = $total_full_marks > 0 ? ($total_obtain_marks * 100) / $total_full_marks : 0;
 					$grade = $this->exam_model->get_grade($percentage_grade, $getExam['branch_id']);
 					$total_grade_point += $grade['grade_point'];
 					?>
@@ -176,11 +176,11 @@ if (count($student_array)) {
 				</tr>
 			<?php } ?>
 			<?php if ($getExam['type_id'] == 1 || $getExam['type_id'] == 3) { ?>
-				<tr class="text-weight-semibold">
+				<tr class="fw-semibold">
 					<td valign="top" >GRAND TOTAL :</td>
-					<td valign="top" colspan="<?=$colspan?>"><?=$grand_obtain_marks . '/' . $grand_full_marks; ?>, Average : <?php $percentage = ($grand_obtain_marks * 100) / $grand_full_marks; echo number_format($percentage, 2, '.', '')?>%</td>
+					<td valign="top" colspan="<?=$colspan?>"><?=$grand_obtain_marks . '/' . $grand_full_marks; ?>, Average : <?php $percentage = $grand_full_marks > 0 ? ($grand_obtain_marks * 100) / $grand_full_marks : 0; echo number_format($percentage, 2, '.', '')?>%</td>
 				</tr>
-				<tr class="text-weight-semibold">
+				<tr class="fw-semibold">
 					<td valign="top" >GRAND TOTAL IN WORDS :</td>
 					<td valign="top" colspan="<?=$colspan?>">
 						<?php
@@ -190,17 +190,17 @@ if (count($student_array)) {
 					</td>
 				</tr>
 			<?php } if ($getExam['type_id'] == 2) { ?>
-				<tr class="text-weight-semibold">
+				<tr class="fw-semibold">
 					<td valign="top" >GPA :</td>
-					<td valign="top" colspan="<?=$colspan+1?>"><?=number_format(($total_grade_point / count($getMarksList)), 2, '.', '')?></td>
+					<td valign="top" colspan="<?=$colspan+1?>"><?=number_format((count($getMarksList) > 0 ? $total_grade_point / count($getMarksList) : 0), 2, '.', '')?></td>
 				</tr>
 			<?php } if ($getExam['type_id'] == 3) { ?>
-				<tr class="text-weight-semibold">
+				<tr class="fw-semibold">
 					<td valign="top" >GPA :</td>
-					<td valign="top" colspan="<?=$colspan?>"><?=number_format(($total_grade_point / count($getMarksList)), 2, '.', '')?></td>
+					<td valign="top" colspan="<?=$colspan?>"><?=number_format((count($getMarksList) > 0 ? $total_grade_point / count($getMarksList) : 0), 2, '.', '')?></td>
 				</tr>
 			<?php } if ($getExam['type_id'] == 1 || $getExam['type_id'] == 3) { ?>
-				<tr class="text-weight-semibold">
+				<tr class="fw-semibold">
 					<td valign="top" >RESULT :</td>
 					<td valign="top" colspan="<?=$colspan?>"><?=$result_status == 0 ? 'Fail' : 'Pass'; ?></td>
 				</tr>
@@ -217,7 +217,7 @@ if (count($student_array)) {
 					$getTotalAttendance = $this->db->where(array('student_id' => $studentID, 'status' => 'P', 'year(date)' => $year[0]))->get('student_attendance')->num_rows();
 					$attenPercentage = empty($getTotalWorking) ? '0.00' : ($getTotalAttendance * 100) / $getTotalWorking;
 					?>
-				<table class="table table-bordered table-condensed">
+				<table class="table table-bordered table-sm">
 					<tbody>
 						<tr>
 							<th colspan="2" class="text-center">Attendance</th>
@@ -243,7 +243,7 @@ if (count($student_array)) {
 		if ($getExam['type_id'] != 1) {
 			?>
 			<div style="width: 50%; padding-left: 15px;">
-				<table class="table table-condensed table-bordered">
+				<table class="table table-sm table-bordered">
 					<tbody>
 						<tr>
 							<th colspan="3" class="text-center">Grading Scale</th>
@@ -270,11 +270,11 @@ if (count($student_array)) {
 		</div>
 	<?php if (!empty($remarks_array[$sc])) { ?>
 		<div style="width: 100%;">
-			<table class="table table-condensed table-bordered">
+			<table class="table table-sm table-bordered">
 				<tbody>
 					<tr>
 						<th style="width: 250px;">Remarks</th>
-						<td><?=$remarks_array[$sc]?></td>
+						<td><?=htmlspecialchars($remarks_array[$sc])?></td>
 					</tr>
 				</tbody>
 			</table>

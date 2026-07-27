@@ -113,7 +113,7 @@
 						</div>
 					</div>
 					<div class="table-responsive mb-md">
-						<table class="table table-condensed table-hover table-bordered tbr-top">
+						<table class="table table-sm table-hover table-bordered tbr-top">
 							<thead>
 								<tr>
 									<th width="50">#</th>
@@ -124,20 +124,19 @@
 									<th><?=translate('roll')?></th>
 									<th class="center">
 										<div class="checkbox-replace">
-											<label class="i-checks" data-toggle="tooltip" data-original-title="Promotion"><input type="checkbox" id="selectAllchkbox" checked><i></i></label>
-										</div>				
+											<label class="i-checks" data-bs-toggle="tooltip" data-bs-title="Promotion"><input type="checkbox" id="selectAllchkbox" checked><i></i></label>
+										</div>
 									</th>
 								</tr>
 							</thead>
 							<tbody>
 								<?php
 								$count = 1;
-								if (count($students)) {
+								if (!empty($students)) {
 									foreach($students as $key => $row):
 								?>
 								<tr>
-									<input type="hidden" name="promote[<?=$key?>][student_id]" value="<?=$row['student_id']?>" />
-									<td><?php echo $count++;?></td>
+									<td><input type="hidden" name="promote[<?=$key?>][student_id]" value="<?=$row['student_id']?>" /><?php echo $count++;?></td>
 									<td><?php echo $row['fullname'];?></td>
 									<td><?php echo $row['register_no'];?></td>
 									<td><?php echo (!empty($row['parent_id']) ? get_type_name_by_id('parent', $row['parent_id']) : 'N/A');?></td>
@@ -192,6 +191,11 @@
 
 <script type="text/javascript">
 	$(document).ready(function () {
+		$('#selectAllchkbox').on('change', function() {
+			var checked = $(this).prop('checked');
+			$('.checked-area input[type="checkbox"]').prop('checked', checked);
+		});
+
 		 $('#class_promote_id').on('change', function() {
 			var classID = $(this).val();
 			$.ajax({

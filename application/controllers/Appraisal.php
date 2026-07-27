@@ -14,7 +14,19 @@ class Appraisal extends Admin_Controller {
         $branchId = $this->_branchId();
         $templates = $this->db->where('branch_id', $branchId)->get('appraisal_templates')->result();
 
-        $this->data['templates']  = $templates;
+        // Pre-fetch criteria counts to avoid N+1 queries in the view
+        $criteriaCounts = [];
+        if (!empty($templates)) {
+            $tplIds = array_column(array_map('get_object_vars', $templates), 'id');
+            $rows   = $this->db->select('template_id, COUNT(*) AS cnt')
+                               ->where_in('template_id', $tplIds)
+                               ->group_by('template_id')
+                               ->get('appraisal_criteria')->result();
+            foreach ($rows as $r) { $criteriaCounts[$r->template_id] = (int)$r->cnt; }
+        }
+
+        $this->data['templates']      = $templates;
+        $this->data['criteriaCounts'] = $criteriaCounts;
         $this->data['title']      = 'Appraisal Templates';
         $this->data['main_menu']  = 'appraisal';
         $this->data['sub_page']   = 'appraisal/templates';
@@ -50,6 +62,15 @@ class Appraisal extends Admin_Controller {
 
     public function delete_template($id) {
         $branchId = $this->_branchId();
+        // Cascade: scores → criteria → appraisals → template
+        $appraisalIds = array_column(
+            $this->db->where('template_id',$id)->get('appraisals')->result_array(),
+            'id'
+        );
+        if (!empty($appraisalIds)) {
+            $this->db->where_in('appraisal_id', $appraisalIds)->delete('appraisal_scores');
+            $this->db->where_in('id', $appraisalIds)->delete('appraisals');
+        }
         $this->db->where('template_id',$id)->delete('appraisal_criteria');
         $this->db->where('id',$id)->where('branch_id',$branchId)->delete('appraisal_templates');
         echo json_encode(['status'=>'success','url'=>base_url('appraisal/templates')]);
@@ -208,6 +229,9 @@ class Appraisal extends Admin_Controller {
 
         $appraisal = $this->db->where('id',$appraisalId)->where('branch_id',$branchId)->get('appraisals')->row();
         if (!$appraisal) { echo json_encode(['status'=>'error','msg'=>'Not found']); return; }
+        if (in_array($appraisal->status, ['approved','reviewed'])) {
+            echo json_encode(['status'=>'error','msg'=>'This appraisal has been '.$appraisal->status.' and cannot be edited.']); return;
+        }
 
         $scores  = $this->input->post('scores');   // [criterion_id => score]
         $comments= $this->input->post('comments'); // [criterion_id => comment]

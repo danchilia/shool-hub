@@ -110,7 +110,7 @@
             <div class="row g-3">
                 <div class="col-12">
                     <label class="form-label">Staff Member <span class="text-danger">*</span></label>
-                    <select name="staff_id" class="form-select select2" required>
+                    <select name="staff_id" class="form-select" data-plugin-selectTwo data-width="100%" required>
                         <option value="">-- Select Staff --</option>
                         <?php foreach ($staff as $s): ?>
                         <option value="<?php echo $s->id; ?>"><?php echo html_escape($s->name); ?></option>
@@ -119,7 +119,7 @@
                 </div>
                 <div class="col-12">
                     <label class="form-label">Template <span class="text-danger">*</span></label>
-                    <select name="template_id" class="form-select select2" required>
+                    <select name="template_id" class="form-select" data-plugin-selectTwo data-width="100%" required>
                         <option value="">-- Select Template --</option>
                         <?php foreach ($templates as $t): ?>
                         <option value="<?php echo $t->id; ?>"><?php echo html_escape($t->name); ?> (<?php echo ucfirst(str_replace('_',' ',$t->appraisal_type)); ?>)</option>

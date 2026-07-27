@@ -141,7 +141,7 @@
                 </div>
                 <div class="col-sm-6">
                     <label class="form-label">Category</label>
-                    <select name="category_id" class="form-select select2">
+                    <select name="category_id" class="form-select" data-plugin-selectTwo data-width="100%">
                         <option value="">-- Select --</option>
                         <?php foreach ($categories as $c): ?>
                         <option value="<?php echo $c->id; ?>"><?php echo html_escape($c->name); ?></option>

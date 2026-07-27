@@ -66,7 +66,7 @@
 					<label class="col-md-3 control-label"><?=translate('date_of_homework')?> <span class="required">*</span></label>
 					<div class="col-md-6">
 						<div class="input-group">
-							<span class="input-group-addon"><i class="far fa-calendar-alt"></i></span>
+							<span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
 							<input type="text" class="form-control" name="date_of_homework" id="date_of_homework" value="<?=$homework['date_of_homework']?>" autocomplete="off" data-plugin-datepicker
 							data-plugin-options='{ "todayHighlight" : true }' />
 						</div>
@@ -77,7 +77,7 @@
 					<label class="col-md-3 control-label"><?=translate('date_of_submission')?> <span class="required">*</span></label>
 					<div class="col-md-6">
 						<div class="input-group">
-							<span class="input-group-addon"><i class="far fa-calendar-alt"></i></span>
+							<span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
 							<input type="text" class="form-control" name="date_of_submission" value="<?=$homework['date_of_submission']?>" autocomplete="off" data-plugin-datepicker
 							data-plugin-options='{ "todayHighlight" : true }' />
 						</div>
@@ -85,7 +85,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-md-offset-3 col-md-6">
+					<div class="col-md-6 offset-md-3">
 						<div class="checkbox-replace">
 							<label class="i-checks"><input type="checkbox" name="published_later" <?=$homework['status'] == 1 ? 'checked' : '';?> id="published_later"><i></i> Published later</label>
 						</div>
@@ -94,7 +94,7 @@
 					<label class="col-md-3 control-label">Schedule Date <span class="required">*</span></label>
 					<div class="col-md-6">
 						<div class="input-group">
-							<span class="input-group-addon"><i class="far fa-calendar-alt"></i></span>
+							<span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
 							<input type="text" class="form-control" name="schedule_date" id="schedule_date" <?=$homework['status'] == 0 ? 'disabled' : '';?> autocomplete="off" value="<?=$homework['schedule_date']?>" data-plugin-datepicker
 							data-plugin-options='{ "todayHighlight" : true }' />
 						</div>
@@ -130,7 +130,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-md-offset-3 col-md-6">
+					<div class="col-md-6 offset-md-3">
 						<div class="checkbox-replace">
 							<label class="i-checks"><input type="checkbox" name="notification_sms" <?=$homework['sms_notification'] == 1 ? 'checked' : '';?>><i></i> Send Notification SMS</label>
 						</div>
@@ -139,7 +139,7 @@
 			</div>
 			<footer class="panel-footer">
 				<div class="row">
-					<div class="col-md-offset-3 col-md-2">
+					<div class="col-md-2 offset-md-3">
 						<button type="submit" class="btn btn-default btn-block" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing">
 							<i class="fas fa-plus-circle"></i> <?=translate('update')?>
 						</button>

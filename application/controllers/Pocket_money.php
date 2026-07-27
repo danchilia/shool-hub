@@ -28,9 +28,10 @@ class Pocket_money extends Admin_Controller
     public function index()
     {
         $branchId = get_loggedin_branch_id();
+        $sessionId = get_session_id();
         $students = $this->db->select('s.id AS student_id, s.first_name, s.last_name, s.register_no, c.name AS class, se.name AS section_name, COALESCE(pmb.balance, 0) AS balance')
             ->from('student s')
-            ->join('enroll e', 'e.student_id = s.id AND e.branch_id = '.(int)$branchId)
+            ->join('enroll e', 'e.student_id = s.id AND e.branch_id = '.(int)$branchId.' AND e.session_id = '.(int)$sessionId)
             ->join('class c', 'c.id = e.class_id', 'left')
             ->join('section se', 'se.id = e.section_id', 'left')
             ->join('pocket_money_balance pmb', 'pmb.student_id = s.id', 'left')
@@ -44,7 +45,7 @@ class Pocket_money extends Admin_Controller
         $this->data['totalHeld'] = $totalHeld;
         $this->data['sub_page']  = 'pocket_money/index';
         $this->data['main_menu'] = 'pocket_money';
-        $this->data['page_title']= 'Pocket Money';
+        $this->data['title']     = 'Pocket Money';
         $this->load->view('layout/index', $this->data);
     }
 
@@ -52,9 +53,10 @@ class Pocket_money extends Admin_Controller
     public function ledger($studentId = '')
     {
         $branchId = get_loggedin_branch_id();
-        $student  = $this->db->select('s.*, c.name AS class, se.name AS section_name')
+        $sessionId = get_session_id();
+        $student  = $this->db->select('s.id AS student_id, s.*, c.name AS class, se.name AS section_name')
             ->from('student s')
-            ->join('enroll e', 'e.student_id = s.id', 'left')
+            ->join('enroll e', 'e.student_id = s.id AND e.branch_id = ' . (int)$branchId . ' AND e.session_id = ' . (int)$sessionId)
             ->join('class c', 'c.id = e.class_id', 'left')
             ->join('section se', 'se.id = e.section_id', 'left')
             ->where('s.id', $studentId)
@@ -63,7 +65,7 @@ class Pocket_money extends Admin_Controller
             show_404();
         }
 
-        $transactions = $this->db->where('student_id', $studentId)->order_by('id', 'DESC')->get('pocket_money')->result_array();
+        $transactions = $this->db->where('student_id', $studentId)->where('branch_id', $branchId)->order_by('id', 'DESC')->get('pocket_money')->result_array();
         $balance      = $this->_getBalance($studentId);
 
         $this->data['student']      = $student;
@@ -71,13 +73,14 @@ class Pocket_money extends Admin_Controller
         $this->data['balance']      = $balance;
         $this->data['sub_page']     = 'pocket_money/ledger';
         $this->data['main_menu']    = 'pocket_money';
-        $this->data['page_title']   = 'Pocket Money — ' . $student['first_name'];
+        $this->data['title']        = 'Pocket Money — ' . $student['first_name'];
         $this->load->view('layout/index', $this->data);
     }
 
     /** Deposit cash */
     public function deposit()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $this->form_validation->set_rules('student_id', 'Student',     'trim|required|is_natural_no_zero');
         $this->form_validation->set_rules('amount',     'Amount',      'trim|required|numeric|greater_than[0]');
         if ($this->form_validation->run() !== false) {
@@ -97,15 +100,16 @@ class Pocket_money extends Admin_Controller
                 'recorded_by'     => get_loggedin_user_id(),
                 'branch_id'       => $branchId,
             ));
-            echo json_encode(array('status' => 'success', 'message' => 'KES ' . number_format($amount, 2) . ' deposited. New balance: KES ' . number_format($balance, 2)));
+            echo json_encode(array('status' => 'success', 'url' => base_url('pocket_money/ledger/' . $studentId)));
         } else {
-            echo json_encode(array('status' => 'fail', 'error' => $this->form_validation->error_array()));
+            echo json_encode(array('status' => 'error', 'msg' => validation_errors()));
         }
     }
 
     /** Withdrawal */
     public function withdraw()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $this->form_validation->set_rules('student_id', 'Student', 'trim|required|is_natural_no_zero');
         $this->form_validation->set_rules('amount',     'Amount',  'trim|required|numeric|greater_than[0]');
         if ($this->form_validation->run() !== false) {
@@ -128,9 +132,9 @@ class Pocket_money extends Admin_Controller
                 'recorded_by'     => get_loggedin_user_id(),
                 'branch_id'       => $branchId,
             ));
-            echo json_encode(array('status' => 'success', 'message' => 'KES ' . number_format($amount, 2) . ' withdrawn. Remaining: KES ' . number_format($newBalance, 2)));
+            echo json_encode(array('status' => 'success', 'url' => base_url('pocket_money/ledger/' . $studentId)));
         } else {
-            echo json_encode(array('status' => 'fail', 'error' => $this->form_validation->error_array()));
+            echo json_encode(array('status' => 'error', 'msg' => validation_errors()));
         }
     }
 }

@@ -88,13 +88,10 @@
 							<?php } } ?>
 								<td class="min-w-xs">
 								<?php if (get_permission('parent', 'is_edit')): ?>
-									<!-- update link -->
-									<a href="<?php echo base_url('parents/profile/' . $row->id);?>" class="btn btn-default btn-circle icon" data-toggle="tooltip"
-									data-original-title="<?=translate('profile')?>">
-										<i class="far fa-arrow-alt-circle-right"></i>
+									<a href="<?php echo base_url('parents/profile/' . $row->id);?>" class="btn btn-info btn-action">
+										<i class="fas fa-user"></i> <?=translate('profile')?>
 									</a>
 								<?php endif; if (get_permission('parent', 'is_delete')): ?>
-									<!-- delete link -->
 									<?php echo btn_delete('parents/delete/' . $row->id);?>
 								<?php endif; ?>
 								</td>

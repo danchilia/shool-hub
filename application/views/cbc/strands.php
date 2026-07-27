@@ -36,7 +36,7 @@
 				<div class="panel-footer">
 					<div class="row">
 						<div class="col-md-12">
-							<button class="btn btn-default pull-right" type="submit" name="save" value="1">
+							<button class="btn btn-default float-end" type="submit" name="save" value="1">
 								<i class="fas fa-plus-circle"></i> <?=translate('save')?>
 							</button>
 						</div>
@@ -54,7 +54,7 @@
 			</header>
 			<div class="panel-body">
 				<div class="table-responsive">
-					<table class="table table-bordered table-hover table-condensed mb-none">
+					<table class="table table-bordered table-hover table-sm mb-0">
 						<thead>
 							<tr>
 								<th><?=translate('sl')?></th>
@@ -69,7 +69,7 @@
 						<tbody>
 							<?php
 							$count = 1;
-							if (count($strands)){
+							if (!empty($strands)){
 								foreach ($strands as $row):
 							?>
 							<tr>

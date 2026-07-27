@@ -59,6 +59,7 @@ class Application_model extends CI_Model
 
     public function getStudentListByClassSection($classID = '', $sectionID = '', $branchID = '', $deactivate = false, $rollOrder = false)
     {
+        $sessionId = get_session_id();
         $this->db->select('e.*,s.photo, CONCAT(s.first_name, " ", s.last_name) as fullname,s.register_no,s.parent_id,s.email,s.mobileno,s.blood_group,s.birthday,s.admission_date,l.active,c.name as class_name,se.name as section_name');
         $this->db->from('enroll as e');
         $this->db->join('student as s', 'e.student_id = s.id', 'inner');
@@ -67,7 +68,7 @@ class Application_model extends CI_Model
         $this->db->join('section as se', 'e.section_id=se.id', 'left');
         $this->db->where('e.class_id', $classID);
         $this->db->where('e.branch_id', $branchID);
-        $this->db->where('e.session_id', get_session_id());
+        $this->db->where('e.session_id', $sessionId);
         if ($rollOrder == true) {
             $this->db->order_by('e.roll', 'ASC');
         } else {

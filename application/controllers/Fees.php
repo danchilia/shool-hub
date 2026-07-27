@@ -35,7 +35,7 @@ class Fees extends Admin_Controller
         if (!get_permission('fees_type', 'is_view')) {
             access_denied();
         }
-        if ($_POST) {
+        if ($this->input->is_ajax_request()) {
             if (!get_permission('fees_type', 'is_add')) {
                 ajax_access_denied();
             }
@@ -46,8 +46,7 @@ class Fees extends Admin_Controller
                 set_alert('success', translate('information_has_been_saved_successfully'));
                 $array = array('status' => 'success');
             } else {
-                $error = $this->form_validation->error_array();
-                $array = array('status' => 'fail', 'error' => $error);
+                $array = array('status' => 'error', 'msg' => validation_errors());
             }
             echo json_encode($array);
             exit();
@@ -65,7 +64,7 @@ class Fees extends Admin_Controller
             access_denied();
         }
 
-        if ($_POST) {
+        if ($this->input->is_ajax_request()) {
             $this->type_validation();
             if ($this->form_validation->run() !== false) {
                 $post = $this->input->post();
@@ -74,8 +73,7 @@ class Fees extends Admin_Controller
                 $url = base_url('fees/type');
                 $array = array('status' => 'success', 'url' => $url);
             } else {
-                $error = $this->form_validation->error_array();
-                $array = array('status' => 'fail', 'error' => $error);
+                $array = array('status' => 'error', 'msg' => validation_errors());
             }
             echo json_encode($array);
             exit();
@@ -89,13 +87,16 @@ class Fees extends Admin_Controller
 
     public function type_delete($id = '')
     {
-        if (get_permission('fees_type', 'is_delete')) {
-            if (!is_superadmin_loggedin()) {
-                $this->db->where('branch_id', get_loggedin_branch_id());
-            }
-            $this->db->where('id', $id);
-            $this->db->delete('fees_type');
+        if (!$this->input->is_ajax_request()) show_404();
+        if (!get_permission('fees_type', 'is_delete')) {
+            ajax_access_denied();
         }
+        if (!is_superadmin_loggedin()) {
+            $this->db->where('branch_id', get_loggedin_branch_id());
+        }
+        $this->db->where('id', $id);
+        $this->db->delete('fees_type');
+        echo json_encode(array('status' => 'success', 'url' => base_url('fees/type')));
     }
 
     public function unique_type($name)
@@ -120,7 +121,7 @@ class Fees extends Admin_Controller
         if (!get_permission('fees_group', 'is_view')) {
             access_denied();
         }
-        if ($_POST) {
+        if ($this->input->is_ajax_request()) {
             if (!get_permission('fees_group', 'is_add')) {
                 ajax_access_denied();
             }
@@ -171,14 +172,31 @@ class Fees extends Admin_Controller
                 $url = base_url('fees/group');
                 $array = array('status' => 'success', 'url' => $url);
             } else {
-                $error = $this->form_validation->error_array();
-                $array = array('status' => 'fail', 'error' => $error);
+                $array = array('status' => 'error', 'msg' => validation_errors());
             }
             echo json_encode($array);
             exit();
         }
         $this->data['branch_id'] = $branch_id;
-        $this->data['categorylist'] = $this->app_lib->getTable('fee_groups', array('t.session_id' => get_session_id()));
+        $categorylist = $this->app_lib->getTable('fee_groups', array('t.session_id' => get_session_id()));
+        $this->data['categorylist'] = $categorylist;
+        $groupDetailsMap = array();
+        if (!empty($categorylist)) {
+            $groupIds = array_column($categorylist, 'id');
+            $rows = $this->db->select('gd.fee_groups_id, ft.name, gd.amount')
+                ->from('fee_groups_details as gd')
+                ->join('fees_type as ft', 'ft.id = gd.fee_type_id', 'left')
+                ->where_in('gd.fee_groups_id', $groupIds)
+                ->get()->result_array();
+            foreach ($rows as $d) {
+                $groupDetailsMap[$d['fee_groups_id']][] = $d;
+            }
+        }
+        $this->data['group_details_map'] = $groupDetailsMap;
+        $branchForTypes = is_superadmin_loggedin() ? $branch_id : get_loggedin_branch_id();
+        $this->data['fee_types_for_create'] = !empty($branchForTypes)
+            ? $this->db->where('branch_id', $branchForTypes)->get('fees_type')->result_array()
+            : array();
         $this->data['title'] = translate('fees_group');
         $this->data['sub_page'] = 'fees/group';
         $this->data['main_menu'] = 'fees';
@@ -190,7 +208,7 @@ class Fees extends Admin_Controller
         if (!get_permission('fees_group', 'is_edit')) {
             access_denied();
         }
-        if ($_POST) {
+        if ($this->input->is_ajax_request()) {
             $this->form_validation->set_rules('name', translate('group_name'), 'trim|required');
             $elems = $this->input->post('elem');
             $sel = array();
@@ -240,13 +258,20 @@ class Fees extends Admin_Controller
                 $url = base_url('fees/group');
                 $array = array('status' => 'success', 'url' => $url);
             } else {
-                $error = $this->form_validation->error_array();
-                $array = array('status' => 'fail', 'error' => $error);
+                $array = array('status' => 'error', 'msg' => validation_errors());
             }
             echo json_encode($array);
             exit();
         }
-        $this->data['group'] = $this->app_lib->getTable('fee_groups', array('t.id' => $id), true);
+        $group = $this->app_lib->getTable('fee_groups', array('t.id' => $id), true);
+        $this->data['group'] = $group;
+        $this->data['fee_types'] = $this->db->where('branch_id', $group['branch_id'])->get('fees_type')->result_array();
+        $existingDetails = $this->db->where('fee_groups_id', $id)->get('fee_groups_details')->result_array();
+        $existingMap = array();
+        foreach ($existingDetails as $d) {
+            $existingMap[$d['fee_type_id']] = $d;
+        }
+        $this->data['existing_details_map'] = $existingMap;
         $this->data['title'] = translate('fees_group');
         $this->data['sub_page'] = 'fees/group_edit';
         $this->data['main_menu'] = 'fees';
@@ -255,17 +280,20 @@ class Fees extends Admin_Controller
 
     public function group_delete($id)
     {
-        if (get_permission('fees_group', 'is_delete')) {
-            if (!is_superadmin_loggedin()) {
-                $this->db->where('branch_id', get_loggedin_branch_id());
-            }
-            $this->db->where('id', $id);
-            $this->db->delete('fee_groups');
-            if ($this->db->affected_rows() > 0) {
-                $this->db->where('fee_groups_id', $id);
-                $this->db->delete('fee_groups_details');
-            }
+        if (!$this->input->is_ajax_request()) show_404();
+        if (!get_permission('fees_group', 'is_delete')) {
+            ajax_access_denied();
         }
+        if (!is_superadmin_loggedin()) {
+            $this->db->where('branch_id', get_loggedin_branch_id());
+        }
+        $this->db->where('id', $id);
+        $this->db->delete('fee_groups');
+        if ($this->db->affected_rows() > 0) {
+            $this->db->where('fee_groups_id', $id);
+            $this->db->delete('fee_groups_details');
+        }
+        echo json_encode(array('status' => 'success', 'url' => base_url('fees/group')));
     }
 
     /* fees type form validation rules */
@@ -287,7 +315,7 @@ class Fees extends Admin_Controller
             access_denied();
         }
         $branchID = $this->application_model->get_branch_id();
-        if ($_POST) {
+        if ($this->input->is_ajax_request()) {
             if (!get_permission('fees_fine_setup', 'is_add')) {
                 ajax_access_denied();
             }
@@ -306,8 +334,7 @@ class Fees extends Admin_Controller
                 set_alert('success', translate('information_has_been_saved_successfully'));
                 $array = array('status' => 'success');
             } else {
-                $error = $this->form_validation->error_array();
-                $array = array('status' => 'fail', 'error' => $error);
+                $array = array('status' => 'error', 'msg' => validation_errors());
             }
             echo json_encode($array);
             exit();
@@ -326,7 +353,7 @@ class Fees extends Admin_Controller
             access_denied();
         }
 
-        if ($_POST) {
+        if ($this->input->is_ajax_request()) {
             $branchID = $this->application_model->get_branch_id();
             $this->fine_validation();
             if ($this->form_validation->run() !== false) {
@@ -345,8 +372,7 @@ class Fees extends Admin_Controller
                 $url = base_url('fees/fine_setup');
                 $array = array('status' => 'success', 'url' => $url);
             } else {
-                $error = $this->form_validation->error_array();
-                $array = array('status' => 'fail', 'error' => $error);
+                $array = array('status' => 'error', 'msg' => validation_errors());
             }
             echo json_encode($array);
             exit();
@@ -378,13 +404,16 @@ class Fees extends Admin_Controller
 
     public function fine_delete($id)
     {
-        if (get_permission('fees_fine_setup', 'is_delete')) {
-            if (!is_superadmin_loggedin()) {
-                $this->db->where('branch_id', get_loggedin_branch_id());
-            }
-            $this->db->where('id', $id);
-            $this->db->delete('fee_fine');
+        if (!$this->input->is_ajax_request()) show_404();
+        if (!get_permission('fees_fine_setup', 'is_delete')) {
+            ajax_access_denied();
         }
+        if (!is_superadmin_loggedin()) {
+            $this->db->where('branch_id', get_loggedin_branch_id());
+        }
+        $this->db->where('id', $id);
+        $this->db->delete('fee_fine');
+        echo json_encode(array('status' => 'success', 'url' => base_url('fees/fine_setup')));
     }
 
     public function allocation()
@@ -454,8 +483,10 @@ class Fees extends Admin_Controller
 
     function invoice_delete($student_id)
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (!get_permission('invoice', 'is_delete')) {
-            access_denied();
+            echo json_encode(array('status' => 'error', 'msg' => 'Access denied'));
+            return;
         }
 
         if (!is_superadmin_loggedin()) {
@@ -473,6 +504,7 @@ class Fees extends Admin_Controller
         }
         $this->db->where('student_id', $student_id);
         $this->db->delete('fee_allocation');
+        echo json_encode(array('status' => 'success', 'url' => base_url('fees/invoice_list')));
     }
 
     /* invoice user interface with information are controlled here */
@@ -495,9 +527,26 @@ class Fees extends Admin_Controller
             access_denied();
         }
         if ($_POST) {
-            $this->data['student_array'] = $this->input->post('student_id');
+            $student_ids = $this->input->post('student_id');
+            $print_data = array();
+            foreach ((array)$student_ids as $student_id) {
+                $invoice = $this->fees_model->getInvoiceStatus($student_id);
+                $basic   = $this->fees_model->getInvoiceBasic($student_id);
+                $allocations = $this->fees_model->getInvoiceDetails($basic['id']);
+                $alloc_data = array();
+                foreach ($allocations as $alloc) {
+                    $deposit = $this->fees_model->getStudentFeeDeposit($alloc['allocation_id'], $alloc['fee_type_id']);
+                    $alloc_data[] = array_merge($alloc, array('deposit' => $deposit));
+                }
+                $print_data[] = array(
+                    'invoice'     => $invoice,
+                    'basic'       => $basic,
+                    'allocations' => $alloc_data,
+                );
+            }
+            $this->data['print_data'] = $print_data;
             echo $this->load->view('fees/invoicePrint', $this->data, true);
-        }  
+        }
     }
 
     public function due_invoice()
@@ -524,6 +573,7 @@ class Fees extends Admin_Controller
 
     public function fee_add()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if (!get_permission('collect_fees', 'is_add')) {
             ajax_access_denied();
         }
@@ -575,23 +625,23 @@ class Fees extends Admin_Controller
             // send payment confirmation sms
             if (isset($_POST['guardian_sms'])) {
                 $arrayData = array(
-                    'student_id' => $this->input->post('student_id'), 
-                    'amount' => $amount, 
-                    'paid_date' => $date, 
+                    'student_id' => $this->input->post('student_id'),
+                    'amount' => $amount,
+                    'paid_date' => $date,
                 );
                 $this->sms_model->send_sms($arrayData, 2);
             }
             set_alert('success', translate('information_has_been_saved_successfully'));
             $array = array('status' => 'success');
         } else {
-            $error = $this->form_validation->error_array();
-            $array = array('status' => 'fail', 'url' => '', 'error' => $error);
+            $array = array('status' => 'error', 'msg' => validation_errors());
         }
         echo json_encode($array);
     }
 
     public function getBalanceByType()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $input = $this->input->post('typeID');
         if (empty($input)) {
             $balance = 0;
@@ -608,6 +658,7 @@ class Fees extends Admin_Controller
 
     public function getTypeByBranch()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $html = "";
         $branchID = $this->application_model->get_branch_id();
         $typeID = (isset($_POST['type_id']) ? $_POST['type_id'] : 0);
@@ -638,6 +689,7 @@ class Fees extends Admin_Controller
 
     public function getGroupByBranch()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $html = "";
         $branch_id = $this->application_model->get_branch_id();
         if (!empty($branch_id)) {
@@ -660,6 +712,7 @@ class Fees extends Admin_Controller
 
     public function getTypeByGroup()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $html = "";
         $groupID = $this->input->post('group_id');
         $typeID = (isset($_POST['type_id']) ? $_POST['type_id'] : 0);
@@ -691,7 +744,7 @@ class Fees extends Admin_Controller
         }
         $this->form_validation->set_rules('frequency', translate('frequency'), 'trim|required');
         $this->form_validation->set_rules('days', translate('days'), 'trim|required|numeric');
-        $this->form_validation->set_rules('message', translate('message'), 'trim|required'); 
+        $this->form_validation->set_rules('message', translate('message'), 'trim|required');
     }
 
     public function reminder()
@@ -700,7 +753,7 @@ class Fees extends Admin_Controller
             access_denied();
         }
         $branchID = $this->application_model->get_branch_id();
-        if ($_POST) {
+        if ($this->input->is_ajax_request()) {
             if (!get_permission('fees_reminder', 'is_add')) {
                 ajax_access_denied();
             }
@@ -712,8 +765,7 @@ class Fees extends Admin_Controller
                 set_alert('success', translate('information_has_been_saved_successfully'));
                 $array = array('status' => 'success');
             } else {
-                $error = $this->form_validation->error_array();
-                $array = array('status' => 'fail', 'error' => $error);
+                $array = array('status' => 'error', 'msg' => validation_errors());
             }
             echo json_encode($array);
             exit();
@@ -729,10 +781,10 @@ class Fees extends Admin_Controller
     public function edit_reminder($id='')
     {
         if (!get_permission('fees_reminder', 'is_edit')) {
-            ajax_access_denied();
+            access_denied();
         }
         $branchID = $this->application_model->get_branch_id();
-        if ($_POST) {
+        if ($this->input->is_ajax_request()) {
             $this->reminder_validation();
             if ($this->form_validation->run() !== false) {
                 $post = $this->input->post();
@@ -742,8 +794,7 @@ class Fees extends Admin_Controller
                 set_alert('success', translate('information_has_been_updated_successfully'));
                 $array = array('status' => 'success', 'url' => $url);
             } else {
-                $error = $this->form_validation->error_array();
-                $array = array('status' => 'fail', 'error' => $error);
+                $array = array('status' => 'error', 'msg' => validation_errors());
             }
             echo json_encode($array);
             exit();
@@ -757,13 +808,16 @@ class Fees extends Admin_Controller
 
     public function reminder_delete($id='')
     {
-        if (get_permission('fees_reminder', 'is_delete')) {
-            if (!is_superadmin_loggedin()) {
-                $this->db->where('branch_id', get_loggedin_branch_id());
-            }
-            $this->db->where('id', $id);
-            $this->db->delete('fees_reminder');
+        if (!$this->input->is_ajax_request()) show_404();
+        if (!get_permission('fees_reminder', 'is_delete')) {
+            ajax_access_denied();
         }
+        if (!is_superadmin_loggedin()) {
+            $this->db->where('branch_id', get_loggedin_branch_id());
+        }
+        $this->db->where('id', $id);
+        $this->db->delete('fees_reminder');
+        echo json_encode(array('status' => 'success', 'url' => base_url('fees/reminder')));
     }
 
     public function due_report()

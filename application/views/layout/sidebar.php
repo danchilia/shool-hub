@@ -49,6 +49,37 @@
                                     <i class="icons icon-grid"></i><span><?=translate('dashboard')?></span>
                                 </a>
                             </li>
+                            <?php
+                            /* Setup Guide — only for school admins, not superadmin */
+                            if (is_admin_loggedin()):
+                                $CI =& get_instance();
+                                $sg_branch = get_loggedin_branch_id();
+                                $sg_session = get_session_id();
+                                $sg_done = 0;
+                                $sg_total = 9; // core steps checked here
+                                if ($CI->db->where('branch_id',$sg_branch)->count_all_results('student_category') > 0)   $sg_done++;
+                                if ($CI->db->where('branch_id',$sg_branch)->count_all_results('section') > 0)            $sg_done++;
+                                if ($CI->db->where('branch_id',$sg_branch)->count_all_results('class') > 0)              $sg_done++;
+                                if ($CI->db->where('branch_id',$sg_branch)->count_all_results('subject') > 0)            $sg_done++;
+                                if ($CI->db->where('branch_id',$sg_branch)->count_all_results('staff') > 0)              $sg_done++;
+                                if ($CI->db->where('branch_id',$sg_branch)->count_all_results('fees_type') > 0)          $sg_done++;
+                                if ($CI->db->where('branch_id',$sg_branch)->where('session_id',$sg_session)->count_all_results('fee_groups') > 0) $sg_done++;
+                                if ($CI->db->where('branch_id',$sg_branch)->where('session_id',$sg_session)->count_all_results('enroll') > 0) $sg_done++;
+                                if ($CI->db->where('branch_id',$sg_branch)->count_all_results('exam') > 0)               $sg_done++;
+                                $sg_incomplete = $sg_done < $sg_total;
+                            ?>
+                            <li class="<?php if ($main_menu == 'setup_guide') echo 'nav-active'; ?>" style="<?=$sg_incomplete ? 'border-left:3px solid #f59e0b;' : ''?>">
+                                <a href="<?=base_url('setup_guide')?>" style="<?=$sg_incomplete ? 'font-weight:600;' : ''?>">
+                                    <i class="fas fa-compass" style="<?=$sg_incomplete ? 'color:#f59e0b' : ''?>"></i>
+                                    <span>
+                                        Setup Guide
+                                        <?php if ($sg_incomplete): ?>
+                                            <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f59e0b;vertical-align:middle;margin-left:4px;animation:sg-pulse 1.6s infinite"></span>
+                                        <?php endif; ?>
+                                    </span>
+                                </a>
+                            </li>
+                            <?php endif; ?>
                     <?php } ?>
                     <?php if (is_superadmin_loggedin()) : ?>
                     <!-- branch -->
@@ -75,6 +106,11 @@
                             <li class="<?php if ($sub_page == 'subscription/invoices') echo 'nav-active';?>">
                                 <a href="<?=base_url('subscription/invoices')?>">
                                     <span><i class="fas fa-caret-right"></i> Invoices</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($main_menu == 'setup_guide') echo 'nav-active';?>">
+                                <a href="<?=base_url('setup_guide')?>">
+                                    <span><i class="fas fa-caret-right"></i> School Setup Guide</span>
                                 </a>
                             </li>
                         </ul>

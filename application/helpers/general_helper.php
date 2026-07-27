@@ -47,6 +47,7 @@ function validate_kenyan_phone($phone) {
 // return translation
 function translate($word = '')
 {
+    if ($word === null || $word === '') return '';
     $CI = &get_instance();
     if ($CI->session->has_userdata('set_lang')) {
         $set_lang = $CI->session->userdata('set_lang');
@@ -267,7 +268,7 @@ function get_type_name_by_id($table, $type_id = '', $field = 'name')
 {
     $CI = &get_instance();
     $get = $CI->db->select($field)->from($table)->where('id', $type_id)->limit(1)->get()->row_array();
-    return $get[$field];
+    return isset($get[$field]) ? $get[$field] : '';
 }
 
 // set session alert / flashdata

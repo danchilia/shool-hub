@@ -79,6 +79,7 @@ class Parents_model extends MY_Model
 
     public function childsResult($parent_id)
     {
+        $sessionId = get_session_id();
         $this->db->select('s.id,s.photo, CONCAT(s.first_name, " ", s.last_name) as fullname,c.name as class_name,se.name as section_name');
         $this->db->from('enroll as e');
         $this->db->join('student as s', 'e.student_id = s.id', 'inner');
@@ -86,6 +87,7 @@ class Parents_model extends MY_Model
         $this->db->join('class as c', 'e.class_id = c.id', 'left');
         $this->db->join('section as se', 'e.section_id=se.id', 'left');
         $this->db->where('s.parent_id', $parent_id);
+        $this->db->where('e.session_id', $sessionId);
         $this->db->where('l.active', 1);
         return $this->db->get()->result_array();
     }

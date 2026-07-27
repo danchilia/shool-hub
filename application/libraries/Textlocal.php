@@ -50,9 +50,9 @@ class Textlocal
         $textlocal = $ci->db->get_where('sms_credential', array('id' => 5, 'branch_id' => $branchID))->row_array();
 
 		//$username, $hash, $apiKey = false
-		$this->username 		= $textlocal['field_one'];
-		$this->hash 			= $textlocal['field_three'];
-		$this->sender_number 	= $textlocal['field_two'];
+		$this->username 		= $textlocal['field_one']   ?? '';
+		$this->hash 			= $textlocal['field_three'] ?? '';
+		$this->sender_number 	= $textlocal['field_two']   ?? '';
 
 
 		if ($apiKey) {

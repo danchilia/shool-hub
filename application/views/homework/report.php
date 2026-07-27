@@ -62,7 +62,7 @@
 			</div>
 			<footer class="panel-footer">
 				<div class="row">
-					<div class="col-md-offset-10 col-md-2">
+					<div class="col-md-2 offset-md-10">
 						<button type="submit" name="search" value="1" class="btn btn btn-default btn-block"> <i class="fas fa-filter"></i> <?=translate('filter')?></button>
 					</div>
 				</div>
@@ -77,7 +77,7 @@
 			</header>
 			<div class="panel-body">
 				<div class="export_title"><?=translate('evaluation_report')?></div>
-				<table class="table table-bordered table-condensed table-export">
+				<table class="table table-bordered table-sm table-export">
 					<thead>
 						<tr>
 							<th><?=translate('sl')?></th>
@@ -115,7 +115,6 @@
 					</tbody>
 				</table>
 			</div>
-			<?php echo form_close(); ?>
 		</section>
 		<?php endif; ?>
 	</div>
@@ -127,7 +126,7 @@
 			<h4 class="panel-title"><i class="fas fa-bars"></i> <?php echo translate('view_report') . " " . translate('details') ?></h4>
 		</header>
 		<div class="panel-body">
-			<table class="table table-bordered table-condensed table-export" id="tableReport">
+			<table class="table table-bordered table-sm table-export" id="tableReport">
 				<thead>
 					<tr>
 						<th><?=translate('sl')?></th>

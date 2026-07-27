@@ -24,54 +24,44 @@
 						<span class="error"><?=form_error('type_name')?></span>
 					</div>
 					<div class="form-group mb-xs">
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="bullhorn" checked name="event_icon" id="bullhorn">
-							<label for="bullhorn"><i class="fas fa-bullhorn"></i></label>
-						</div>
+						<label class="control-label d-block mb-1">Event Icon</label>
+						<div class="d-flex flex-wrap gap-1">
+							<input type="radio" class="btn-check" name="event_icon" value="bullhorn" id="icon_bullhorn" autocomplete="off" checked>
+							<label class="btn btn-outline-secondary" for="icon_bullhorn" title="Bullhorn"><i class="fas fa-fw fa-bullhorn"></i></label>
 
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="flag-checkered" name="event_icon" id="flag">
-							<label for="flag"><i class="fas fa-flag-checkered"></i></label>
-						</div>
+							<input type="radio" class="btn-check" name="event_icon" value="flag-checkered" id="icon_flag" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="icon_flag" title="Flag"><i class="fas fa-flag-checkered fa-fw"></i></label>
 
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="comments" name="event_icon" id="comments">
-							<label for="comments"><i class="fas fa-comments"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="concierge-bell" name="event_icon" id="concierge-bell">
-							<label for="concierge-bell"><i class="fas fa-concierge-bell"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="envelope" name="event_icon" id="envelope">
-							<label for="envelope"><i class="fas fa-envelope"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="comment-alt" name="event_icon" id="comment-alt">
-							<label for="comment-alt"><i class="fas fa-comment-alt"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="users" name="event_icon" id="users">
-							<label for="users"><i class="fas fa-users"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="star" name="event_icon" id="star">
-							<label for="star"><i class="far fa-star"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="stamp" name="event_icon" id="stamp">
-							<label for="stamp"><i class="fas fa-stamp"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="search" name="event_icon" id="search">
-							<label for="search"><i class="fas fa-search"></i></label>
+							<input type="radio" class="btn-check" name="event_icon" value="comments" id="icon_comments" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="icon_comments" title="Comments"><i class="fas fa-comments fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="concierge-bell" id="icon_concierge" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="icon_concierge" title="Bell"><i class="fas fa-concierge-bell fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="envelope" id="icon_envelope" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="icon_envelope" title="Envelope"><i class="fas fa-envelope fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="comment-alt" id="icon_comment_alt" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="icon_comment_alt" title="Message"><i class="fas fa-comment-alt fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="users" id="icon_users" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="icon_users" title="Users"><i class="fas fa-users fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="star" id="icon_star" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="icon_star" title="Star"><i class="far fa-star fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="stamp" id="icon_stamp" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="icon_stamp" title="Stamp"><i class="fas fa-stamp fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="search" id="icon_search" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="icon_search" title="Search"><i class="fas fa-search fa-fw"></i></label>
 						</div>
 					</div>
 				</div>
 				<div class="panel-footer">
 					<div class="row">
 						<div class="col-md-12">
-							<button class="btn btn-default pull-right" type="submit" name="save" value="1">
+							<button class="btn btn-default float-end" type="submit" name="save" value="1">
 								<i class="fas fa-plus-circle"></i> <?=translate('save')?>
 							</button>
 						</div>	
@@ -89,7 +79,7 @@
 			</header>
 			<div class="panel-body">
 				<div class="table-responsive">
-					<table class="table table-bordered table-hover table-condensed mb-none">
+					<table class="table table-bordered table-hover table-sm mb-0">
 						<thead>
 							<tr>
 								<th><?=translate('sl')?></th>
@@ -102,13 +92,13 @@
 						<tbody>
 							<?php
 							$count = 1;
-							if (count($typelist)){
+							if (!empty($typelist)){
 								foreach ($typelist as $row):
 							?>
 							<tr>
 								<td><?php echo $count++;?></td>
 								<td><?php echo $row['branch_name']; ?></td>
-								<td><i class="text-xl fas fa-<?=html_escape($row['icon'])?>"></i></td>
+								<td><i class="fas fa-lg fa-<?=html_escape($row['icon'])?>"></i></td>
 								<td><?php echo $row['name']; ?></td>
 								<td>
 								<?php if (get_permission('event_type', 'is_edit')): ?>
@@ -163,47 +153,37 @@
 					<span class="error"></span>
 				</div>
 					<div class="form-group mb-xs">
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="bullhorn" checked name="event_icon" id="bullhorn">
-							<label for="bullhorn"><i class="fas fa-bullhorn"></i></label>
-						</div>
+						<label class="control-label d-block mb-1">Event Icon</label>
+						<div class="d-flex flex-wrap gap-1">
+							<input type="radio" class="btn-check" name="event_icon" value="bullhorn" id="eicon_bullhorn" autocomplete="off" checked>
+							<label class="btn btn-outline-secondary" for="eicon_bullhorn" title="Bullhorn"><i class="fas fa-fw fa-bullhorn"></i></label>
 
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="flag-checkered" name="event_icon" id="flag">
-							<label for="flag"><i class="fas fa-flag-checkered"></i></label>
-						</div>
+							<input type="radio" class="btn-check" name="event_icon" value="flag-checkered" id="eicon_flag" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="eicon_flag" title="Flag"><i class="fas fa-flag-checkered fa-fw"></i></label>
 
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="comments" name="event_icon" id="comments">
-							<label for="comments"><i class="fas fa-comments"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="concierge-bell" name="event_icon" id="concierge-bell">
-							<label for="concierge-bell"><i class="fas fa-concierge-bell"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="envelope" name="event_icon" id="envelope">
-							<label for="envelope"><i class="fas fa-envelope"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="comment-alt" name="event_icon" id="comment-alt">
-							<label for="comment-alt"><i class="fas fa-comment-alt"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="users" name="event_icon" id="users">
-							<label for="users"><i class="fas fa-users"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="star" name="event_icon" id="star">
-							<label for="star"><i class="far fa-star"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="stamp" name="event_icon" id="stamp">
-							<label for="stamp"><i class="fas fa-stamp"></i></label>
-						</div>
-						<div class="radio-custom radio-success radio-inline">
-							<input type="radio" value="search" name="event_icon" id="search">
-							<label for="search"><i class="fas fa-search"></i></label>
+							<input type="radio" class="btn-check" name="event_icon" value="comments" id="eicon_comments" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="eicon_comments" title="Comments"><i class="fas fa-comments fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="concierge-bell" id="eicon_concierge" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="eicon_concierge" title="Bell"><i class="fas fa-concierge-bell fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="envelope" id="eicon_envelope" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="eicon_envelope" title="Envelope"><i class="fas fa-envelope fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="comment-alt" id="eicon_comment_alt" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="eicon_comment_alt" title="Message"><i class="fas fa-comment-alt fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="users" id="eicon_users" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="eicon_users" title="Users"><i class="fas fa-users fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="star" id="eicon_star" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="eicon_star" title="Star"><i class="far fa-star fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="stamp" id="eicon_stamp" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="eicon_stamp" title="Stamp"><i class="fas fa-stamp fa-fw"></i></label>
+
+							<input type="radio" class="btn-check" name="event_icon" value="search" id="eicon_search" autocomplete="off">
+							<label class="btn btn-outline-secondary" for="eicon_search" title="Search"><i class="fas fa-search fa-fw"></i></label>
 						</div>
 					</div>
 			</div>
@@ -229,7 +209,7 @@
 			var branch = $(this).data('branch'); 
 			$('#etype_id').val(id);
 			$('#ename').val(name);
-			$(".frm-submit input[name=event_icon][value=" + icon + "]").prop('checked', true);
+			$("#modal input[name=event_icon][value=" + icon + "]").prop('checked', true);
             if ($('#ebranch_id').length) {
                 $('#ebranch_id').val(branch).trigger('change');
             }

@@ -62,9 +62,8 @@
 						<?php } } } ?>
 							<td class="min-w-c">
 							<?php if (get_permission('employee', 'is_edit')): ?>
-								<a href="<?php echo base_url('employee/profile/'.$row->id); ?>" class="btn btn-circle btn-default icon" data-toggle="tooltip" 
-								data-original-title="<?=translate('profile')?>">
-									<i class="far fa-arrow-alt-circle-right"></i>
+								<a href="<?php echo base_url('employee/profile/'.$row->id); ?>" class="btn btn-info btn-action">
+									<i class="fas fa-user"></i> <?=translate('profile')?>
 								</a>
 							<?php endif; if (get_permission('employee', 'is_delete')): ?>
 								<?php echo btn_delete('employee/delete/' . $row->id); ?>

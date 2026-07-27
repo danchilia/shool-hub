@@ -1,3 +1,9 @@
+<style>
+@media(prefers-color-scheme:dark)   { .alert-info { background:#1e3a5f !important; border-color:#2563eb !important; color:#93c5fd !important; } }
+:root[data-theme="dark"]  .alert-info { background:#1e3a5f !important; border-color:#2563eb !important; color:#93c5fd !important; }
+:root[data-theme="light"] .alert-info { background:#eff6ff !important; border-color:#bfdbfe !important; color:#1e40af !important; }
+</style>
+
 <div class="content-header">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
         <div>

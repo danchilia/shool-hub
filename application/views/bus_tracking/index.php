@@ -4,7 +4,9 @@
 .bus-badge-online  { background:#d1fae5; color:#065f46; }
 .bus-badge-offline { background:#fee2e2; color:#991b1b; }
 #map-container { height:500px; border-radius:10px; border:1px solid #e2e8f0; overflow:hidden; }
-@media(prefers-color-scheme:dark){ .bus-card{ background:#2b2b3a; border-color:#3a3a50; } }
+@media(prefers-color-scheme:dark){ .bus-card { background:#2b2b3a; border-color:#3a3a50; } }
+:root[data-theme="dark"]  .bus-card { background:#2b2b3a; border-color:#3a3a50; }
+:root[data-theme="light"] .bus-card { background:#fff;     border-color:#e2e8f0; }
 </style>
 
 <div class="content-header">
@@ -68,7 +70,7 @@
             <div class="text-muted small mt-2">
                 <i class="fas fa-info-circle me-1"></i>
                 Map auto-refreshes every 30 seconds.
-                GPS devices should POST to: <code><?php echo base_url('bus_tracking/update_location'); ?></code>
+                GPS device URLs are shown per-bus in <a href="<?php echo base_url('bus_tracking/manage'); ?>">Manage Buses</a> → <i class="fas fa-satellite-dish"></i> GPS Setup button.
             </div>
         </div>
     </div>
@@ -88,16 +90,18 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 var markers = {};
 var busIcon = L.divIcon({ className:'', html:'<div style="background:#1a5276;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:.9rem;box-shadow:0 2px 6px rgba(0,0,0,.4);"><i class="fas fa-bus"></i></div>', iconSize:[32,32], iconAnchor:[16,16] });
 
+function esc(s){ return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
+
 function refreshPositions() {
     $.get(base_url+'bus_tracking/live_positions', function(data) {
         data = typeof data==='string' ? JSON.parse(data) : data;
         data.forEach(function(bus) {
             if (!bus.lat || !bus.lng) return;
-            var popup = '<strong>'+bus.name+'</strong><br>'+bus.reg
-                       +(bus.driver?'<br><i class="fas fa-user"></i> '+bus.driver:'')
-                       +(bus.driver_phone?'<br><i class="fas fa-phone"></i> '+bus.driver_phone:'')
+            var popup = '<strong>'+esc(bus.name)+'</strong><br>'+esc(bus.reg)
+                       +(bus.driver?'<br><i class="fas fa-user"></i> '+esc(bus.driver):'')
+                       +(bus.driver_phone?'<br><i class="fas fa-phone"></i> '+esc(bus.driver_phone):'')
                        +(bus.speed?'<br>Speed: '+Math.round(bus.speed)+' km/h':'')
-                       +(bus.last_seen?'<br><small>Updated: '+bus.last_seen+'</small>':'');
+                       +(bus.last_seen?'<br><small>Updated: '+esc(bus.last_seen)+'</small>':'');
             if (markers[bus.id]) {
                 markers[bus.id].setLatLng([bus.lat, bus.lng]).setPopupContent(popup);
             } else {

@@ -687,7 +687,7 @@ section.panel, div.panel, .panel {
 
 /* ── 10. BUTTONS ──────────────────────────────────────────────────────────── */
 .btn {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-weight: 500;
   font-size: .8rem;
   border-radius: var(--dck-radius-xs);
@@ -842,7 +842,7 @@ section.panel, div.panel, .panel {
 /* ── 12. FORMS ────────────────────────────────────────────────────────────── */
 .form-control, .form-select {
   font-size: .8rem;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   border: 1px solid var(--dck-border-md);
   border-radius: var(--dck-radius-xs);
   padding: .42rem .875rem;
@@ -1366,15 +1366,7 @@ hr, .separator { border-color: var(--dck-border); }
 
 /* ── 28. LOADING OVERLAY ──────────────────────────────────────────────────── */
 .dck-loader {
-  position: fixed;
-  inset: 0;
-  background: rgba(255,255,255,.94);
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: .75rem;
+  display: none !important;
 }
 .dck-loader-spinner {
   width: 40px; height: 40px;
@@ -1904,4 +1896,215 @@ ul.list-inline > li { display: inline-flex; align-items: center; }
   .col-lg-offset-6  { margin-left: 50%; }
   .col-lg-offset-8  { margin-left: 66.666667%; }
   .col-lg-offset-10 { margin-left: 83.333333%; }
+}
+
+/* ── P. Employee/Staff Profile Card ─────────────────────────────────────── */
+.profile-head {
+    padding: 30px 0;
+    border-radius: 8px;
+    position: relative;
+    background-image: url(../images/profile_bg.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    overflow: hidden;
+    color: #fff;
+}
+.profile-head::before {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 80%;
+    background: #c866a1;
+    opacity: .40;
+    top: 0;
+    left: -20%;
+    transform: skewX(30deg);
+}
+.profile-head h5 {
+    width: 100%;
+    padding: 5px 5px 0 5px;
+    font-weight: bold;
+    color: #fff;
+    font-size: 25px;
+    text-transform: capitalize;
+    margin-bottom: 0;
+}
+.profile-head p {
+    width: 100%;
+    padding: 5px;
+    color: #fff;
+    font-size: 17px;
+    text-transform: capitalize;
+    margin: 0;
+}
+.profile-head ul {
+    list-style: none;
+    padding: 0;
+}
+.profile-head ul li {
+    display: block;
+    color: #fff;
+    padding: 7px;
+    font-weight: 400;
+    font-size: 15px;
+}
+.profile-head h6 {
+    width: 100%;
+    text-align: center;
+    font-weight: 100;
+    color: #fff;
+    font-size: 15px;
+    text-transform: uppercase;
+    margin-bottom: 0;
+}
+.profile-head ul li .icon-holder {
+    display: inline-block;
+    height: 27px;
+    width: 27px;
+    line-height: 25px;
+    text-align: center;
+    background: transparent;
+    border-radius: 15px;
+    position: relative;
+    z-index: 1;
+    margin-right: 10px;
+}
+.profile-head ul li .icon-holder::before {
+    position: absolute;
+    margin: 0 auto;
+    display: block;
+    height: 27px;
+    width: 27px;
+    background: #ffbd2e;
+    border-radius: 3px;
+    transform: rotate(45deg);
+    content: "";
+    z-index: -1;
+    transition: all 500ms ease;
+    box-shadow: 0 2px 4px #3c3a3a;
+    left: 0;
+    top: 0;
+}
+.profile-head ul li:hover .icon-holder::before { transform: rotate(0deg); }
+.profile-head ul li .icon-holder i { font-size: 14px; color: #313536; line-height: 27px; display: block; }
+
+@media only screen and (max-width: 1600px) { .profile-head::before { width: 92%; } }
+@media only screen and (max-width: 991px)  {
+    .profile-head::before { width: 100%; left: 0; right: 0; transform: none; }
+}
+
+/* Social icon panel (slides in on photo hover) */
+.social-icon-one {
+    position: relative;
+    text-align: center;
+    padding: 20px 0 15px;
+    display: inline-block;
+    background-color: #083061;
+}
+.social-icon-one::after {
+    position: absolute;
+    content: '';
+    left: 0;
+    bottom: -50px;
+    border-top: 50px solid #083061;
+    border-right: 48px solid transparent;
+}
+.social-icon-one li { position: relative; margin-bottom: 2px; }
+.social-icon-one li:last-child { margin-bottom: 0; }
+.social-icon-one li a {
+    position: relative;
+    font-size: 18px;
+    color: #2bb4e6;
+    display: block;
+    padding: 3px 8px;
+    transition: all 300ms ease;
+}
+.social-icon-one li a:hover { color: #fff; background-color: #222; }
+
+.profile-head.social .image-content-center .social-icon-one {
+    position: absolute;
+    left: 0;
+    z-index: 1;
+    top: -100%;
+    width: 100%;
+    transition: all 0.6s ease;
+}
+.profile-head.social .image-content-center:hover .social-icon-one { top: 0; }
+
+/* Photo frame */
+.image-content-center {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    padding: 5px 10px;
+    font-size: 14px;
+    line-height: 22px;
+    border: 1px solid #e5e5e5;
+    background: #fbfbfb;
+    border-radius: 5px;
+}
+.image-content-center .preview {
+    position: absolute;
+    z-index: 1;
+    padding: 5px;
+    width: 100%;
+    height: 100%;
+    top: 0; right: 0; bottom: 0; left: 0;
+    overflow: hidden;
+    text-align: center;
+}
+.image-content-center .preview img {
+    top: 50%;
+    transform: translate(0, -50%);
+    position: relative;
+    max-width: 100%;
+}
+.image-content-center.user-pro {
+    height: 334px;
+    max-width: 90%;
+    margin: 0 auto;
+    border-color: rgba(255,255,255,.1);
+    background-color: rgba(127,129,131,.5) !important;
+    box-shadow: 5px 5px 10px 0 #624949;
+}
+.image-content-center.user-pro img { max-height: 320px !important; }
+
+/* ── Q. Payslip / Invoice styles ─────────────────────────────────────────── */
+.invoice-summary ul.amounts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.invoice-summary ul.amounts li {
+    background: #f5f5f5;
+    margin-bottom: 5px;
+    padding: 10px;
+    border-radius: 4px;
+    list-style-type: none;
+    font-weight: 300;
+}
+@media (prefers-color-scheme: dark) {
+    .invoice-summary ul.amounts li { background: #383838; }
+}
+:root[data-theme="dark"] .invoice-summary ul.amounts li { background: #383838; }
+:root[data-theme="light"] .invoice-summary ul.amounts li { background: #f5f5f5; }
+
+@media print {
+    .payslip .panel.panel-custom { border: 0 !important; }
+    .payslip .panel.panel-custom .panel-body { padding: 0 !important; border: 0 !important; }
+    .payslip .panel.panel-custom .panel-heading { padding: 5px; border-bottom: 1px solid #d2d2d2 !important; }
+    .payslip .panel.panel-custom .panel-heading h4 { font-weight: 600; }
+    .payslip .panel.panel-custom table th { font-weight: normal !important; }
+    .invoice { font-size: 9pt !important; }
+    .invoice .label { border: 0 !important; color: inherit !important; font-size: inherit !important; font-weight: inherit !important; }
+    .bill-info address { margin-bottom: 5px; }
+    .invoice table { font-size: inherit; }
+    .invoice header { box-shadow: none; }
+    .invoice table.invoice-items thead tr th,
+    .invoice table.invoice-items tbody tr td { padding: 3pt; }
+    .invoice-summary ul.amounts li { margin-bottom: 0 !important; padding: 2px !important; border-radius: 0; border-bottom: 1px solid #ddd; }
+    .invoice-summary ul.amounts li:last-child { border-bottom: 0; }
 }

@@ -52,7 +52,7 @@
 
 <?php
 $this->load->model('cbc_model');
-if (count($student_array)) {
+if (!empty($student_array)) {
 	foreach ($student_array as $sc => $studentID) {
 		$result = $this->cbc_model->getStudentCbcReport($studentID, $examID, $sessionID);
 		$student = $result['student'];
@@ -153,7 +153,7 @@ if (count($student_array)) {
 		</thead>
 		<tbody>
 		<?php
-		if (count($assessments)) {
+		if (!empty($assessments)) {
 			$counts = array('EE2'=>0,'EE1'=>0,'ME2'=>0,'ME1'=>0,'AE2'=>0,'AE1'=>0,'BE2'=>0,'BE1'=>0);
 			$num = 1;
 			foreach ($assessments as $a) {
@@ -197,7 +197,7 @@ if (count($student_array)) {
 	</table>
 
 	<!-- BEHAVIOUR & VALUES ASSESSMENT -->
-	<?php if (count($behaviours)): ?>
+	<?php if (!empty($behaviours)): ?>
 	<table class="behaviour-table" style="margin-top:10px;">
 		<thead>
 			<tr class="behaviour-header"><th colspan="4" style="border:none;">BEHAVIOUR & VALUES ASSESSMENT</th></tr>

@@ -39,10 +39,10 @@ class Clickatell
             $branchID = get_loggedin_branch_id();
         }
         $clickatell = $ci->db->get_where('sms_credential', array('id' => 2, 'branch_id' => $branchID))->row_array();
-        $this->username = $clickatell['field_one'];
-        $this->password = $clickatell['field_two'];
-        $this->api_id   = $clickatell['field_three'];
-        $this->from_no  = $clickatell['field_four'];
+        $this->username = $clickatell['field_one']   ?? '';
+        $this->password = $clickatell['field_two']   ?? '';
+        $this->api_id   = $clickatell['field_three'] ?? '';
+        $this->from_no  = $clickatell['field_four']  ?? '';
     }
 
     /**

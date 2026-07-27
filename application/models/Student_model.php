@@ -119,8 +119,12 @@ class Student_model extends MY_Model
                 'father_name' => $row['FatherName'],
                 'mother_name' => $row['MotherName'],
                 'occupation' => $row['GuardianOccupation'],
+                'income' => '',
+                'education' => '',
                 'mobileno' => $row['GuardianMobileNo'],
                 'address' => $row['GuardianAddress'],
+                'city' => '',
+                'state' => '',
                 'email' => $row['GuardianEmail'],
                 'branch_id' => $branchID,
                 'photo' => 'defualt.png',
@@ -206,7 +210,7 @@ class Student_model extends MY_Model
         $this->db->select('e.*,s.photo, CONCAT(s.first_name, " ", s.last_name) as fullname,s.register_no,s.parent_id,s.email,s.blood_group,s.birthday,l.active,c.name as class_name,se.name as section_name');
         $this->db->from('enroll as e');
         $this->db->join('student as s', 'e.student_id = s.id', 'inner');
-        $this->db->join('login_credential as l', 'l.user_id = s.id and l.role = 7', 'inner');
+        $this->db->join('login_credential as l', 'l.user_id = s.id and l.role = 7', 'left');
         $this->db->join('class as c', 'e.class_id = c.id', 'left');
         $this->db->join('section as se', 'e.section_id=se.id', 'left');
         $this->db->where('e.class_id', $classID);
@@ -252,7 +256,7 @@ class Student_model extends MY_Model
         $this->db->select('s.*,l.active,e.class_id,e.section_id,e.id as enrollid,e.roll,e.branch_id,e.session_id,c.name as class_name,se.name as section_name,sc.name as category_name');
         $this->db->from('enroll as e');
         $this->db->join('student as s', 'e.student_id = s.id', 'left');
-        $this->db->join('login_credential as l', 'l.user_id = s.id and l.role = 7', 'inner');
+        $this->db->join('login_credential as l', 'l.user_id = s.id and l.role = 7', 'left');
         $this->db->join('class as c', 'e.class_id = c.id', 'left');
         $this->db->join('section as se', 'e.section_id = se.id', 'left');
         $this->db->join('student_category as sc', 's.category_id=sc.id', 'left');

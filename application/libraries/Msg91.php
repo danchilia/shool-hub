@@ -14,8 +14,8 @@ class Msg91 {
         }
         $msg91 = $ci->db->get_where('sms_credential', array('id' => 3, 'branch_id' => $branchID))->row_array();
 
-        $this->authKey  = $msg91['field_one'];
-        $this->senderID = $msg91['field_two'];
+        $this->authKey  = $msg91['field_one'] ?? '';
+        $this->senderID = $msg91['field_two'] ?? '';
         $this->url      = 'https://msg91sms.vsms.net/eapi/submission/send_sms/2/2.0';
 	}
 

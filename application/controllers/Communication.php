@@ -67,17 +67,16 @@ class Communication extends Admin_Controller
         $this->data['headerelements'] = array(
             'css' => array(
                 'vendor/summernote/summernote.css',
-                'vendor/bootstrap-fileupload/bootstrap-fileupload.min.css',
             ),
             'js' => array(
                 'vendor/summernote/summernote.js',
-                 'vendor/bootstrap-fileupload/bootstrap-fileupload.min.js',
             ),
         );
         $this->load->view('layout/index', $this->data);
     }
 
     public function message_send() {
+        if (!$this->input->is_ajax_request()) show_404();
         if ($_POST) {
             if (is_superadmin_loggedin()) {
                 $this->form_validation->set_rules('branch_id', translate('branch'), 'required');
@@ -102,6 +101,7 @@ class Communication extends Admin_Controller
 
     public function message_reply()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         if ($_POST) {
             $this->form_validation->set_rules('attachment_file', translate('attachment'), 'callback_handle_upload');
             $this->form_validation->set_rules('message', 'Message', 'trim|required');
@@ -146,12 +146,20 @@ class Communication extends Admin_Controller
     {
         $encrypt_name = $this->input->get('file');
         $type = $this->input->get('type');
+        $activeUser = loggedin_role_id() . '-' . get_loggedin_user_id();
+
         if ($type == 'reply') {
-            $table = 'message_reply';
+            $row = $this->db->select('file_name, message_id')->where('enc_name', $encrypt_name)->get('message_reply')->row();
+            if (empty($row)) show_404();
+            $msg = $this->db->select('sender,reciever')->where('id', $row->message_id)->get('message')->row();
+            if (empty($msg) || ($msg->sender !== $activeUser && $msg->reciever !== $activeUser)) show_404();
+            $file_name = $row->file_name;
         } else {
-            $table = 'message';
+            $row = $this->db->select('file_name, sender, reciever')->where('enc_name', $encrypt_name)->get('message')->row();
+            if (empty($row) || ($row->sender !== $activeUser && $row->reciever !== $activeUser)) show_404();
+            $file_name = $row->file_name;
         }
-        $file_name = $this->db->select('file_name')->where('enc_name', $encrypt_name)->get($table)->row()->file_name;
+
         $this->load->helper('download');
         force_download($file_name, file_get_contents('uploads/attachments/' . $encrypt_name));
     }
@@ -185,6 +193,7 @@ class Communication extends Admin_Controller
     /* message delete */
     public function delete_mail()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $arrayID = $this->input->post('arrayID');
         $mode = $this->input->post('mode');
         if (count($arrayID)) {
@@ -192,14 +201,15 @@ class Communication extends Admin_Controller
                 $this->db->where('id', $value);
                 $this->db->update('message', array('trash_' . $mode => 1));
             }
-            set_alert('success', translate('message_has_been_deleted'));
+            echo json_encode(array('status' => 'success'));
         } else {
-            set_alert('error', 'Please Select a Message to Delete');
+            echo json_encode(array('status' => 'fail', 'error' => array('msg' => 'Please select a message')));
         }
     }
 
     public function set_fvourite_status()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $messageID = $this->input->post('messageID');
         $status = $this->input->post('status');
         $active_user = loggedin_role_id() . '-' . get_loggedin_user_id();
@@ -219,6 +229,7 @@ class Communication extends Admin_Controller
     /* mailbox trash observe */
     public function trash_observe()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $activeUser = loggedin_role_id() . '-' . get_loggedin_user_id();
         $arrayID = $this->input->post('array_id');
         $mode = $this->input->post('mode');
@@ -241,9 +252,9 @@ class Communication extends Admin_Controller
                 $this->db->where('id', $id);
                 $this->db->update('message', $array);
             }
-            if ($option == 'restore') {
+            if ($mode == 'restore') {
                 set_alert('success', translate('message_has_been_restored'));
-            } elseif ($option == 'delete') {
+            } elseif ($mode == 'delete') {
                 set_alert('success', translate('message_has_been_deleted'));
             }
         } else {
@@ -253,6 +264,7 @@ class Communication extends Admin_Controller
 
     public function getStafflistRole()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $html = "";
         $branch_id = $this->application_model->get_branch_id();
         if (!empty($branch_id)) {
@@ -285,6 +297,7 @@ class Communication extends Admin_Controller
 
     public function getStudentByClass()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $html = "";
         $class_id = $this->input->post('class_id');
         $branch_id = $this->application_model->get_branch_id();
@@ -317,6 +330,7 @@ class Communication extends Admin_Controller
 
     public function getParentListBranch()
     {
+        if (!$this->input->is_ajax_request()) show_404();
         $html = "";
         $branch_id = $this->application_model->get_branch_id();
         if (!empty($branch_id)) {
