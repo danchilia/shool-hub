@@ -161,6 +161,13 @@ class Authentication extends Authentication_Controller
         }
     }
 
+    /* publicly accessible privacy policy — no auth required */
+    public function privacy_policy()
+    {
+        $this->data['title'] = 'Privacy Policy';
+        $this->load->view('authentication/privacy_policy', $this->data);
+    }
+
     /* session logout */
     public function logout()
     {

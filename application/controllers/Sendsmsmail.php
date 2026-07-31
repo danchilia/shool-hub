@@ -184,7 +184,8 @@ class Sendsmsmail extends Admin_Controller
                             }
                         }
                         if ($users_value == 6) {
-                            $parents = $this->sendsmsmail_model->getParent($branchID);
+                            $optout = ($messageType == 1) ? 'sms_optout' : 'email_optout';
+                            $parents = $this->sendsmsmail_model->getParent($branchID, '', $optout);
                             if (count($parents)) {
                                 foreach ($parents as $key => $value) {
                                     $user_array[] = array(

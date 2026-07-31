@@ -104,6 +104,9 @@
                                 </div>
                                 <div class="sign-footer">
                                     <p><?php echo $global_config['footer_text'];?></p>
+                                    <p style="margin-top:6px;font-size:12px;">
+                                        <a href="<?php echo base_url('authentication/privacy_policy');?>" target="_blank" style="color:inherit;text-decoration:underline;">Privacy Policy</a>
+                                    </p>
                                 </div>
                             <?php echo form_close();?>
                         </div>

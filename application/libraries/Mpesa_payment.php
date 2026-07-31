@@ -18,6 +18,16 @@ class Mpesa_payment
         $this->api_config = $this->ci->db->select('mpesa_consumer_key, mpesa_consumer_secret, mpesa_shortcode, mpesa_passkey, mpesa_sandbox, mpesa_callback_url')
             ->where('branch_id', $branchId)
             ->get('payment_config')->row_array();
+
+        if (!empty($this->api_config)) {
+            $this->ci->load->library('encryption');
+            foreach (array('mpesa_consumer_key', 'mpesa_consumer_secret', 'mpesa_passkey') as $key) {
+                if (!empty($this->api_config[$key])) {
+                    $dec = $this->ci->encryption->decrypt($this->api_config[$key]);
+                    $this->api_config[$key] = $dec !== false ? $dec : $this->api_config[$key];
+                }
+            }
+        }
     }
 
     private function getBaseUrl()

@@ -286,13 +286,14 @@ class School_settings extends Admin_Controller
         }
         $branchID = $this->school_model->getBranchID();
         $mpesa_sandbox = isset($_POST['mpesa_sandbox']) ? 1 : 0;
+        $this->load->library('encryption');
         $arrayMpesa = array(
-            'mpesa_consumer_key' => $this->input->post('mpesa_consumer_key'),
-            'mpesa_consumer_secret' => $this->input->post('mpesa_consumer_secret'),
-            'mpesa_shortcode' => $this->input->post('mpesa_shortcode'),
-            'mpesa_passkey' => $this->input->post('mpesa_passkey'),
-            'mpesa_callback_url' => $this->input->post('mpesa_callback_url'),
-            'mpesa_sandbox' => $mpesa_sandbox,
+            'mpesa_consumer_key'    => $this->encryption->encrypt($this->input->post('mpesa_consumer_key')),
+            'mpesa_consumer_secret' => $this->encryption->encrypt($this->input->post('mpesa_consumer_secret')),
+            'mpesa_shortcode'       => $this->input->post('mpesa_shortcode'),
+            'mpesa_passkey'         => $this->encryption->encrypt($this->input->post('mpesa_passkey')),
+            'mpesa_callback_url'    => $this->input->post('mpesa_callback_url'),
+            'mpesa_sandbox'         => $mpesa_sandbox,
         );
         $this->db->where('branch_id', $branchID);
         $q = $this->db->get('payment_config');

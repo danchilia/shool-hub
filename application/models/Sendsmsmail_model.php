@@ -29,12 +29,16 @@ class Sendsmsmail_model extends CI_Model
         return $this->db->get()->$method();
     }
 
-    public function getParent($branch_id, $parent_id = '')
+    public function getParent($branch_id, $parent_id = '', $optout_field = '')
     {
         $this->db->select('id,name,email,mobileno');
         $this->db->where('branch_id', $branch_id);
         if (empty($parent_id)) {
             $method = 'result_array';
+            // Respect opt-out flag when doing bulk sends (Kenya DPA 2019 — right to withdraw consent)
+            if (!empty($optout_field)) {
+                $this->db->where($optout_field, 0);
+            }
         } else {
             $this->db->where('id', $parent_id);
             $method = 'row_array';

@@ -3,9 +3,52 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Health extends Admin_Controller
 {
+    // Fields in student_health that contain special-category health data (Kenya DPA 2019)
+    private $_enc_health_fields = array(
+        'blood_group', 'vision_left', 'vision_right', 'hearing',
+        'allergies', 'chronic_conditions', 'disabilities',
+        'nhif_number', 'insurance_provider',
+        'emergency_contact_name', 'emergency_contact_phone',
+        'doctor_name', 'doctor_phone', 'notes',
+    );
+
+    // Fields in clinic_visits that contain sensitive clinical data
+    private $_enc_visit_fields = array('complaint', 'diagnosis', 'treatment', 'medication', 'referral_facility');
+
     public function __construct()
     {
         parent::__construct();
+        $this->load->library('encryption');
+    }
+
+    private function _he($value)
+    {
+        if (empty($value)) return $value;
+        $enc = $this->encryption->encrypt($value);
+        return $enc !== false ? $enc : $value;
+    }
+
+    private function _hd($value)
+    {
+        if (empty($value)) return $value;
+        $dec = $this->encryption->decrypt($value);
+        return $dec !== false ? $dec : $value; // fallback for existing plaintext rows
+    }
+
+    private function _enc_row(array $row, array $fields)
+    {
+        foreach ($fields as $f) {
+            if (isset($row[$f])) $row[$f] = $this->_he($row[$f]);
+        }
+        return $row;
+    }
+
+    private function _dec_row(array $row, array $fields)
+    {
+        foreach ($fields as $f) {
+            if (isset($row[$f])) $row[$f] = $this->_hd($row[$f]);
+        }
+        return $row;
     }
 
     /** Health record for a specific student */
@@ -28,6 +71,14 @@ class Health extends Admin_Controller
         $vaccinations = $this->db->where('student_id', $studentId)->order_by('date_given', 'DESC')->get('student_vaccinations')->result_array();
         $visits       = $this->db->where('student_id', $studentId)->order_by('visit_date', 'DESC')->limit(10)->get('clinic_visits')->result_array();
 
+        if ($health) {
+            $health = $this->_dec_row($health, $this->_enc_health_fields);
+        }
+        foreach ($visits as &$v) {
+            $v = $this->_dec_row($v, $this->_enc_visit_fields);
+        }
+        unset($v);
+
         $this->data['student']      = $student;
         $this->data['health']       = $health ?: array();
         $this->data['vaccinations'] = $vaccinations;
@@ -48,22 +99,22 @@ class Health extends Admin_Controller
             $branchId  = get_loggedin_branch_id();
             $data = array(
                 'student_id'              => $studentId,
-                'blood_group'             => $this->input->post('blood_group'),
+                'blood_group'             => $this->_he($this->input->post('blood_group')),
                 'height_cm'               => $this->input->post('height_cm') ?: null,
                 'weight_kg'               => $this->input->post('weight_kg') ?: null,
-                'vision_left'             => $this->input->post('vision_left'),
-                'vision_right'            => $this->input->post('vision_right'),
-                'hearing'                 => $this->input->post('hearing'),
-                'allergies'               => $this->input->post('allergies'),
-                'chronic_conditions'      => $this->input->post('chronic_conditions'),
-                'disabilities'            => $this->input->post('disabilities'),
-                'emergency_contact_name'  => $this->input->post('emergency_contact_name'),
-                'emergency_contact_phone' => $this->input->post('emergency_contact_phone'),
-                'doctor_name'             => $this->input->post('doctor_name'),
-                'doctor_phone'            => $this->input->post('doctor_phone'),
-                'nhif_number'             => $this->input->post('nhif_number'),
-                'insurance_provider'      => $this->input->post('insurance_provider'),
-                'notes'                   => $this->input->post('notes'),
+                'vision_left'             => $this->_he($this->input->post('vision_left')),
+                'vision_right'            => $this->_he($this->input->post('vision_right')),
+                'hearing'                 => $this->_he($this->input->post('hearing')),
+                'allergies'               => $this->_he($this->input->post('allergies')),
+                'chronic_conditions'      => $this->_he($this->input->post('chronic_conditions')),
+                'disabilities'            => $this->_he($this->input->post('disabilities')),
+                'emergency_contact_name'  => $this->_he($this->input->post('emergency_contact_name')),
+                'emergency_contact_phone' => $this->_he($this->input->post('emergency_contact_phone')),
+                'doctor_name'             => $this->_he($this->input->post('doctor_name')),
+                'doctor_phone'            => $this->_he($this->input->post('doctor_phone')),
+                'nhif_number'             => $this->_he($this->input->post('nhif_number')),
+                'insurance_provider'      => $this->_he($this->input->post('insurance_provider')),
+                'notes'                   => $this->_he($this->input->post('notes')),
                 'branch_id'               => $branchId,
             );
             $exists = $this->db->where('student_id', $studentId)->count_all_results('student_health');
@@ -124,12 +175,12 @@ class Health extends Admin_Controller
             $this->db->insert('clinic_visits', array(
                 'student_id'       => (int) $this->input->post('student_id'),
                 'visit_date'       => $this->input->post('visit_date'),
-                'complaint'        => $this->input->post('complaint'),
-                'diagnosis'        => $this->input->post('diagnosis'),
-                'treatment'        => $this->input->post('treatment'),
-                'medication'       => $this->input->post('medication'),
+                'complaint'        => $this->_he($this->input->post('complaint')),
+                'diagnosis'        => $this->_he($this->input->post('diagnosis')),
+                'treatment'        => $this->_he($this->input->post('treatment')),
+                'medication'       => $this->_he($this->input->post('medication')),
                 'referred'         => $this->input->post('referred') ? 1 : 0,
-                'referral_facility'=> $this->input->post('referral_facility'),
+                'referral_facility'=> $this->_he($this->input->post('referral_facility')),
                 'attended_by'      => $this->input->post('attended_by'),
                 'follow_up_date'   => $this->input->post('follow_up_date') ?: null,
                 'branch_id'        => get_loggedin_branch_id(),
@@ -170,6 +221,11 @@ class Health extends Admin_Controller
             ->where('cv.visit_date <=', $to)
             ->order_by('cv.visit_date', 'DESC')
             ->get()->result_array();
+
+        foreach ($visits as &$v) {
+            $v = $this->_dec_row($v, $this->_enc_visit_fields);
+        }
+        unset($v);
 
         $this->data['visits']     = $visits;
         $this->data['from']       = $from;
