@@ -23,7 +23,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . $_SERVER['HTTP_HOST'] . str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
+// Validate HTTP_HOST against an explicit allowlist to prevent Host Header Injection
+// in password-reset and email links. Add your real domain(s) to APP_ALLOWED_HOSTS.
+$_allowed_hosts = array_filter(array_map('trim', explode(',', getenv('APP_ALLOWED_HOSTS') ?: '')));
+$_detected_host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+if (!empty($_allowed_hosts) && !in_array($_detected_host, $_allowed_hosts, true)) {
+    $_detected_host = $_allowed_hosts[0]; // fall back to the first trusted host
+}
+$_scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$_path   = str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
+$config['base_url'] = $_scheme . '://' . $_detected_host . $_path;
 
 /*
 |--------------------------------------------------------------------------
@@ -326,7 +335,15 @@ $config['cache_query_string'] = FALSE;
 */
 $config['encryption_key'] = '';
 if (file_exists(__DIR__ . '/encryption_key.php')) {
-	require __DIR__ . '/encryption_key.php';
+    require __DIR__ . '/encryption_key.php';
+}
+// Halt immediately if the encryption key is missing or too short.
+// A blank key makes CI's Encryption library completely insecure.
+if (strlen($config['encryption_key']) < 32) {
+    log_message('error', 'SECURITY: encryption_key is missing or too short. Set a 32+ char key in application/config/encryption_key.php');
+    if (ENVIRONMENT !== 'development') {
+        show_error('Application configuration error. Please contact the administrator.', 500);
+    }
 }
 
 /*
@@ -384,9 +401,9 @@ $config['sess_driver'] = 'database';
 $config['sess_cookie_name'] = 'rm_session';
 $config['sess_expiration'] = 7200;
 $config['sess_save_path'] = 'rm_sessions';
-$config['sess_match_ip'] = FALSE;
+$config['sess_match_ip'] = TRUE;          // stolen cookie cannot be replayed from another IP
 $config['sess_time_to_update'] = 300;
-$config['sess_regenerate_destroy'] = FALSE;
+$config['sess_regenerate_destroy'] = TRUE; // destroy old session record on ID regeneration
 
 /*
 |--------------------------------------------------------------------------
@@ -406,7 +423,7 @@ $config['sess_regenerate_destroy'] = FALSE;
 $config['cookie_prefix']	= '';
 $config['cookie_domain']	= '';
 $config['cookie_path']		= '/';
-$config['cookie_secure']	= FALSE;
+$config['cookie_secure']	= (ENVIRONMENT !== 'development'); // HTTPS-only in production
 $config['cookie_httponly'] 	= TRUE;
 
 /*

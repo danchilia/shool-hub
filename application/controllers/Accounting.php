@@ -280,12 +280,23 @@ class Accounting extends Admin_Controller
                 $post = $this->input->post();
                 //save data into table
                 $insert_id = $this->accounting_model->saveVoucher($post);
-                if (isset($_FILES["attachment_file"]) && !empty($_FILES['attachment_file']['name'])) {
-                    $ext = pathinfo($_FILES["attachment_file"]["name"], PATHINFO_EXTENSION);
-                    $file_name = $insert_id . '.' . $ext;
-                    move_uploaded_file($_FILES["attachment_file"]["tmp_name"], "./uploads/attachments/voucher/" . $file_name);
-                    $this->db->where('id', $insert_id);
-                    $this->db->update('transactions', array('attachments' => $file_name));
+                if (isset($_FILES["attachment_file"]) && $_FILES["attachment_file"]["error"] === UPLOAD_ERR_OK) {
+                    $allowed_ext  = array('pdf', 'jpg', 'jpeg', 'png', 'gif', 'doc', 'docx', 'xls', 'xlsx');
+                    $allowed_mime = array('application/pdf', 'image/jpeg', 'image/png', 'image/gif',
+                                         'application/msword',
+                                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                                         'application/vnd.ms-excel',
+                                         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                    $ext  = strtolower(pathinfo($_FILES["attachment_file"]["name"], PATHINFO_EXTENSION));
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    $mime  = finfo_file($finfo, $_FILES["attachment_file"]["tmp_name"]);
+                    finfo_close($finfo);
+                    if (in_array($ext, $allowed_ext, true) && in_array($mime, $allowed_mime, true)) {
+                        $file_name = $insert_id . '.' . $ext;
+                        move_uploaded_file($_FILES["attachment_file"]["tmp_name"], FCPATH . 'uploads/attachments/voucher/' . $file_name);
+                        $this->db->where('id', $insert_id);
+                        $this->db->update('transactions', array('attachments' => $file_name));
+                    }
                 }
                 set_alert('success', translate('information_has_been_saved_successfully'));
                 $array  = array('status' => 'success',  'error' => '');

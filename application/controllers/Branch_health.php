@@ -100,7 +100,10 @@ class Branch_health extends Admin_Controller
         $classesWithStudents = $this->db->select('class_id, COUNT(*) as cnt')->where(array('branch_id' => $branchId, 'session_id' => $sessionId))->group_by('class_id')->get('enroll')->num_rows();
         $emptyClasses = $classCount - $classesWithStudents;
 
-        $dupRolls = $this->db->query("SELECT class_id, section_id, roll, COUNT(*) as cnt FROM enroll WHERE branch_id = $branchId AND session_id = $sessionId GROUP BY class_id, section_id, roll HAVING cnt > 1")->num_rows();
+        $dupRolls = $this->db->query(
+            "SELECT class_id, section_id, roll, COUNT(*) as cnt FROM enroll WHERE branch_id = ? AND session_id = ? GROUP BY class_id, section_id, roll HAVING cnt > 1",
+            array((int)$branchId, (int)$sessionId)
+        )->num_rows();
 
         $studentsNoParent = $this->db->where(array('parent_id' => 0))->count_all_results('student');
 
@@ -121,7 +124,10 @@ class Branch_health extends Admin_Controller
         $feeGroupCount = $this->db->where(array('branch_id' => $branchId, 'session_id' => $sessionId))->count_all_results('fee_groups');
         $feeAllocCount = $this->db->where(array('branch_id' => $branchId, 'session_id' => $sessionId))->count_all_results('fee_allocation');
         $studentsNoFee = $totalStudents - $this->db->select('DISTINCT student_id')->where(array('branch_id' => $branchId, 'session_id' => $sessionId))->count_all_results('fee_allocation');
-        $paymentCount = $this->db->query("SELECT COUNT(*) as c FROM fee_payment_history fph JOIN fee_allocation fa ON fa.id = fph.allocation_id WHERE fa.branch_id = $branchId AND fa.session_id = $sessionId")->row()->c;
+        $paymentCount = $this->db->query(
+            "SELECT COUNT(*) as c FROM fee_payment_history fph JOIN fee_allocation fa ON fa.id = fph.allocation_id WHERE fa.branch_id = ? AND fa.session_id = ?",
+            array((int)$branchId, (int)$sessionId)
+        )->row()->c;
 
         $checks['fees']['items'][] = $this->checkItem('Fee Types Created', $feeTypeCount > 0, $feeTypeCount . ' fee types');
         $checks['fees']['items'][] = $this->checkItem('Fee Groups Created', $feeGroupCount > 0, $feeGroupCount . ' fee groups', $feeGroupCount == 0 ? 'Create fee groups with amounts in Student Accounting > Fees Group' : '');
