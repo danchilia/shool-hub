@@ -212,10 +212,12 @@ class Settings extends Admin_Controller
             ajax_access_denied();
         }
         $branchID = $this->application_model->get_branch_id();
+        $this->form_validation->set_rules('stripe_public_key', 'Stripe Publishable Key', 'trim|required');
         $this->form_validation->set_rules('stripe_secret', 'Stripe Secret Key', 'trim|required');
         if ($this->form_validation->run() !== false) {
             $stripe_demo = isset($_POST['stripe_demo']) ? 1 : 2;
             $arrayPaypal = array(
+                'stripe_public_key' => $this->input->post('stripe_public_key'),
                 'stripe_secret' => $this->input->post('stripe_secret'),
                 'stripe_demo' => $stripe_demo,
             );

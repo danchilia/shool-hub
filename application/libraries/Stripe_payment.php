@@ -24,10 +24,10 @@ class Stripe_payment {
         $gateway->setTestMode($stripe_demo);
 
         $params = array(
-            'amount'        => number_format($data['amount'] + $data['fine'], 2, '.', ''),
-            'description'   => "Online Student fees deposit. Invoice No - " . $data['invoice_no'],
-            'currency'      => $data['currency'],
-            'card'          => $data['card_data']
+            'amount'      => number_format($data['amount'] + $data['fine'], 2, '.', ''),
+            'description' => "Online Student fees deposit. Invoice No - " . $data['invoice_no'],
+            'currency'    => $data['currency'],
+            'token'       => $data['stripe_token'], // one-time token from Stripe.js — no raw card data
         );
         $response = $gateway->purchase($params)->send();
         return $response;

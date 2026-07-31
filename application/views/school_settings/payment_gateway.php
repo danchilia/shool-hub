@@ -82,9 +82,18 @@
 						<?php echo form_open('settings/stripe_save', array('class' => 'form-horizontal frm-submit-msg'));?>
 							<input type="hidden" name="branch_id" value="<?=$branch_id?>">
 							<div class="form-group">
-							  <label  class="col-sm-3 control-label">Stripe Secret Key</label>
+							  <label class="col-sm-3 control-label">Stripe Publishable Key <span class="required">*</span></label>
 								<div class="col-md-6">
-									<input type="text" class="form-control" name="stripe_secret" value="<?=$config['stripe_secret']?>">
+									<input type="text" class="form-control" name="stripe_public_key" placeholder="pk_live_..." value="<?=isset($config['stripe_public_key']) ? $config['stripe_public_key'] : ''?>">
+									<small class="text-muted">Starts with <code>pk_live_</code> (or <code>pk_test_</code> in demo mode). Used by Stripe.js in the browser — safe to expose.</small>
+									<span class="error"></span>
+								</div>
+							</div>
+							<div class="form-group">
+							  <label  class="col-sm-3 control-label">Stripe Secret Key <span class="required">*</span></label>
+								<div class="col-md-6">
+									<input type="text" class="form-control" name="stripe_secret" placeholder="sk_live_..." value="<?=$config['stripe_secret']?>">
+									<small class="text-muted">Starts with <code>sk_live_</code>. Never expose this in the browser.</small>
 									<span class="error"></span>
 								</div>
 							</div>

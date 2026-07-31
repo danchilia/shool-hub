@@ -46,10 +46,8 @@ class Feespayment extends Admin_Controller
             $this->form_validation->set_rules('fee_amount', translate('amount'), array('trim','required','numeric','greater_than[0]',array('deposit_verify', array($this->fees_model, 'depositAmountVerify'))));
             $this->form_validation->set_rules('pay_via', translate('payment_method'), 'trim|required');
             if ($payVia == 'stripe') {
-                $this->form_validation->set_rules('card_number', 'Card Number', 'trim|required');
-                $this->form_validation->set_rules('cvv', 'CVV', 'trim|required|max_length[4]');
-                $this->form_validation->set_rules('expire_month', 'Card Expire', 'trim|required|max_length[2]');
-                $this->form_validation->set_rules('expire_year', 'Card Expire', 'trim|required|max_length[4]');
+                // Token is created by Stripe.js in the browser — raw card data never reaches this server
+                $this->form_validation->set_rules('stripe_token', 'Stripe Token', 'trim|required');
             }
             if ($payVia == 'payumoney') {
                 $this->form_validation->set_rules('payer_name', translate('name'), 'trim|required');
@@ -81,13 +79,8 @@ class Feespayment extends Admin_Controller
                 }
 
                 if ($payVia == 'stripe') {
-                    $cardData = array(
-                        'number' => $this->input->post('card_number'),
-                        'expiryMonth' => $this->input->post('expire_month'),
-                        'expiryYear' => $this->input->post('expire_year'),
-                        'cvv' => $this->input->post('cvv'),
-                    );
-                    $params['card_data'] = $cardData;
+                    // Only store the one-time Stripe token — never raw card data
+                    $params['stripe_token'] = $this->input->post('stripe_token');
                     $url = base_url("feespayment/stripe");
                     $this->session->set_userdata("params", $params);
                 }

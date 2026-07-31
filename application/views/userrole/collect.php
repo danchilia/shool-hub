@@ -405,32 +405,14 @@ if (count($allocations)) {
 								</div>
 							</div>
 
+							<!-- Stripe Elements — card data never reaches this server -->
 							<div class="form-group stripe" style="display: none;">
-								<label class="col-md-3 control-label"><?php echo translate('card_number');?> <span class="required">*</span></label>
+								<label class="col-md-3 control-label">Card Details <span class="required">*</span></label>
 								<div class="col-md-6">
-									<input type="text" class="form-control" name="card_number" autocomplete="off" />
-									<span class="error"></span>
-								</div>
-							</div>
-							
-							<div class="form-group stripe" style="display: none;">
-								<label class="col-md-3 control-label">CVV <span class="required">*</span></label>
-								<div class="col-md-6">
-									<input type="text" class="form-control" name="cvv" autocomplete="off" />
-									<span class="error"></span>
-								</div>
-							</div>
-							
-							<div class="form-group stripe" style="display: none;">
-								<label class="col-md-3 control-label">Card Expire <span class="required">*</span></label>
-								<div class="col-md-3">
-									<input type="text" class="form-control" autocomplete="off" name="expire_month" data-plugin-datepicker data-plugin-options='{ "format": "mm", "viewMode": "months", "minViewMode":
-									"months" }' placeholder="Expire Month" />
-									<span class="error"></span>
-								</div>
-								<div class="col-md-3">
-									<input type="text" class="form-control" autocomplete="off" name="expire_year" data-plugin-datepicker data-plugin-options='{ "format": "yyyy", "viewMode": "years", "minViewMode":
-									"years" }' placeholder="Expire Years" />
+									<div id="stripe-card-element" style="padding:10px 12px;border:1px solid #ccc;border-radius:4px;background:#fff;"></div>
+									<div id="stripe-card-errors" class="text-danger mt-sm" role="alert"></div>
+									<!-- Token injected here by Stripe.js before submit -->
+									<input type="hidden" name="stripe_token" id="stripe_token" />
 								</div>
 							</div>
 						
@@ -592,6 +574,79 @@ if (count($allocations)) {
 		}
 	});
 </script>
+
+<?php
+// Expose Stripe publishable key only when Stripe is active — never expose the secret key
+$stripe_pub_key = '';
+if (!empty($config) && !empty($config['stripe_status']) && $config['stripe_status'] == 1) {
+    $stripe_pub_key = isset($config['stripe_public_key']) ? $config['stripe_public_key'] : '';
+}
+if ($stripe_pub_key): ?>
+<!-- Stripe.js v3 — loaded from Stripe's CDN (required by PCI DSS; must not be self-hosted) -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+(function () {
+    var stripePublicKey = <?php echo json_encode($stripe_pub_key); ?>;
+    if (!stripePublicKey || typeof Stripe === 'undefined') return;
+
+    var stripe  = Stripe(stripePublicKey);
+    var elements = stripe.elements();
+    var cardElement = elements.create('card', {
+        style: {
+            base: { fontSize: '15px', color: '#333', '::placeholder': { color: '#aaa' } },
+            invalid: { color: '#e3342f' }
+        }
+    });
+    cardElement.mount('#stripe-card-element');
+
+    cardElement.on('change', function (event) {
+        var el = document.getElementById('stripe-card-errors');
+        el.textContent = event.error ? event.error.message : '';
+    });
+
+    // Intercept form submit when Stripe is selected
+    $(document).on('submit.stripe', 'form.frm-submit', function (e) {
+        if ($('#pay_via').val() !== 'stripe') return; // let other handlers run
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        var $form = $(this);
+        var $btn  = $form.find('[type="submit"]');
+        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+        stripe.createToken(cardElement).then(function (result) {
+            if (result.error) {
+                document.getElementById('stripe-card-errors').textContent = result.error.message;
+                $btn.prop('disabled', false).html('<i class="fas fa-credit-card"></i> <?=translate('fees_pay_now')?>');
+            } else {
+                // Place the token into the hidden field — card data never sent to server
+                document.getElementById('stripe_token').value = result.token.id;
+                // Now submit via the existing AJAX handler
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: 'POST',
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status === 'success' && data.url) {
+                            window.location.href = data.url;
+                        } else if (data.status === 'fail') {
+                            $.each(data.error || {}, function (k, v) {
+                                $form.find("[name='" + k + "']").closest('.form-group').find('.error').html(v);
+                            });
+                            $btn.prop('disabled', false).html('<i class="fas fa-credit-card"></i> <?=translate('fees_pay_now')?>');
+                        }
+                    },
+                    error: function () {
+                        $btn.prop('disabled', false).html('<i class="fas fa-credit-card"></i> <?=translate('fees_pay_now')?>');
+                    }
+                });
+            }
+        });
+    });
+})();
+</script>
+<?php endif; ?>
 
 <!-- M-Pesa Waiting Modal -->
 <div id="mpesa-waiting-modal" class="white-popup mfp-hide" style="max-width:420px;margin:auto;padding:32px;border-radius:12px;text-align:center;">
