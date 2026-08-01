@@ -472,7 +472,9 @@ $config['csrf_protection'] = TRUE;
 $config['csrf_token_name'] = 'school_csrf_name';
 $config['csrf_cookie_name'] = 'school_cookie_name';
 $config['csrf_expire'] = 7200;
-$config['csrf_regenerate'] = TRUE;
+// FALSE = token is per-session (standard, secure). TRUE = token rotates per POST, which
+// causes stale-token errors when users open new tabs or navigate away and come back.
+$config['csrf_regenerate'] = FALSE;
 // Only exclude endpoints that external servers POST to (no browser session = no CSRF token).
 // Never disable CSRF globally for a whole controller.
 $config['csrf_exclude_uris'] = array(
