@@ -423,7 +423,10 @@ $config['sess_regenerate_destroy'] = TRUE; // destroy old session record on ID r
 $config['cookie_prefix']	= '';
 $config['cookie_domain']	= '';
 $config['cookie_path']		= '/';
-$config['cookie_secure']	= (ENVIRONMENT !== 'development'); // HTTPS-only in production
+// TRUE only when the connection is actually HTTPS — not tied to ENVIRONMENT name,
+// because index.php sets ENVIRONMENT='production' on local XAMPP too.
+// Tying to ENVIRONMENT='development' would break staging/UAT servers that run as production over HTTP.
+$config['cookie_secure']	= (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
 $config['cookie_httponly'] 	= TRUE;
 
 /*
