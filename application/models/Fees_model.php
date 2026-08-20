@@ -303,7 +303,9 @@ class Fees_model extends MY_Model
         $this->db->where('h.date  >=', $start);
         $this->db->where('h.date <=', $end);
         $this->db->where('e.branch_id', $branchID);
-        $this->db->where('e.class_id', $classID);
+        if (!empty($classID)) {
+            $this->db->where('e.class_id', $classID);
+        }
         if (!empty($typeID)) {
             $typeID = explode("|", $typeID);
             $this->db->where('h.type_id', $typeID[1]);
@@ -311,7 +313,9 @@ class Fees_model extends MY_Model
         if (!empty($studentID)) {
             $this->db->where('e.student_id', $studentID);
         }
-        $this->db->where('e.section_id', $sectionID);
+        if (!empty($sectionID)) {
+            $this->db->where('e.section_id', $sectionID);
+        }
         $this->db->order_by('h.id', 'asc');
         $result = $this->db->get()->result_array();
         return $result;
