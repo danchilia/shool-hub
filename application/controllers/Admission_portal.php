@@ -17,7 +17,6 @@ class Admission_portal extends MY_Controller
     public function index()
     {
         $branches = $this->db->select('id, name, address, mobileno, email')
-            ->where('active', 1)
             ->get('branch')->result_array();
 
         $this->data['branches'] = $branches;
@@ -33,12 +32,12 @@ class Admission_portal extends MY_Controller
             show_404();
         }
 
-        $classes  = $this->db->where('branch_id', $branchId)->get('class')->result_array();
-        $sessions = $this->db->where('branch_id', $branchId)->get('session')->result_array();
+        $classes      = $this->db->where('branch_id', $branchId)->get('class')->result_array();
+        $school_years = $this->db->order_by('id', 'DESC')->get('schoolyear')->result_array();
 
-        $this->data['branch']   = $branch;
-        $this->data['classes']  = $classes;
-        $this->data['sessions'] = $sessions;
+        $this->data['branch']       = $branch;
+        $this->data['classes']      = $classes;
+        $this->data['school_years'] = $school_years;
         $this->load->view('admission_portal/apply', $this->data);
     }
 
@@ -84,10 +83,8 @@ class Admission_portal extends MY_Controller
                 'grd_password'  => 'changeme123',
             );
 
-            // Find current active session for the branch
-            $session = $this->db->where(array('branch_id' => $branchId, 'active' => 1))
-                ->order_by('id', 'DESC')->limit(1)
-                ->get('session')->row_array();
+            // Find the latest academic year (schoolyear is global, not per-branch)
+            $session   = $this->db->order_by('id', 'DESC')->limit(1)->get('schoolyear')->row_array();
             $sessionId = $session ? $session['id'] : 0;
 
             $this->db->insert('admission_requests', array(
@@ -107,11 +104,11 @@ class Admission_portal extends MY_Controller
             redirect(base_url('admission_portal/success/' . $token));
         } else {
             // Re-render form with errors
-            $classes  = $this->db->where('branch_id', $branchId)->get('class')->result_array();
-            $sessions = $this->db->where('branch_id', $branchId)->get('session')->result_array();
+            $classes      = $this->db->where('branch_id', $branchId)->get('class')->result_array();
+            $school_years = $this->db->order_by('id', 'DESC')->get('schoolyear')->result_array();
             $this->data['branch']            = $branch;
             $this->data['classes']           = $classes;
-            $this->data['sessions']          = $sessions;
+            $this->data['school_years']      = $school_years;
             $this->data['validation_errors'] = $this->form_validation->error_array();
             $this->load->view('admission_portal/apply', $this->data);
         }

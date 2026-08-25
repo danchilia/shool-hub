@@ -1,5 +1,5 @@
 # Sensitive files - NEVER push these
-application/config/database.php
+# NOTE: database.php is safe to commit — credentials come from env vars
 application/config/purchase_key.php
 application/config/encryption_key.php
 
@@ -13,12 +13,20 @@ uploads/images/
 uploads/attachments/
 uploads/qrcode_cache/
 
+# Application log files
+application/logs/log-*.php
+
 # System files
 .DS_Store
 Thumbs.db
 *.log
 *.bak
 *.tmp
+
+# Word/Office documents
+*.docx
+*.doc
+*.xlsx
 
 # IDE files
 .vscode/

@@ -5,8 +5,8 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta content="width=device-width,initial-scale=1" name="viewport">
 	<meta name="keywords" content="">
-	<meta name="description" content="DCK Solutions - School Management System">
-	<meta name="author" content="DCK Solutions">
+	<meta name="description" content="CST SchoolHub - School Management System">
+	<meta name="author" content="Chilia Select Technologies">
 	<title><?php echo translate('login');?></title>
 	<link rel="shortcut icon" href="<?php echo base_url('assets/images/favicon.png');?>">
     
@@ -37,7 +37,7 @@
                                 <h2><?php echo translate('welcome_to');?></h2>
                             </div>
                             <div class="center img-hol-p">
-                                <img src="<?php echo base_url('uploads/app_image/logo.png');?>" height="60" alt="DCK Solutions">
+                                <img src="<?php echo base_url('uploads/app_image/logo.png');?>" height="60" alt="CST SchoolHub" onerror="this.src='<?php echo base_url('assets/images/cst-logo.png'); ?>'">
                             </div>
                             <div class="address">
                                 <p><?php echo $global_config['address'];?></p>
@@ -64,7 +64,7 @@
                     <div class="col-lg-6 col-lg-offset-right-1 col-md-6 col-md-offset-right-1 col-sm-12 col-xs-12 no-padding">
                         <div class="sign-area">
                             <div class="sign-hader">
-                                <img src="<?php echo base_url('uploads/app_image/logo.png');?>" height="54" alt="">
+                                <img src="<?php echo base_url('uploads/app_image/logo.png');?>" height="54" alt="CST SchoolHub" onerror="this.src='<?php echo base_url('assets/images/cst-logo.png'); ?>'">
                                 <h2><?php echo $global_config['institute_name'];?></h2>
                             </div>
                             <?php echo form_open($this->uri->uri_string()); ?>
@@ -104,9 +104,14 @@
                                 </div>
                                 <div class="sign-footer">
                                     <p><?php echo $global_config['footer_text'];?></p>
-                                    <p style="margin-top:6px;font-size:12px;">
-                                        <a href="<?php echo base_url('authentication/privacy_policy');?>" target="_blank" style="color:inherit;text-decoration:underline;">Privacy Policy</a>
-                                    </p>
+                                </div>
+                                <div style="text-align:center; margin-top:12px;">
+                                    <a href="<?php echo base_url('authentication/privacy_policy');?>" target="_blank"
+                                       style="display:inline-block; color:#fff; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.35); border-radius:20px; padding:6px 18px; font-size:12px; font-weight:600; letter-spacing:0.5px; text-decoration:none; transition:background 0.2s;"
+                                       onmouseover="this.style.background='rgba(255,255,255,0.28)'"
+                                       onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+                                        <i class="fas fa-shield-alt" style="margin-right:5px;"></i> Privacy Policy
+                                    </a>
                                 </div>
                             <?php echo form_close();?>
                         </div>

@@ -95,7 +95,7 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f4f8}
                     <select name="class_id" id="class_id" onchange="loadSections(this.value)">
                         <option value="">— Select Class —</option>
                         <?php foreach ($classes as $c): ?>
-                        <option value="<?= $c['id'] ?>" <?= set_select('class_id', $c['id']) ?>><?= htmlspecialchars($c['class']) ?></option>
+                        <option value="<?= $c['id'] ?>" <?= set_select('class_id', $c['id']) ?>><?= htmlspecialchars($c['name']) ?></option>
                         <?php endforeach; ?>
                     </select>
                     <?php if (!empty($errors['class_id'])): ?><div class="error"><?= $errors['class_id'] ?></div><?php endif; ?>

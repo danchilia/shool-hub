@@ -1,3 +1,17 @@
+# -------------------------------------------------------
+# DATABASE & APP ENVIRONMENT VARIABLES
+# LOCAL (XAMPP): values below are used as-is
+# PRODUCTION (cPanel): change these values to your real
+#   hosting DB credentials before uploading to server
+# -------------------------------------------------------
+<IfModule mod_env.c>
+    SetEnv DB_HOST      localhost
+    SetEnv DB_USER      root
+    SetEnv DB_PASS
+    SetEnv DB_NAME      ramom
+    SetEnv APP_ALLOWED_HOSTS  localhost
+</IfModule>
+
 <IfModule mod_rewrite.c>
 RewriteEngine On
 

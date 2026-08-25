@@ -106,7 +106,17 @@ class School_settings extends Admin_Controller
 
         $branchID = $this->school_model->getBranchID();
         $this->data['branch_id'] = $branchID;
-        $this->data['config'] = $this->school_model->get('payment_config', array('branch_id' => $branchID), true);
+        $config = $this->school_model->get('payment_config', array('branch_id' => $branchID), true);
+        if (!empty($config)) {
+            $this->load->library('encryption');
+            foreach (array('mpesa_consumer_key', 'mpesa_consumer_secret', 'mpesa_passkey') as $key) {
+                if (!empty($config[$key])) {
+                    $dec = $this->encryption->decrypt($config[$key]);
+                    if ($dec !== false) $config[$key] = $dec;
+                }
+            }
+        }
+        $this->data['config'] = $config;
         $this->data['sub_page'] = 'school_settings/payment_gateway';
         $this->data['main_menu'] = 'school_m';
         $this->data['title'] = translate('payment_control');

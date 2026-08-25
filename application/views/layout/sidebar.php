@@ -3,10 +3,10 @@
     <!-- Brand / Logo -->
     <div class="dck-sidebar-brand">
         <a href="<?php echo base_url('dashboard'); ?>" class="dck-sidebar-logo">
-            <img src="<?php echo base_url('uploads/app_image/logo-small.png'); ?>" alt="DCK"
-                 onerror="this.style.display='none'">
+            <img src="<?php echo base_url('uploads/app_image/logo-small.png'); ?>" alt="CST SchoolHub"
+                 onerror="this.src='<?php echo base_url('assets/images/cst-logo.png'); ?>'">
             <div class="dck-sidebar-brand-name">
-                DCK Schools
+                CST SchoolHub
                 <small>Management System</small>
             </div>
         </a>
@@ -81,6 +81,51 @@
                             </li>
                             <?php endif; ?>
                     <?php } ?>
+                    <!-- all available modules (training/demo page) -->
+                    <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
+                    <li class="<?php if ($main_menu == 'module_map') echo 'nav-active';?>">
+                        <a href="<?=base_url('module_map')?>">
+                            <i class="fas fa-th-large"></i><span>All Available Modules</span>
+                        </a>
+                    </li>
+                    <?php endif; ?>
+
+                    <!-- agent management (superadmin only) -->
+                    <?php if (is_superadmin_loggedin()): ?>
+                    <li class="nav-parent <?php if ($main_menu == 'agents') echo 'nav-expanded nav-active';?>">
+                        <a>
+                            <i class="fas fa-user-tie"></i><span>Agent Management</span>
+                        </a>
+                        <ul class="nav-children">
+                            <li class="<?php if ($sub_page == 'agents/index') echo 'nav-active';?>">
+                                <a href="<?=base_url('agents')?>">
+                                    <span><i class="fas fa-caret-right"></i> Field Agents</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'agents/earnings') echo 'nav-active';?>">
+                                <a href="<?=base_url('agents/earnings')?>">
+                                    <span><i class="fas fa-caret-right"></i> Agent Earnings</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'agents/all_schools') echo 'nav-active';?>">
+                                <a href="<?=base_url('agents/all_schools')?>">
+                                    <span><i class="fas fa-caret-right"></i> Prospect Schools</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'agents/expenses') echo 'nav-active';?>">
+                                <a href="<?=base_url('agents/expenses')?>">
+                                    <span><i class="fas fa-caret-right"></i> Expense Claims</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($main_menu == 'dck_plans') echo 'nav-active';?>">
+                                <a href="<?=base_url('dck_plans')?>">
+                                    <span><i class="fas fa-caret-right"></i> DCK Plans</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+
                     <?php if (is_superadmin_loggedin()) : ?>
                     <!-- branch -->
                     <li class="nav-parent <?php if ($main_menu == 'branch' || $main_menu == 'subscription') echo 'nav-expanded nav-active';?>">
