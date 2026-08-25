@@ -29,7 +29,7 @@
 							<tr><td style="padding:3px 15px 3px 0;"><strong>Paybill:</strong></td><td><strong style="font-size:18px;"><?=isset($settings->paybill_number) ? $settings->paybill_number : '______'?></strong></td></tr>
 							<tr><td style="padding:3px 15px 3px 0;"><strong>Account Name:</strong></td><td><strong>(School's Name)</strong></td></tr>
 						</table>
-						<p class="mt-sm"><small>After payment, contact DCK Solutions with your M-Pesa code to reactivate.</small></p>
+						<p class="mt-sm"><small>After payment, contact CST Solutions with your M-Pesa code to reactivate.</small></p>
 					</div>
 				</div>
 				<div class="panel-footer">
