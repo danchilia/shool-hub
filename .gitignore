@@ -33,8 +33,8 @@ Thumbs.db
 .idea/
 *.swp
 
-# PHP dependencies (if any)
-vendor/
+# PHP dependencies (Composer only — do NOT exclude assets/vendor/)
+application/vendor/
 
 # XAMPP specific
 php_error_log
