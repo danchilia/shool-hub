@@ -162,6 +162,32 @@
                     </li>
                     <?php endif; ?>
 
+                    <?php if (is_superadmin_loggedin()): ?>
+                    <!-- careers portal -->
+                    <li class="nav-parent <?php if ($main_menu == 'careers') echo 'nav-expanded nav-active'; ?>">
+                        <a>
+                            <i class="fas fa-briefcase"></i><span>Careers Portal</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'careers/manage') echo 'nav-active'; ?>">
+                                <a href="<?=base_url('careers/manage')?>">
+                                    <span><i class="fas fa-caret-right"></i> Manage Jobs</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'careers/add_job') echo 'nav-active'; ?>">
+                                <a href="<?=base_url('careers/add_job')?>">
+                                    <span><i class="fas fa-caret-right"></i> Post New Job</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<?=base_url('careers')?>" target="_blank">
+                                    <span><i class="fas fa-caret-right"></i> View Public Page</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+
                     <?php
                     if (get_permission('student', 'is_add') ||
                     get_permission('multiple_import', 'is_add') ||
