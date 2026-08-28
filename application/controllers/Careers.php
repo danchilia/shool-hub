@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Careers extends MY_Controller {
@@ -88,7 +88,7 @@ class Careers extends MY_Controller {
 
     public function index() {
         $data['jobs']       = $this->careers_model->get_all_positions('open');
-        $data['page_title'] = 'Job Openings — CST SchoolHub';
+        $data['page_title'] = 'Job Openings | CST SchoolHub';
         $this->public_view('index', $data);
     }
 
@@ -97,7 +97,7 @@ class Careers extends MY_Controller {
         $job = $this->careers_model->get_position($id);
         if (!$job) show_404();
         $data['job']        = $job;
-        $data['page_title'] = $job['title'] . ' — CST SchoolHub Careers';
+        $data['page_title'] = $job['title'] . ' | CST SchoolHub Careers';
         $this->public_view('job', $data);
     }
 
@@ -112,7 +112,7 @@ class Careers extends MY_Controller {
         $this->form_validation->set_rules('password',         'Password',         'required|min_length[6]');
         $this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required|matches[password]');
 
-        $data['page_title'] = 'Create Account — CST SchoolHub Careers';
+        $data['page_title'] = 'Create Account | CST SchoolHub Careers';
         $data['error']      = '';
 
         if ($this->form_validation->run()) {
@@ -141,7 +141,7 @@ class Careers extends MY_Controller {
         $this->form_validation->set_rules('email',    'Email',    'required|trim|valid_email');
         $this->form_validation->set_rules('password', 'Password', 'required');
 
-        $data['page_title'] = 'Login — CST SchoolHub Careers';
+        $data['page_title'] = 'Login | CST SchoolHub Careers';
         $data['error']      = '';
 
         if ($this->form_validation->run()) {
@@ -256,7 +256,7 @@ class Careers extends MY_Controller {
         $applicant_id           = $this->applicant_id();
         $data['applicant']      = $this->careers_model->get_applicant($applicant_id);
         $data['applications']   = $this->careers_model->get_applicant_applications($applicant_id);
-        $data['page_title']     = 'My Applications — CST SchoolHub';
+        $data['page_title']     = 'My Applications | CST SchoolHub';
         $this->public_view('dashboard', $data);
     }
 
@@ -268,7 +268,7 @@ class Careers extends MY_Controller {
         $data['app']        = $app;
         $data['replies']    = $this->careers_model->get_replies($id);
         $data['applicant']  = $this->careers_model->get_applicant($this->applicant_id());
-        $data['page_title'] = 'Application — ' . $app['position_title'];
+        $data['page_title'] = 'Application | ' . $app['position_title'];
         $this->public_view('my_application', $data);
     }
 
@@ -368,7 +368,7 @@ class Careers extends MY_Controller {
 
             $this->send_email(
                 $app['email'],
-                'Update on Your Application — ' . $app['position_title'],
+                'Update on Your Application | ' . $app['position_title'],
                 $this->email_tpl('Application Update',
                     "Dear {$app['full_name']},<br><br>
                     There is an update on your application for <strong>{$app['position_title']}</strong>.<br><br>
@@ -386,7 +386,7 @@ class Careers extends MY_Controller {
 
         $this->data['app']       = $app;
         $this->data['replies']   = $this->careers_model->get_replies($id);
-        $this->data['title']     = 'Application — ' . $app['full_name'];
+        $this->data['title']     = 'Application | ' . $app['full_name'];
         $this->data['sub_page']  = 'careers/view_application';
         $this->data['main_menu'] = 'careers';
         $this->load->view('layout/index', $this->data);
