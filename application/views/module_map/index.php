@@ -369,8 +369,8 @@ foreach ($categories as $cat) {
                     <i class="fas fa-th-large" style="color:#4e73df;margin-right:8px;"></i>All Available Modules
                 </h4>
                 <p style="margin:4px 0 0;color:#888;font-size:12px;">
-                    Training &amp; demo reference — <strong><?php echo $total_modules; ?> modules</strong> across
-                    <strong><?php echo count($categories); ?> categories</strong> — click any card to open the module
+                    Training &amp; demo reference: <strong><?php echo $total_modules; ?> modules</strong> across
+                    <strong><?php echo count($categories); ?> categories</strong>. Click any card to open the module
                 </p>
             </div>
             <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">

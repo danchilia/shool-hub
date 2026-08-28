@@ -3,14 +3,14 @@
 <!-- Hero -->
 <div class="rounded-3 mb-4 p-4" style="background:linear-gradient(135deg,#1a5276 0%,#2980b9 100%);color:#fff;">
     <h2 class="mb-1"><i class="fas fa-briefcase me-2"></i>Current Job Openings</h2>
-    <p class="mb-0" style="color:#aed6f1;">Join the CST SchoolHub team — shaping education technology in Kenya.</p>
+    <p class="mb-0" style="color:#aed6f1;">Join the CST SchoolHub team shaping education technology in Kenya.</p>
 </div>
 
 <?php if (empty($jobs)): ?>
 <div class="job-card p-5 text-center">
     <i class="fas fa-inbox fa-3x text-muted mb-3 d-block"></i>
     <h5 class="text-muted">No open positions right now.</h5>
-    <p class="text-muted mb-0">Check back soon — we're always growing!</p>
+    <p class="text-muted mb-0">Check back soon, we're always growing!</p>
 </div>
 <?php else: ?>
 <div class="row g-3">

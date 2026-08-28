@@ -32,7 +32,7 @@
 
         <?php if (empty($replies)): ?>
         <div class="text-center py-3 text-muted">
-            <i class="fas fa-clock me-1"></i>No messages yet — we will be in touch soon.
+            <i class="fas fa-clock me-1"></i>No messages yet. We will be in touch soon.
         </div>
         <?php else: ?>
         <?php foreach ($replies as $r): ?>

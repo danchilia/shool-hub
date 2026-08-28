@@ -72,7 +72,7 @@
         <div class="card-body">
             <p class="text-muted small mb-3">
                 Each bus has a unique private URL. Click the <i class="fas fa-satellite-dish text-info"></i> button next to a bus to see its specific URL.
-                GPS devices and driver phone apps send location updates to that URL — no login required.
+                GPS devices and driver phone apps send location updates to that URL, no login required.
             </p>
             <div class="row g-3">
                 <div class="col-md-6">
@@ -92,7 +92,7 @@
             </div>
             <div class="alert alert-info small mt-3 mb-0">
                 <i class="fas fa-lock me-1"></i>
-                Each URL contains a private token unique to that bus. Keep it confidential — anyone with the URL can update that bus's location. If a token is compromised, delete the bus and re-add it to get a new token.
+                Each URL contains a private token unique to that bus. Keep it confidential. Anyone with the URL can update that bus's location. If a token is compromised, delete the bus and re-add it to get a new token.
             </div>
         </div>
     </div>
@@ -117,7 +117,7 @@
             <div class="border rounded p-3 mb-3 bg-light">
                 <div class="fw-semibold small mb-2">URL Parameters</div>
                 <table class="table table-sm table-borderless mb-0 small">
-                    <tr><td class="fw-semibold text-nowrap" style="width:80px">token</td><td class="text-muted">Required. Already included in the URL above — do not change it.</td></tr>
+                    <tr><td class="fw-semibold text-nowrap" style="width:80px">token</td><td class="text-muted">Required. Already included in the URL above, do not change it.</td></tr>
                     <tr><td class="fw-semibold">lat</td><td class="text-muted">Required. GPS latitude (decimal degrees, e.g. -1.286389)</td></tr>
                     <tr><td class="fw-semibold">lng</td><td class="text-muted">Required. GPS longitude (decimal degrees, e.g. 36.817223)</td></tr>
                     <tr><td class="fw-semibold">speed</td><td class="text-muted">Optional. Speed in km/h</td></tr>
@@ -125,7 +125,7 @@
             </div>
 
             <div class="mb-3">
-                <div class="fw-semibold small mb-2"><i class="fas fa-mobile-alt me-1 text-primary"></i>GPS Logger App (Android — Free)</div>
+                <div class="fw-semibold small mb-2"><i class="fas fa-mobile-alt me-1 text-primary"></i>GPS Logger App (Android, Free)</div>
                 <ol class="small text-muted ps-3 mb-0">
                     <li>Install <strong>GPS Logger</strong> from Google Play Store</li>
                     <li>Open app → Menu → <strong>Logging Details</strong> → Custom URL</li>

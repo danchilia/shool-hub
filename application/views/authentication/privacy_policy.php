@@ -62,7 +62,7 @@
     <h2>4. Legal Basis for Processing</h2>
     <p>
         Processing is carried out on the basis of: (a) performance of a contract (student enrolment); (b) compliance with a legal obligation
-        (NEMIS reporting, KNEC examinations); (c) legitimate interests of the school; and (d) consent, where required — including for bulk
+        (NEMIS reporting, KNEC examinations); (c) legitimate interests of the school; and (d) consent, where required, including for bulk
         SMS/email communications.
     </p>
 

@@ -313,7 +313,7 @@
 									<div class="panel-body">
 										<div class="col-md-12 mb-md">
 											<div class="alert alert-info">
-												<i class="fab fa-whatsapp"></i> <strong>Meta WhatsApp Cloud API</strong> — Go to <strong>developers.facebook.com</strong>, create an App, add the WhatsApp product, and get your Phone Number ID and Permanent Access Token. Outbound notifications require approved message templates.
+												<i class="fab fa-whatsapp"></i> <strong>Meta WhatsApp Cloud API</strong>: Go to <strong>developers.facebook.com</strong>, create an App, add the WhatsApp product, and get your Phone Number ID and Permanent Access Token. Outbound notifications require approved message templates.
 											</div>
 										</div>
 										<div class="form-group mt-md">

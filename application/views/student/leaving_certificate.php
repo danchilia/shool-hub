@@ -99,9 +99,9 @@ $issue_date   = isset($issue_date)   ? $issue_date   : date('Y-m-d');
             <div class="clearance">
                 <strong>Fee Clearance Status:</strong>
                 <?php if ($fees_balance <= 0): ?>
-                    <span style="color:#155724;font-weight:700;">&#10003; CLEARED — No outstanding fees balance.</span>
+                    <span style="color:#155724;font-weight:700;">&#10003; CLEARED. No outstanding fees balance.</span>
                 <?php else: ?>
-                    <span style="color:#721c24;font-weight:700;">&#10005; NOT CLEARED — Outstanding balance: KES <?=number_format($fees_balance, 2)?></span>
+                    <span style="color:#721c24;font-weight:700;">&#10005; NOT CLEARED. Outstanding balance: KES <?=number_format($fees_balance, 2)?></span>
                 <?php endif; ?>
             </div>
 

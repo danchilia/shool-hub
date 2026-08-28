@@ -9,7 +9,7 @@ $roles = array(
         'bg'       => '#fadbd8',
         'email'    => 'admin@sunriseacademy.co.ke',
         'password' => 'Sunrise@Admin',
-        'desc'     => 'Full access — student records, fees, staff, reports, settings. Best for showing the complete system.',
+        'desc'     => 'Full access: student records, fees, staff, reports, settings. Best for showing the complete system.',
     ),
     array(
         'role'     => 'Teacher',

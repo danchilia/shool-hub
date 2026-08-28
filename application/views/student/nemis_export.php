@@ -134,7 +134,7 @@ $branch_id  = isset($branch_id)  ? $branch_id  : '';
                     <i class="fas fa-exclamation-triangle"></i>
                     <strong><?=$missingUpi?> learner(s) have no UPI number.</strong>
                     Go to <a href="<?=base_url('student')?>">Student Profiles</a> and enter UPI numbers before uploading to NEMIS.
-                    Rows with missing UPI will be exported as empty — NEMIS will skip them.
+                    Rows with missing UPI will be exported as empty. NEMIS will skip them.
                 </div>
                 <?php endif; ?>
 

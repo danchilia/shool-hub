@@ -286,7 +286,7 @@ if (!empty($branches) && !empty($branchID)) {
                 School Setup Guide
             <?php endif; ?>
             </h2>
-            <p>Follow these <?=count($steps)?> steps in order to get the school fully operational. Steps link directly to the setup page — the order is a recommendation, not a lock.</p>
+            <p>Follow these <?=count($steps)?> steps in order to get the school fully operational. Steps link directly to the setup page. The order is a recommendation, not a lock.</p>
         </div>
         <div class="sg-hero-bar">
             <div class="sg-progress-wrap">
@@ -299,11 +299,11 @@ if (!empty($branches) && !empty($branchID)) {
                 </div>
                 <p class="sg-pct-note">
                 <?php if ($percent == 100): ?>
-                    <i class="fas fa-check-circle text-success"></i> Setup complete — your school is ready!
+                    <i class="fas fa-check-circle text-success"></i> Setup complete. Your school is ready!
                 <?php elseif ($percent >= 50): ?>
-                    <i class="fas fa-spinner text-warning"></i> <?=$percent?>% done — keep going, almost there.
+                    <i class="fas fa-spinner text-warning"></i> <?=$percent?>% done. Keep going, almost there.
                 <?php elseif ($percent > 0): ?>
-                    <i class="fas fa-play-circle" style="color:#3b82f6"></i> <?=$percent?>% done — great start!
+                    <i class="fas fa-play-circle" style="color:#3b82f6"></i> <?=$percent?>% done. Great start!
                 <?php else: ?>
                     <i class="fas fa-flag-checkered"></i> Start with Step 1 below.
                 <?php endif; ?>

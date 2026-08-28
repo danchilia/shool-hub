@@ -43,9 +43,9 @@
 
             <p class="mb-2"><strong>Column meaning:</strong></p>
             <ul class="mb-3">
-                <li><strong>BiometricID</strong> — The fingerprint ID number from the device (must match what you set in Biometric &gt; ID Mapping)</li>
-                <li><strong>ScanTime</strong> — Date and time of the scan, format: YYYY-MM-DD HH:MM:SS</li>
-                <li><strong>Type</strong> — "in" or "out" (optional, can leave blank)</li>
+                <li><strong>BiometricID</strong>: The fingerprint ID number from the device (must match what you set in Biometric &gt; ID Mapping)</li>
+                <li><strong>ScanTime</strong>: Date and time of the scan, format: YYYY-MM-DD HH:MM:SS</li>
+                <li><strong>Type</strong>: "in" or "out" (optional, can leave blank)</li>
             </ul>
 
             <div class="mb-3">

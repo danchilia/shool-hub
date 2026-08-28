@@ -1,4 +1,4 @@
-<div class="row">
+﻿<div class="row">
 	<div class="col-md-3">
         <?php include 'sidebar.php'; ?>
     </div>

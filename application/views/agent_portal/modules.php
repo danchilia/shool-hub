@@ -254,7 +254,7 @@ foreach ($categories as $cat) $total_modules += count($cat['modules']);
       </div>
       <div>
         <div style="font-size:1.1rem;font-weight:700">All System Modules</div>
-        <div style="opacity:.65;font-size:.83rem"><?= $total_modules ?> features across <?= count($categories) ?> categories — use during demos to show the full system</div>
+        <div style="opacity:.65;font-size:.83rem"><?= $total_modules ?> features across <?= count($categories) ?> categories, use during demos to show the full system</div>
       </div>
       <div class="ms-auto d-flex gap-2 flex-wrap">
         <a href="<?= base_url('agent_portal/demo') ?>" class="btn btn-sm" style="background:var(--ap-accent);color:#fff;font-weight:600">
