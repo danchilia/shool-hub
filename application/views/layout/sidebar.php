@@ -127,6 +127,11 @@
                                     <span><i class="fas fa-caret-right"></i> Demo Requests</span>
                                 </a>
                             </li>
+                            <li class="<?php if ($sub_page == 'agents/onboarding_requests') echo 'nav-active';?>">
+                                <a href="<?=base_url('agents/onboarding_requests')?>">
+                                    <span><i class="fas fa-caret-right"></i> Onboarding Requests</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     <?php endif; ?>

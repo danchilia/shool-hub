@@ -315,6 +315,92 @@ class Agent_portal extends CI_Controller
         $this->_render('agent_portal/expenses/index', $data);
     }
 
+    // ─── DOWNLOAD DATA COLLECTION FORM ────────────────────────────
+
+    public function download_form()
+    {
+        $this->_require_auth();
+        $file = FCPATH . 'uploads/documents/CST_School_Hub_Data_Collection_Form_v2.2.docx';
+        if (!file_exists($file)) {
+            show_404();
+        }
+        $this->load->helper('download');
+        force_download('CST_School_Hub_Data_Collection_Form_v2.2.docx', file_get_contents($file));
+    }
+
+    // ─── SCHOOL ONBOARDING SUBMISSION ─────────────────────────────
+
+    public function submit_school($schoolId = '')
+    {
+        $this->_require_auth();
+        $agentId = $this->_agent_id();
+        $school  = $this->agent_model->getSchool($schoolId, $agentId);
+        if (!$school) show_404();
+
+        $data['success'] = false;
+        $data['errors']  = array();
+
+        if ($this->input->post('submit_onboarding')) {
+            $this->form_validation->set_rules('school_name',    'School Name',    'trim|required');
+            $this->form_validation->set_rules('principal_name', 'Principal Name', 'trim|required');
+            $this->form_validation->set_rules('school_phone',   'School Phone',   'trim|required');
+            $this->form_validation->set_rules('admin_name',     'Admin Name',     'trim|required');
+            $this->form_validation->set_rules('admin_phone',    'Admin Phone',    'trim|required');
+            $this->form_validation->set_rules('admin_email',    'Admin Email',    'trim|required|valid_email');
+
+            if ($this->form_validation->run()) {
+                $this->db->insert('school_onboarding_requests', array(
+                    'agent_id'               => $agentId,
+                    'agent_school_id'        => $schoolId,
+                    'school_name'            => $this->input->post('school_name',      TRUE),
+                    'subscription_plan_id'   => (int) $this->input->post('subscription_plan_id') ?: null,
+                    'billing_cycle'          => $this->input->post('billing_cycle') === 'yearly' ? 'yearly' : 'monthly',
+                    'reg_number'             => $this->input->post('reg_number',       TRUE),
+                    'school_type'            => $this->input->post('school_type',      TRUE),
+                    'school_category'        => $this->input->post('school_category',  TRUE),
+                    'county'                 => $this->input->post('county',           TRUE),
+                    'sub_county'             => $this->input->post('sub_county',       TRUE),
+                    'ward'                   => $this->input->post('ward',             TRUE),
+                    'physical_address'       => $this->input->post('physical_address', TRUE),
+                    'postal_address'         => $this->input->post('postal_address',   TRUE),
+                    'school_phone'           => $this->input->post('school_phone',     TRUE),
+                    'school_email'           => $this->input->post('school_email',     TRUE),
+                    'school_website'         => $this->input->post('school_website',   TRUE),
+                    'principal_name'         => $this->input->post('principal_name',   TRUE),
+                    'principal_phone'        => $this->input->post('principal_phone',  TRUE),
+                    'principal_email'        => $this->input->post('principal_email',  TRUE),
+                    'num_students'           => (int) $this->input->post('num_students'),
+                    'num_teaching_staff'     => (int) $this->input->post('num_teaching_staff'),
+                    'num_non_teaching_staff' => (int) $this->input->post('num_non_teaching_staff'),
+                    'num_streams'            => $this->input->post('num_streams',      TRUE),
+                    'admin_name'             => $this->input->post('admin_name',       TRUE),
+                    'admin_phone'            => $this->input->post('admin_phone',      TRUE),
+                    'admin_email'            => $this->input->post('admin_email',      TRUE),
+                    'notes'                  => $this->input->post('notes',            TRUE),
+                    'status'                 => 'pending',
+                    'submitted_at'           => date('Y-m-d H:i:s'),
+                ));
+                $this->agent_model->updateSchool($schoolId, array('status' => 'closed_won'));
+                $data['success'] = true;
+            }
+        }
+
+        $data['school']  = $school;
+        $data['sub_plans'] = $this->db->order_by('monthly_price','ASC')->get_where('subscription_plans', array('is_active' => 1))->result_array();
+        $data['title']   = 'Submit School for Setup — ' . $school['school_name'];
+        $this->_render('agent_portal/schools/submit', $data);
+    }
+
+    public function my_submissions()
+    {
+        $this->_require_auth();
+        $agentId = $this->_agent_id();
+        $rows = $this->db->where('agent_id', $agentId)->order_by('submitted_at','DESC')->get('school_onboarding_requests')->result_array();
+        $data['submissions'] = $rows;
+        $data['title']       = 'My Submissions';
+        $this->_render('agent_portal/schools/submissions', $data);
+    }
+
     // ─── DEMO SCHOOL ───────────────────────────────────────────────
 
     public function demo()

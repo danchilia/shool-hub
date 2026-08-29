@@ -7,6 +7,11 @@
   <a href="<?= base_url('agent_portal/log_visit/' . $sch['id']) ?>" class="btn btn-sm ms-auto" style="background:var(--ap-green);color:#fff">
     <i class="fas fa-map-marker-alt me-1"></i>Log Visit
   </a>
+  <?php if ($sch['status'] === 'closed_won'): ?>
+  <a href="<?= base_url('agent_portal/submit_school/' . $sch['id']) ?>" class="btn btn-sm" style="background:var(--ap-accent);color:#fff">
+    <i class="fas fa-paper-plane me-1"></i>Submit for Setup
+  </a>
+  <?php endif; ?>
 </div>
 
 <div class="row g-4">

@@ -192,4 +192,34 @@ class Agents extends Admin_Controller
         $this->agent_model->updateExpenseStatus($id, 'rejected', get_loggedin_user_id(), $note);
         redirect('agents/expenses');
     }
+
+    public function onboarding_requests()
+    {
+        $status = $this->input->get('status') ?: '';
+        $q      = $status ? array('status' => $status) : array();
+
+        $this->db->select('sor.*, CONCAT(a.first_name," ",a.last_name) AS agent_name, sp.name AS plan_name, sp.monthly_price, sp.yearly_price');
+        $this->db->from('school_onboarding_requests sor');
+        $this->db->join('agents a',              'a.id = sor.agent_id',              'left');
+        $this->db->join('subscription_plans sp', 'sp.id = sor.subscription_plan_id', 'left');
+        if ($status) $this->db->where('sor.status', $status);
+        $this->db->order_by('sor.submitted_at', 'DESC');
+        $rows = $this->db->get()->result_array();
+
+        $this->data['requests']  = $rows;
+        $this->data['status']    = $status;
+        $this->data['pending']   = $this->db->where('status','pending')->count_all_results('school_onboarding_requests');
+        $this->data['title']     = 'School Onboarding Requests';
+        $this->data['sub_page']  = 'agents/onboarding_requests';
+        $this->data['main_menu'] = 'agents';
+        $this->load->view('layout/index', $this->data);
+    }
+
+    public function update_onboarding($id = '')
+    {
+        $status = $this->input->post('status');
+        $note   = $this->input->post('admin_notes', TRUE);
+        $this->db->update('school_onboarding_requests', array('status' => $status, 'admin_notes' => $note), array('id' => $id));
+        redirect('agents/onboarding_requests');
+    }
 }

@@ -225,6 +225,14 @@ function ap_active($segment) {
       <i class="fas fa-receipt"></i> Expense Claims
     </a>
 
+    <div class="nav-section">Onboarding</div>
+    <a href="<?= base_url('agent_portal/my_submissions') ?>" class="<?= ap_active('agent_portal/my_submissions') ?>">
+      <i class="fas fa-clipboard-check"></i> My Submissions
+    </a>
+    <a href="<?= base_url('agent_portal/download_form') ?>">
+      <i class="fas fa-file-word"></i> Download Form
+    </a>
+
     <div class="nav-section">Demo Tools</div>
     <a href="<?= base_url('agent_portal/demo') ?>" class="<?= ap_active('agent_portal/demo') ?>">
       <i class="fas fa-school"></i> Demo Credentials
