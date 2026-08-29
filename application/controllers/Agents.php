@@ -200,7 +200,7 @@ class Agents extends Admin_Controller
 
         $this->db->select('sor.*, CONCAT(a.first_name," ",a.last_name) AS agent_name, sp.name AS plan_name, sp.monthly_price, sp.yearly_price');
         $this->db->from('school_onboarding_requests sor');
-        $this->db->join('agents a',              'a.id = sor.agent_id',              'left');
+        $this->db->join('agent a',               'a.id = sor.agent_id',              'left');
         $this->db->join('subscription_plans sp', 'sp.id = sor.subscription_plan_id', 'left');
         if ($status) $this->db->where('sor.status', $status);
         $this->db->order_by('sor.submitted_at', 'DESC');
