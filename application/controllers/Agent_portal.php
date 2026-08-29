@@ -299,6 +299,19 @@ class Agent_portal extends CI_Controller
         $this->_render('agent_portal/expenses/index', $data);
     }
 
+    // ─── DOWNLOAD BROCHURE ─────────────────────────────────────────
+
+    public function download_brochure()
+    {
+        $this->_require_auth();
+        $file = FCPATH . 'uploads/documents/cst-schoolhub-brochure.pdf';
+        if (!file_exists($file)) {
+            show_404();
+        }
+        $this->load->helper('download');
+        force_download('CST_SchoolHub_Brochure.pdf', file_get_contents($file));
+    }
+
     // ─── DOWNLOAD DATA COLLECTION FORM ────────────────────────────
 
     public function download_form()

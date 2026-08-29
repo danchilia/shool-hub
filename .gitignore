@@ -25,11 +25,12 @@ Thumbs.db
 *.bak
 *.tmp
 
-# Word/Office documents (except shared agent resources)
+# Word/Office documents and PDFs (except shared agent resources)
 *.docx
 *.doc
 *.xlsx
 !uploads/documents/*.docx
+!uploads/documents/*.pdf
 
 # IDE files
 .vscode/
