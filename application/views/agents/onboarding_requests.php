@@ -1,3 +1,10 @@
+<?php if ($this->session->flashdata('msg')): ?>
+<div class="alert alert-success alert-dismissible fade show mb-3">
+  <?= $this->session->flashdata('msg') ?>
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+</div>
+<?php endif; ?>
+
 <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
   <h6 class="mb-0">School Onboarding Requests</h6>
   <?php if ($pending > 0): ?>
@@ -68,10 +75,26 @@
                 <br><small class="text-muted"><?= htmlspecialchars($r['admin_notes']) ?></small>
               <?php endif; ?>
             </td>
-            <td>
-              <button type="button" class="btn btn-xs btn-outline-secondary" onclick="openModal(<?= $r['id'] ?>, '<?= htmlspecialchars($r['school_name'], ENT_QUOTES) ?>', '<?= $r['status'] ?>', '<?= addslashes($r['admin_notes']) ?>', <?= htmlspecialchars(json_encode($r), ENT_QUOTES) ?>)">
+            <td style="white-space:nowrap">
+              <button type="button" class="btn btn-xs btn-outline-secondary mb-1" onclick="openModal(<?= $r['id'] ?>, '<?= htmlspecialchars($r['school_name'], ENT_QUOTES) ?>', '<?= $r['status'] ?>', '<?= addslashes($r['admin_notes']) ?>', <?= htmlspecialchars(json_encode($r), ENT_QUOTES) ?>)">
                 <i class="fas fa-edit"></i> Review
               </button>
+              <?php if (!empty($r['filled_form_path'])): ?>
+              <a href="<?= base_url('agents/download_filled_form/' . $r['id']) ?>" class="btn btn-xs btn-outline-info mb-1" title="Download filled data collection form">
+                <i class="fas fa-file-download"></i> Form
+              </a>
+              <?php endif; ?>
+              <?php if ($r['status'] === 'approved' && empty($r['setup_completed_at'])): ?>
+              <a href="<?= base_url('agents/complete_setup/' . $r['id']) ?>"
+                 class="btn btn-xs btn-success mb-1"
+                 onclick="return confirm('Mark setup as complete for <?= htmlspecialchars($r['school_name'], ENT_QUOTES) ?>? This will create the commission earning for the agent.')">
+                <i class="fas fa-check-double"></i> Setup Complete
+              </a>
+              <?php elseif (!empty($r['setup_completed_at'])): ?>
+              <span class="label label-success" title="Setup completed <?= date('d M Y', strtotime($r['setup_completed_at'])) ?>">
+                <i class="fas fa-check"></i> Setup Done
+              </span>
+              <?php endif; ?>
             </td>
           </tr>
           <?php endforeach; endif; ?>

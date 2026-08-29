@@ -230,22 +230,6 @@ class Agent_portal extends CI_Controller
                 'status'      => 'pending',
             ));
 
-            // Auto-create commission earning when signed up
-            if ($outcome === 'signed_up' && $planId) {
-                $plan = $this->agent_model->getPlan($planId);
-                if ($plan && $plan['commission_amount'] > 0) {
-                    $this->agent_model->addEarning(array(
-                        'agent_id'    => $agentId,
-                        'visit_id'    => $visitId,
-                        'school_id'   => $schoolId,
-                        'type'        => 'commission',
-                        'amount'      => $plan['commission_amount'],
-                        'description' => 'Commission — ' . $school['school_name'] . ' (' . $plan['name'] . ' Plan)',
-                        'status'      => 'pending',
-                    ));
-                }
-            }
-
             redirect('agent_portal/view_school/' . $schoolId);
         }
 
@@ -349,6 +333,26 @@ class Agent_portal extends CI_Controller
             $this->form_validation->set_rules('admin_email',    'Admin Email',    'trim|required|valid_email');
 
             if ($this->form_validation->run()) {
+                // Handle filled form upload
+                $filePath = null;
+                if (!empty($_FILES['filled_form']['name'])) {
+                    $uploadDir = FCPATH . 'uploads/onboarding/';
+                    if (!is_dir($uploadDir)) {
+                        mkdir($uploadDir, 0755, true);
+                    }
+                    $uploadConfig = array(
+                        'upload_path'   => $uploadDir,
+                        'allowed_types' => 'doc|docx|pdf',
+                        'max_size'      => 10240,
+                        'file_name'     => 'school_' . $schoolId . '_' . time(),
+                    );
+                    $this->load->library('upload', $uploadConfig);
+                    if ($this->upload->do_upload('filled_form')) {
+                        $upData   = $this->upload->data();
+                        $filePath = 'uploads/onboarding/' . $upData['file_name'];
+                    }
+                }
+
                 $this->db->insert('school_onboarding_requests', array(
                     'agent_id'               => $agentId,
                     'agent_school_id'        => $schoolId,
@@ -377,6 +381,7 @@ class Agent_portal extends CI_Controller
                     'admin_phone'            => $this->input->post('admin_phone',      TRUE),
                     'admin_email'            => $this->input->post('admin_email',      TRUE),
                     'notes'                  => $this->input->post('notes',            TRUE),
+                    'filled_form_path'       => $filePath,
                     'status'                 => 'pending',
                     'submitted_at'           => date('Y-m-d H:i:s'),
                 ));

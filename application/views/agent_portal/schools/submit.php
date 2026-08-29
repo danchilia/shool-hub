@@ -23,7 +23,7 @@
   </div>
 </div>
 
-<?php echo form_open('agent_portal/submit_school/' . $school['id']); ?>
+<?php echo form_open_multipart('agent_portal/submit_school/' . $school['id']); ?>
 <input type="hidden" name="submit_onboarding" value="1">
 
 <?php if (validation_errors()): ?>
@@ -199,6 +199,21 @@
         <textarea name="notes" class="form-control form-control-sm" rows="3" placeholder="Any specific modules, data migration needs, or special instructions..."><?= set_value('notes') ?></textarea>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- FILLED DATA COLLECTION FORM -->
+<div class="ap-card mb-3">
+  <div class="ap-card-header">
+    <span><i class="fas fa-file-upload me-1" style="color:var(--ap-accent)"></i>Upload Filled Data Collection Form</span>
+    <small class="text-muted" style="font-weight:normal">Optional but recommended</small>
+  </div>
+  <div class="ap-card-body">
+    <p style="font-size:.83rem;color:var(--ap-muted);margin-bottom:12px">
+      If you filled and signed the physical Data Collection Form with the school, upload it here so the CST team can verify the details.
+      Accepted formats: <strong>.docx, .doc, .pdf</strong> — max 10 MB.
+    </p>
+    <input type="file" name="filled_form" class="form-control form-control-sm" accept=".doc,.docx,.pdf">
   </div>
 </div>
 

@@ -222,4 +222,49 @@ class Agents extends Admin_Controller
         $this->db->update('school_onboarding_requests', array('status' => $status, 'admin_notes' => $note), array('id' => $id));
         redirect('agents/onboarding_requests');
     }
+
+    public function complete_setup($id = '')
+    {
+        $req = $this->db->get_where('school_onboarding_requests', array('id' => $id))->row_array();
+        if (!$req || $req['status'] !== 'approved' || !empty($req['setup_completed_at'])) {
+            redirect('agents/onboarding_requests');
+        }
+
+        $this->db->where('id', $id)->update('school_onboarding_requests', array(
+            'setup_completed_at' => date('Y-m-d H:i:s'),
+        ));
+
+        // Create commission based on dck_plan assigned to the agent_school
+        $school = $this->db->get_where('agent_school', array('id' => $req['agent_school_id']))->row_array();
+        if ($school && !empty($school['assigned_plan_id'])) {
+            $plan = $this->agent_model->getPlan($school['assigned_plan_id']);
+            if ($plan && $plan['commission_amount'] > 0) {
+                $this->agent_model->addEarning(array(
+                    'agent_id'    => $req['agent_id'],
+                    'school_id'   => $req['agent_school_id'],
+                    'type'        => 'commission',
+                    'amount'      => $plan['commission_amount'],
+                    'description' => 'Commission — ' . $req['school_name'] . ' (setup completed)',
+                    'status'      => 'pending',
+                ));
+            }
+        }
+
+        $this->session->set_flashdata('msg', 'Setup marked complete. Commission added to agent earnings.');
+        redirect('agents/onboarding_requests');
+    }
+
+    public function download_filled_form($id = '')
+    {
+        $req = $this->db->get_where('school_onboarding_requests', array('id' => $id))->row_array();
+        if (!$req || empty($req['filled_form_path'])) show_404();
+
+        $file = FCPATH . $req['filled_form_path'];
+        if (!file_exists($file)) show_404();
+
+        $this->load->helper('download');
+        $ext  = pathinfo($file, PATHINFO_EXTENSION);
+        $name = preg_replace('/[^a-zA-Z0-9_-]/', '_', $req['school_name']);
+        force_download('filled_form_' . $name . '.' . $ext, file_get_contents($file));
+    }
 }

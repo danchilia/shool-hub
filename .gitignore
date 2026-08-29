@@ -12,6 +12,8 @@ sample_complete_school.sql
 uploads/images/
 uploads/attachments/
 uploads/qrcode_cache/
+uploads/onboarding/*
+!uploads/onboarding/.gitkeep
 
 # Application log files
 application/logs/log-*.php
