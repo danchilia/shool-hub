@@ -119,7 +119,7 @@
     <h2>12. Contact</h2>
     <p>
         For data-related enquiries, contact your school's administration or reach DCK Solutions at
-        <strong>danchilia16@gmail.com</strong>.
+        <strong>info@cstschoolhub.co.ke</strong>.
     </p>
 
     <a href="<?php echo base_url('authentication'); ?>" class="back-link">
