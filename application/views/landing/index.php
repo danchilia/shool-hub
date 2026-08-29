@@ -114,6 +114,35 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
 .stat__n{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;color:var(--gold);line-height:1;margin-bottom:8px;font-variant-numeric:tabular-nums}
 .stat__l{color:rgba(255,255,255,.5);font-size:.8rem;letter-spacing:.04em}
 
+/* PRICING */
+.pricing__hd{text-align:center;max-width:560px;margin:0 auto 52px}
+.pricing__hd p{color:var(--muted);margin-top:12px}
+.pricing__grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;align-items:start}
+.pcard{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;transition:transform .22s,box-shadow .22s}
+.pcard:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,0,0,.09)}
+.pcard--featured{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.pcard__head{padding:24px 24px 20px;border-bottom:1px solid var(--border)}
+.pcard--featured .pcard__head{background:var(--navy);color:#fff}
+.pcard__badge{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;background:var(--gold);color:var(--navy);border-radius:20px;margin-bottom:10px}
+.pcard__name{font-size:1.05rem;font-weight:700;font-family:'DM Sans',sans-serif;margin-bottom:4px}
+.pcard--featured .pcard__name{color:#fff}
+.pcard__price{margin-top:14px}
+.pcard__amount{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:700;color:var(--gold);line-height:1}
+.pcard__period{font-size:.78rem;color:var(--muted);margin-top:2px}
+.pcard--featured .pcard__period{color:rgba(255,255,255,.5)}
+.pcard__body{padding:22px 24px}
+.pcard__row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:.84rem}
+.pcard__row:last-child{border-bottom:none}
+.pcard__row span:first-child{color:var(--muted)}
+.pcard__row strong{font-weight:600}
+.pcard__cta{display:block;text-align:center;margin:18px 24px 22px;padding:11px;border-radius:3px;font-size:.87rem;font-weight:600;transition:all .2s}
+.pcard--featured .pcard__cta{background:var(--gold);color:var(--navy)}
+.pcard--featured .pcard__cta:hover{background:#dbb230}
+.pcard:not(.pcard--featured) .pcard__cta{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+.pcard:not(.pcard--featured) .pcard__cta:hover{border-color:var(--gold);color:var(--gold)}
+@media(max-width:960px){.pricing__grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.pricing__grid{grid-template-columns:1fr}}
+
 /* CTA */
 .cta{background:var(--navy-mid);padding:96px 0;text-align:center;border-top:1px solid rgba(255,255,255,.05)}
 .cta h2{color:#fff;max-width:540px;margin:0 auto 14px}
@@ -168,6 +197,7 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
     <ul class="nav__links">
       <li><a href="#features">Features</a></li>
       <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#pricing">Pricing</a></li>
       <li><a href="<?= base_url('careers') ?>">Careers</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
@@ -340,6 +370,93 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
       <div class="stat fi"><div class="stat__n">5,000+</div><div class="stat__l">Students Managed</div></div>
       <div class="stat fi"><div class="stat__n">30+</div><div class="stat__l">Platform Modules</div></div>
       <div class="stat fi"><div class="stat__n">99.9%</div><div class="stat__l">Uptime Guaranteed</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section section--alt" id="pricing">
+  <div class="wrap">
+    <div class="pricing__hd fi">
+      <div class="gr gr--c"></div>
+      <h2>Simple, Transparent Pricing</h2>
+      <p>Choose the plan that fits your school. All plans include full platform access with no hidden fees.</p>
+    </div>
+    <div class="pricing__grid">
+
+      <!-- Basic -->
+      <div class="pcard fi">
+        <div class="pcard__head">
+          <div class="pcard__name">Basic</div>
+          <div class="pcard__price">
+            <div class="pcard__amount">3,000</div>
+            <div class="pcard__period">KES / month &nbsp;&bull;&nbsp; KES 30,000/yr</div>
+          </div>
+        </div>
+        <div class="pcard__body">
+          <div class="pcard__row"><span>Max Students</span><strong>500</strong></div>
+          <div class="pcard__row"><span>Max Staff</span><strong>50</strong></div>
+          <div class="pcard__row"><span>All Modules</span><strong>Included</strong></div>
+          <div class="pcard__row"><span>Support</span><strong>Email</strong></div>
+        </div>
+        <a href="mailto:info@cstschoolhub.co.ke?subject=Basic Plan Enquiry" class="pcard__cta">Get Started</a>
+      </div>
+
+      <!-- Standard -->
+      <div class="pcard fi">
+        <div class="pcard__head">
+          <div class="pcard__name">Standard</div>
+          <div class="pcard__price">
+            <div class="pcard__amount">5,000</div>
+            <div class="pcard__period">KES / month &nbsp;&bull;&nbsp; KES 50,000/yr</div>
+          </div>
+        </div>
+        <div class="pcard__body">
+          <div class="pcard__row"><span>Max Students</span><strong>800</strong></div>
+          <div class="pcard__row"><span>Max Staff</span><strong>50</strong></div>
+          <div class="pcard__row"><span>All Modules</span><strong>Included</strong></div>
+          <div class="pcard__row"><span>Support</span><strong>Email + Phone</strong></div>
+        </div>
+        <a href="mailto:info@cstschoolhub.co.ke?subject=Standard Plan Enquiry" class="pcard__cta">Get Started</a>
+      </div>
+
+      <!-- Premium (featured) -->
+      <div class="pcard pcard--featured fi">
+        <div class="pcard__head">
+          <div class="pcard__badge">Most Popular</div>
+          <div class="pcard__name">Premium</div>
+          <div class="pcard__price">
+            <div class="pcard__amount">20,000</div>
+            <div class="pcard__period">KES / month &nbsp;&bull;&nbsp; KES 200,000/yr</div>
+          </div>
+        </div>
+        <div class="pcard__body">
+          <div class="pcard__row"><span>Max Students</span><strong>2,000</strong></div>
+          <div class="pcard__row"><span>Max Staff</span><strong>200</strong></div>
+          <div class="pcard__row"><span>All Modules</span><strong>Included</strong></div>
+          <div class="pcard__row"><span>Support</span><strong>Priority</strong></div>
+        </div>
+        <a href="mailto:info@cstschoolhub.co.ke?subject=Premium Plan Enquiry" class="pcard__cta">Get Started</a>
+      </div>
+
+      <!-- Unlimited -->
+      <div class="pcard fi">
+        <div class="pcard__head">
+          <div class="pcard__name">Unlimited</div>
+          <div class="pcard__price">
+            <div class="pcard__amount">50,000</div>
+            <div class="pcard__period">KES / month &nbsp;&bull;&nbsp; KES 500,000/yr</div>
+          </div>
+        </div>
+        <div class="pcard__body">
+          <div class="pcard__row"><span>Max Students</span><strong>Unlimited</strong></div>
+          <div class="pcard__row"><span>Max Staff</span><strong>Unlimited</strong></div>
+          <div class="pcard__row"><span>All Modules</span><strong>Included</strong></div>
+          <div class="pcard__row"><span>Support</span><strong>Dedicated</strong></div>
+        </div>
+        <a href="mailto:info@cstschoolhub.co.ke?subject=Unlimited Plan Enquiry" class="pcard__cta">Get Started</a>
+      </div>
+
     </div>
   </div>
 </section>
