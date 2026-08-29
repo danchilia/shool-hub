@@ -12,7 +12,7 @@ class Contact_model extends MY_Model {
         return $this->db->order_by('created_at', 'DESC')->get('contact_requests')->result_array();
     }
 
-    public function get($id) {
+    public function get_request($id) {
         return $this->db->get_where('contact_requests', ['id' => $id])->row_array();
     }
 
