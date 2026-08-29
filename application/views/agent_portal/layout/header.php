@@ -234,6 +234,9 @@ function ap_active($segment) {
     </a>
 
     <div class="nav-section">Demo Tools</div>
+    <a href="<?= base_url('agent_portal/script') ?>" class="<?= ap_active('agent_portal/script') ?>">
+      <i class="fas fa-comment-dots"></i> Visit Script
+    </a>
     <a href="<?= base_url('agent_portal/demo') ?>" class="<?= ap_active('agent_portal/demo') ?>">
       <i class="fas fa-school"></i> Demo Credentials
     </a>
