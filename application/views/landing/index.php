@@ -407,7 +407,7 @@ document.querySelectorAll('.fi').forEach(el => obs.observe(el));
 
   function goTo(n) {
     current = (n + total) % total;
-    track.style.transform = 'translateX(-' + (current * 100) + '%)';
+    track.style.transform = 'translateX(-' + (current * 100 / total) + '%)';
     track.style.transition = 'transform .7s ease';
     dots.forEach(function(d, i){ d.classList.toggle('active', i === current); });
   }
