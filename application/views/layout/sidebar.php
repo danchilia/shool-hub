@@ -122,6 +122,11 @@
                                     <span><i class="fas fa-caret-right"></i> DCK Plans</span>
                                 </a>
                             </li>
+                            <li class="<?php if ($main_menu == 'contact_requests') echo 'nav-active';?>">
+                                <a href="<?=base_url('contact/requests')?>">
+                                    <span><i class="fas fa-caret-right"></i> Demo Requests</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     <?php endif; ?>

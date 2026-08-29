@@ -48,6 +48,28 @@ class Contact extends MY_Controller {
         $this->load->view('contact/index', $this->data);
     }
 
+    public function requests() {
+        if (!is_superadmin_loggedin()) access_denied();
+        $this->data['requests']  = $this->contact_model->get_all();
+        $this->data['unread']    = $this->contact_model->unread_count();
+        $this->data['title']     = 'Demo Requests';
+        $this->data['sub_page']  = 'contact/requests';
+        $this->data['main_menu'] = 'contact_requests';
+        $this->load->view('layout/index', $this->data);
+    }
+
+    public function mark_read($id = '') {
+        if (!is_superadmin_loggedin()) access_denied();
+        $this->contact_model->mark_read($id);
+        redirect('contact/requests');
+    }
+
+    public function delete_request($id = '') {
+        if (!is_superadmin_loggedin()) access_denied();
+        $this->contact_model->delete($id);
+        redirect('contact/requests');
+    }
+
     private function _notify_superadmin($name, $school, $phone, $email, $plan, $message) {
         $to = !empty($this->data['global_config']['company_email'])
             ? $this->data['global_config']['company_email']
