@@ -242,6 +242,9 @@ function ap_active($segment) {
     </a>
 
     <div class="nav-section">Account</div>
+    <a href="<?= base_url('agent_portal/guide') ?>" class="<?= ap_active('agent_portal/guide') ?>" style="color:var(--ap-accent) !important;font-weight:600">
+      <i class="fas fa-book-open"></i> How to Use This Portal
+    </a>
     <a href="<?= base_url('agent_portal/profile') ?>" class="<?= ap_active('agent_portal/profile') ?>">
       <i class="fas fa-user-circle"></i> My Profile
     </a>

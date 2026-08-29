@@ -406,6 +406,14 @@ class Agent_portal extends CI_Controller
         $this->_render('agent_portal/schools/submissions', $data);
     }
 
+    // ─── GUIDE ─────────────────────────────────────────────────────
+
+    public function guide()
+    {
+        $this->_require_auth();
+        $this->_render('agent_portal/guide', array('title' => 'How to Use the Agent Portal'));
+    }
+
     // ─── DEMO SCHOOL ───────────────────────────────────────────────
 
     public function demo()
