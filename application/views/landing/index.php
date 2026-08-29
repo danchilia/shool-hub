@@ -194,13 +194,13 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
       <div class="slider" id="heroSlider">
         <div class="slider__track" id="sliderTrack">
           <div class="slider__slide">
-            <img src="<?= base_url('assets/login_page/image/sidebox.png') ?>" alt="School Management">
+            <img src="<?= base_url('uploads/login_image/slider_1.jpg') ?>" alt="School Management">
           </div>
           <div class="slider__slide">
-            <img src="<?= base_url('assets/images/profile_bg.png') ?>" alt="School Administration">
+            <img src="<?= base_url('uploads/login_image/slider_2.jpg') ?>" alt="School Administration">
           </div>
           <div class="slider__slide">
-            <img src="<?= base_url('assets/images/profile_bg(1).png') ?>" alt="School Dashboard">
+            <img src="<?= base_url('uploads/login_image/slider_3.jpg') ?>" alt="School Dashboard">
           </div>
         </div>
         <div class="slider__dots" id="sliderDots">
