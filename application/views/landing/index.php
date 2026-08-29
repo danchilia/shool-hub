@@ -53,20 +53,20 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
 /* HERO */
 .hero{background:var(--navy);min-height:90vh;display:flex;align-items:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,transparent,transparent 60px,rgba(255,255,255,.012) 60px,rgba(255,255,255,.012) 61px)}
-.hero__bg-img{position:absolute;right:0;top:0;height:100%;width:46%;object-fit:cover;object-position:center top;opacity:.18}
-.hero__fade{position:absolute;right:0;top:0;bottom:0;width:46%;background:linear-gradient(to right,var(--navy) 0%,transparent 30%);z-index:1;pointer-events:none}
 .hero__inner{position:relative;z-index:2;max-width:1160px;margin:0 auto;padding:90px 28px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
 .hero__eyebrow{display:inline-block;font-size:.75rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
 .hero__title{color:#fff;margin-bottom:22px}
 .hero__title em{font-style:italic;color:var(--gold)}
 .hero__body{color:rgba(255,255,255,.6);font-size:1.05rem;max-width:460px;margin-bottom:40px;line-height:1.78}
 .hero__actions{display:flex;gap:14px;flex-wrap:wrap}
-.hero__cards{display:flex;flex-direction:column;gap:14px}
-.hero__card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:18px 22px;display:flex;align-items:center;gap:16px;backdrop-filter:blur(6px)}
-.hero__card-icon{width:40px;height:40px;border-radius:8px;background:var(--gold-dim);display:flex;align-items:center;justify-content:center;color:var(--gold);flex-shrink:0}
-.hero__card-label{color:rgba(255,255,255,.85);font-size:.88rem;font-weight:500}
-.hero__card-sub{color:rgba(255,255,255,.4);font-size:.76rem;margin-top:2px}
-.hero__card-val{margin-left:auto;font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+/* SLIDER */
+.slider{position:relative;border-radius:10px;overflow:hidden;box-shadow:0 32px 64px rgba(0,0,0,.5);aspect-ratio:4/3}
+.slider__track{display:flex;width:100%;height:100%}
+.slider__slide{min-width:100%;height:100%;position:relative;transition:opacity .8s ease}
+.slider__slide img{width:100%;height:100%;object-fit:cover;object-position:center}
+.slider__dots{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10}
+.slider__dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);border:none;cursor:pointer;padding:0;transition:background .3s,transform .3s}
+.slider__dot.active{background:var(--gold);transform:scale(1.2)}
 
 /* TRUST */
 .trust{background:var(--navy-mid);padding:18px 28px;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)}
@@ -93,7 +93,7 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
 .vcard{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:6px 0;box-shadow:0 8px 28px rgba(0,0,0,.06)}
 .vrow{display:flex;align-items:center;gap:14px;padding:14px 24px;border-bottom:1px solid var(--border)}
 .vrow:last-child{border-bottom:none}
-.vcheck{width:26px;height:26px;border-radius:50%;background:#e6f4ed;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#2e7d52;font-size:.75rem;font-weight:700}
+.vdot{width:10px;height:10px;border-radius:50%;background:var(--gold);flex-shrink:0}
 .vlabel{font-size:.87rem;font-weight:500}
 
 /* HOW IT WORKS */
@@ -148,7 +148,6 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
 }
 @media(max-width:600px){
   .features__grid{grid-template-columns:1fr}
-  .hero__cards{display:none}
   .trust__label{display:none}
   .footer__bottom{flex-direction:column;gap:6px;text-align:center}
 }
@@ -178,8 +177,6 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
 
 <!-- HERO -->
 <section class="hero">
-  <img class="hero__bg-img" src="<?= base_url('assets/login_page/image/sidebox.png') ?>" alt="">
-  <div class="hero__fade"></div>
   <div class="hero__inner">
     <div>
       <span class="hero__eyebrow">School Management Platform</span>
@@ -194,36 +191,22 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
       </div>
     </div>
     <div class="hero__visual">
-      <div class="hero__cards">
-        <div class="hero__card">
-          <div class="hero__card-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <div class="slider" id="heroSlider">
+        <div class="slider__track" id="sliderTrack">
+          <div class="slider__slide">
+            <img src="<?= base_url('assets/login_page/image/sidebox.png') ?>" alt="School Management">
           </div>
-          <div>
-            <div class="hero__card-label">Active Students</div>
-            <div class="hero__card-sub">Current term enrollment</div>
+          <div class="slider__slide">
+            <img src="<?= base_url('assets/images/profile_bg.png') ?>" alt="School Administration">
           </div>
-          <div class="hero__card-val">1,284</div>
+          <div class="slider__slide">
+            <img src="<?= base_url('assets/images/profile_bg(1).png') ?>" alt="School Dashboard">
+          </div>
         </div>
-        <div class="hero__card">
-          <div class="hero__card-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          </div>
-          <div>
-            <div class="hero__card-label">Fees Collected</div>
-            <div class="hero__card-sub">This term</div>
-          </div>
-          <div class="hero__card-val" style="font-size:1.1rem">KES 4.2M</div>
-        </div>
-        <div class="hero__card">
-          <div class="hero__card-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          </div>
-          <div>
-            <div class="hero__card-label">Attendance Rate</div>
-            <div class="hero__card-sub">Week average</div>
-          </div>
-          <div class="hero__card-val">94%</div>
+        <div class="slider__dots" id="sliderDots">
+          <button class="slider__dot active" data-i="0"></button>
+          <button class="slider__dot" data-i="1"></button>
+          <button class="slider__dot" data-i="2"></button>
         </div>
       </div>
     </div>
@@ -309,12 +292,12 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
       </div>
       <div class="fi">
         <div class="vcard">
-          <div class="vrow"><div class="vcheck">&#10003;</div><span class="vlabel">NEMIS student number tracking and exports</span></div>
-          <div class="vrow"><div class="vcheck">&#10003;</div><span class="vlabel">CBC strand and sub-strand assessments</span></div>
-          <div class="vrow"><div class="vcheck">&#10003;</div><span class="vlabel">M-Pesa Daraja API fee collection</span></div>
-          <div class="vrow"><div class="vcheck">&#10003;</div><span class="vlabel">KNEC exam timetable management</span></div>
-          <div class="vrow"><div class="vcheck">&#10003;</div><span class="vlabel">Multi-branch school network support</span></div>
-          <div class="vrow"><div class="vcheck">&#10003;</div><span class="vlabel">Kenya Data Protection Act compliance</span></div>
+          <div class="vrow"><span class="vdot"></span><span class="vlabel">NEMIS student number tracking and exports</span></div>
+          <div class="vrow"><span class="vdot"></span><span class="vlabel">CBC strand and sub-strand assessments</span></div>
+          <div class="vrow"><span class="vdot"></span><span class="vlabel">M-Pesa Daraja API fee collection</span></div>
+          <div class="vrow"><span class="vdot"></span><span class="vlabel">KNEC exam timetable management</span></div>
+          <div class="vrow"><span class="vdot"></span><span class="vlabel">Multi-branch school network support</span></div>
+          <div class="vrow"><span class="vdot"></span><span class="vlabel">Kenya Data Protection Act compliance</span></div>
         </div>
       </div>
     </div>
@@ -409,10 +392,39 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
 </footer>
 
 <script>
+// fade-in on scroll
 const obs = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('v'); });
 }, { threshold: 0.1 });
 document.querySelectorAll('.fi').forEach(el => obs.observe(el));
+
+// image slider
+(function(){
+  var track = document.getElementById('sliderTrack');
+  var dots = document.querySelectorAll('.slider__dot');
+  var current = 0;
+  var total = 3;
+
+  function goTo(n) {
+    current = (n + total) % total;
+    track.style.transform = 'translateX(-' + (current * 100) + '%)';
+    track.style.transition = 'transform .7s ease';
+    dots.forEach(function(d, i){ d.classList.toggle('active', i === current); });
+  }
+
+  dots.forEach(function(d){
+    d.addEventListener('click', function(){ goTo(parseInt(this.dataset.i)); });
+  });
+
+  var timer = setInterval(function(){ goTo(current + 1); }, 5000);
+  document.getElementById('heroSlider').addEventListener('mouseenter', function(){ clearInterval(timer); });
+  document.getElementById('heroSlider').addEventListener('mouseleave', function(){ timer = setInterval(function(){ goTo(current + 1); }, 5000); });
+
+  // set track style for sliding
+  track.style.display = 'flex';
+  track.style.width = (total * 100) + '%';
+  track.querySelectorAll('.slider__slide').forEach(function(s){ s.style.minWidth = (100/total) + '%'; });
+})();
 </script>
 </body>
 </html>
