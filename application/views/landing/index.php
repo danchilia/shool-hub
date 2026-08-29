@@ -216,7 +216,7 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
         Manage students, fees, staff, exams, and attendance from a single dashboard.
       </p>
       <div class="hero__actions">
-        <a href="mailto:info@cstschoolhub.co.ke" class="btn btn--gold">Request a Demo</a>
+        <a href="<?= base_url('contact') ?>" class="btn btn--gold">Request a Demo</a>
         <a href="<?= base_url('authentication') ?>" class="btn btn--ghost">Sign In</a>
       </div>
     </div>
@@ -399,7 +399,7 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
           <div class="pcard__row"><span>All Modules</span><strong>Included</strong></div>
           <div class="pcard__row"><span>Support</span><strong>Email</strong></div>
         </div>
-        <a href="mailto:info@cstschoolhub.co.ke?subject=Basic Plan Enquiry" class="pcard__cta">Get Started</a>
+        <a href="<?= base_url('contact?plan=Basic') ?>" class="pcard__cta">Get Started</a>
       </div>
 
       <!-- Standard -->
@@ -417,7 +417,7 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
           <div class="pcard__row"><span>All Modules</span><strong>Included</strong></div>
           <div class="pcard__row"><span>Support</span><strong>Email + Phone</strong></div>
         </div>
-        <a href="mailto:info@cstschoolhub.co.ke?subject=Standard Plan Enquiry" class="pcard__cta">Get Started</a>
+        <a href="<?= base_url('contact?plan=Standard') ?>" class="pcard__cta">Get Started</a>
       </div>
 
       <!-- Premium (featured) -->
@@ -436,7 +436,7 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
           <div class="pcard__row"><span>All Modules</span><strong>Included</strong></div>
           <div class="pcard__row"><span>Support</span><strong>Priority</strong></div>
         </div>
-        <a href="mailto:info@cstschoolhub.co.ke?subject=Premium Plan Enquiry" class="pcard__cta">Get Started</a>
+        <a href="<?= base_url('contact?plan=Premium') ?>" class="pcard__cta">Get Started</a>
       </div>
 
       <!-- Unlimited -->
@@ -454,7 +454,7 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
           <div class="pcard__row"><span>All Modules</span><strong>Included</strong></div>
           <div class="pcard__row"><span>Support</span><strong>Dedicated</strong></div>
         </div>
-        <a href="mailto:info@cstschoolhub.co.ke?subject=Unlimited Plan Enquiry" class="pcard__cta">Get Started</a>
+        <a href="<?= base_url('contact?plan=Unlimited') ?>" class="pcard__cta">Get Started</a>
       </div>
 
     </div>
@@ -468,7 +468,7 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
     <h2>Ready to Modernize Your School?</h2>
     <p>Get in touch and we will set up a live demonstration tailored to your school's needs.</p>
     <div class="hero__actions" style="justify-content:center">
-      <a href="mailto:info@cstschoolhub.co.ke" class="btn btn--gold">Contact Us</a>
+      <a href="<?= base_url('contact') ?>" class="btn btn--gold">Contact Us</a>
       <a href="<?= base_url('authentication') ?>" class="btn btn--ghost">Sign In</a>
     </div>
   </div>
@@ -488,7 +488,7 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
         <ul class="footer__links">
           <li><a href="#features">Features</a></li>
           <li><a href="#how-it-works">How It Works</a></li>
-          <li><a href="mailto:info@cstschoolhub.co.ke">Request Demo</a></li>
+          <li><a href="<?= base_url('contact') ?>">Request Demo</a></li>
           <li><a href="<?= base_url('authentication') ?>">Sign In</a></li>
         </ul>
       </div>
