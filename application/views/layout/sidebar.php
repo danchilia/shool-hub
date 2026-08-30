@@ -186,11 +186,6 @@
                                     <span><i class="fas fa-caret-right"></i> School Setup Guide</span>
                                 </a>
                             </li>
-                            <li class="<?php if ($main_menu == 'help') echo 'nav-active';?>">
-                                <a href="<?=base_url('help')?>">
-                                    <span><i class="fas fa-question-circle"></i> User Guide</span>
-                                </a>
-                            </li>
                         </ul>
                     </li>
                     <?php endif; ?>
@@ -1774,6 +1769,11 @@
                                 </a>
                             </li>
                             <?php } ?>
+                            <li class="<?php if ($main_menu == 'help') echo 'nav-active';?>">
+                                <a href="<?=base_url('help')?>">
+                                    <span><i class="fas fa-question-circle"></i> User Guide</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                     <?php } ?>
