@@ -143,60 +143,117 @@ if (!empty($student_array)) {
 	<!-- LEARNING AREAS ASSESSMENT -->
 	<table class="assessment-table">
 		<thead>
-			<tr class="section-header"><th colspan="7" style="border:none;">LEARNING AREAS ASSESSMENT</th></tr>
+			<tr class="section-header"><th colspan="3" style="border:none;">LEARNING AREAS ASSESSMENT</th></tr>
 			<tr>
-				<th style="width:4%; text-align:center;">#</th>
-				<th style="width:18%; text-align:left;">Learning Area</th>
-				<th style="width:14%; text-align:left;">Strand</th>
-				<th style="width:14%; text-align:left;">Sub-Strand</th>
-				<th style="width:18%; text-align:left;">Learning Outcome</th>
-				<th style="width:12%; text-align:center;">Level</th>
-				<th style="width:20%; text-align:left;">Remarks</th>
+				<th style="text-align:left;">Strand / Sub-Strand / Learning Outcome</th>
+				<th style="width:75px; text-align:center;">Level</th>
+				<th style="width:32%; text-align:left;">Teacher's Remarks</th>
 			</tr>
 		</thead>
 		<tbody>
 		<?php
 		if (!empty($assessments)) {
 			$counts = array('EE2'=>0,'EE1'=>0,'ME2'=>0,'ME1'=>0,'AE2'=>0,'AE1'=>0,'BE2'=>0,'BE1'=>0);
-			$num = 1;
+
+			// Group: learning_area → strand → rows
+			$grouped = array();
 			foreach ($assessments as $a) {
 				$lvl = $a['competency_level'];
 				if ($lvl === 'EE') $lvl = 'EE2';
 				elseif ($lvl === 'ME') $lvl = 'ME2';
 				elseif ($lvl === 'AE') $lvl = 'AE1';
 				elseif ($lvl === 'BE') $lvl = 'BE1';
-				$levelClass = isset($levelClasses[$lvl]) ? $levelClasses[$lvl] : '';
 				if (isset($counts[$lvl])) $counts[$lvl]++;
+				$laId = $a['learning_area_id'];
+				$stId = !empty($a['strand_id']) ? $a['strand_id'] : '__none__';
+				if (!isset($grouped[$laId])) $grouped[$laId] = array('name' => $a['learning_area_name'], 'strands' => array(), 'levels' => array());
+				if (!isset($grouped[$laId]['strands'][$stId])) $grouped[$laId]['strands'][$stId] = array('name' => !empty($a['strand_name']) ? $a['strand_name'] : '', 'rows' => array());
+				$grouped[$laId]['strands'][$stId]['rows'][] = array_merge($a, array('_lvl' => $lvl));
+				$grouped[$laId]['levels'][] = $lvl;
+			}
+
+			$laNum = 1;
+			foreach ($grouped as $laId => $la):
+				// Dominant level for this LA
+				$lvlOrder = array('EE2'=>8,'EE1'=>7,'ME2'=>6,'ME1'=>5,'AE2'=>4,'AE1'=>3,'BE2'=>2,'BE1'=>1);
+				$laCounts = array_count_values($la['levels']);
+				arsort($laCounts);
+				$dominant = array_key_first($laCounts);
+				$domBg = '#6c757d'; $domFg = '#fff';
+				if (strpos($dominant,'EE')===0) { $domBg = ($dominant=='EE2'?'#155724':'#1e7e34'); }
+				elseif (strpos($dominant,'ME')===0) { $domBg = ($dominant=='ME2'?'#004085':'#0062cc'); }
+				elseif (strpos($dominant,'AE')===0) { $domBg = ($dominant=='AE2'?'#856404':'#d39e00'); $domFg = '#000'; }
+				elseif (strpos($dominant,'BE')===0) { $domBg = ($dominant=='BE2'?'#721c24':'#dc3545'); }
 		?>
+			<!-- Learning Area header row -->
 			<tr>
-				<td style="text-align:center;"><?=$num++?></td>
-				<td><?=$a['learning_area_name']?></td>
-				<td style="font-size:12px;"><?=!empty($a['strand_name']) ? $a['strand_name'] : '<span style="color:#aaa;">—</span>'?></td>
-				<td style="font-size:12px;"><?=!empty($a['sub_strand_name']) ? $a['sub_strand_name'] : '<span style="color:#aaa;">—</span>'?></td>
-				<td style="font-size:11px;"><?=!empty($a['learning_outcome_name']) ? htmlspecialchars($a['learning_outcome_name']) : '<span style="color:#aaa;">—</span>'?></td>
-				<td class="<?=$levelClass?>" style="font-weight:700;text-align:center;"><?=$lvl?></td>
-				<td style="font-size:12px;"><?=$a['remarks']?></td>
+				<td colspan="2" style="background:#1a5276 !important; color:#fff; font-weight:700; font-size:13px; padding:7px 10px; letter-spacing:.3px;">
+					<?=$laNum++?>. <?=htmlspecialchars($la['name'])?>
+				</td>
+				<td style="background:#1a5276 !important; text-align:right; padding:4px 8px;">
+					<span style="background:<?=$domBg?>;color:<?=$domFg?>;padding:2px 9px;border-radius:4px;font-size:11px;font-weight:700;"><?=$dominant?></span>
+				</td>
 			</tr>
-		<?php } ?>
+			<?php foreach ($la['strands'] as $stId => $st): ?>
+			<?php if (!empty($st['name'])): ?>
+			<tr style="background:#d6eaf8 !important;">
+				<td colspan="3" style="color:#1a5276; font-weight:600; font-size:11px; padding:4px 16px;">
+					&#9658; <?=htmlspecialchars($st['name'])?>
+				</td>
+			</tr>
+			<?php endif; ?>
+			<?php foreach ($st['rows'] as $row):
+				$lvl = $row['_lvl'];
+				$levelClass = isset($levelClasses[$lvl]) ? $levelClasses[$lvl] : '';
+				$bg = '#6c757d'; $fg = '#fff';
+				if (strpos($lvl,'EE')===0) { $bg = ($lvl=='EE2'?'#155724':'#1e7e34'); }
+				elseif (strpos($lvl,'ME')===0) { $bg = ($lvl=='ME2'?'#004085':'#0062cc'); }
+				elseif (strpos($lvl,'AE')===0) { $bg = ($lvl=='AE2'?'#856404':'#d39e00'); $fg='#000'; }
+				elseif (strpos($lvl,'BE')===0) { $bg = ($lvl=='BE2'?'#721c24':'#dc3545'); }
+			?>
+			<tr>
+				<td style="font-size:11px; padding:5px 10px 5px 28px;">
+					<?php if (!empty($row['sub_strand_name'])): ?>
+					<span style="font-weight:600; color:#333;"><?=htmlspecialchars($row['sub_strand_name'])?></span>
+					<?php endif; ?>
+					<?php if (!empty($row['learning_outcome_name'])): ?>
+					<div style="color:#555; margin-top:2px; font-size:10.5px; line-height:1.4;">
+						<?php if (!empty($row['learning_outcome_code'])): ?>
+						<span style="background:#eaf2f8;border-radius:3px;padding:0 4px;font-weight:700;margin-right:3px;font-size:10px;"><?=htmlspecialchars($row['learning_outcome_code'])?></span>
+						<?php endif; ?>
+						<?=htmlspecialchars($row['learning_outcome_name'])?>
+					</div>
+					<?php endif; ?>
+					<?php if (empty($row['sub_strand_name']) && empty($row['learning_outcome_name'])): ?>
+					<span style="color:#bbb;">General assessment</span>
+					<?php endif; ?>
+				</td>
+				<td style="text-align:center; font-weight:700; font-size:13px; background:<?=$bg?> !important; color:<?=$fg?> !important;">
+					<?=$lvl?>
+				</td>
+				<td style="font-size:11px; color:#444;"><?=htmlspecialchars($row['remarks'])?></td>
+			</tr>
+			<?php endforeach; ?>
+			<?php endforeach; ?>
+		<?php endforeach; ?>
+			<!-- Overall summary row -->
 			<tr class="summary-row">
-				<td colspan="4" style="text-align:right; padding-right:15px;font-size:11px;">KNEC 8-Level Summary:</td>
-				<td colspan="3" style="font-size:10px;">
-					<?php foreach ($counts as $lv => $cnt): if ($cnt > 0): ?>
-					<?php
-						$bg = '#6c757d';
-						if (strpos($lv,'EE')===0) $bg = ($lv=='EE2'?'#155724':'#1e7e34');
-						elseif (strpos($lv,'ME')===0) $bg = ($lv=='ME2'?'#004085':'#0062cc');
-						elseif (strpos($lv,'AE')===0) $bg = ($lv=='AE2'?'#856404':'#d39e00');
-						elseif (strpos($lv,'BE')===0) $bg = ($lv=='BE2'?'#721c24':'#dc3545');
-						$fg = ($lv == 'AE1') ? '#000' : '#fff';
+				<td style="text-align:right; padding-right:15px; font-size:11px; font-weight:700;">Overall KNEC Summary:</td>
+				<td colspan="2" style="font-size:10px;">
+					<?php foreach ($counts as $lv => $cnt): if ($cnt > 0):
+						$bg2 = '#6c757d'; $fg2 = '#fff';
+						if (strpos($lv,'EE')===0) { $bg2 = ($lv=='EE2'?'#155724':'#1e7e34'); }
+						elseif (strpos($lv,'ME')===0) { $bg2 = ($lv=='ME2'?'#004085':'#0062cc'); }
+						elseif (strpos($lv,'AE')===0) { $bg2 = ($lv=='AE2'?'#856404':'#d39e00'); $fg2='#000'; }
+						elseif (strpos($lv,'BE')===0) { $bg2 = ($lv=='BE2'?'#721c24':'#dc3545'); }
 					?>
-					<span style="background:<?=$bg?>;color:<?=$fg?>;padding:1px 7px;border-radius:3px;margin-right:3px;"><?=$lv?>:<?=$cnt?></span>
+					<span style="background:<?=$bg2?>;color:<?=$fg2?>;padding:1px 7px;border-radius:3px;margin-right:3px;"><?=$lv?>: <?=$cnt?></span>
 					<?php endif; endforeach; ?>
-					&nbsp; Total: <?=count($assessments)?> areas
+					&nbsp; Total: <?=count($assessments)?> assessments
 				</td>
 			</tr>
 		<?php } else { ?>
-			<tr><td colspan="7" style="text-align:center; color:#dc3545; padding:15px;">No assessments recorded</td></tr>
+			<tr><td colspan="3" style="text-align:center; color:#dc3545; padding:15px;">No assessments recorded</td></tr>
 		<?php } ?>
 		</tbody>
 	</table>
