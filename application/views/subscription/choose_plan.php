@@ -185,12 +185,24 @@
       <p style="font-size:.78rem;color:#aaa">Amount: <strong id="cpAmountDisplay"></strong></p>
     </div>
 
-    <!-- Step 3: Success -->
+    <!-- Step 3: Payment received, awaiting admin activation -->
     <div id="cpStep3" style="display:none">
       <div style="font-size:2.5rem;margin-bottom:12px">✅</div>
-      <h5 style="font-weight:800;color:#27ae60">Payment Confirmed!</h5>
+      <h5 style="font-weight:800;color:#27ae60">Payment Received!</h5>
       <p style="font-size:.85rem;color:#555;margin-top:8px">
-        Your subscription is now active.<br>
+        Your M-Pesa payment has been confirmed.<br>
+        <strong>CST Admin is activating your school account.</strong>
+      </p>
+      <div style="margin:14px auto;width:36px;height:36px;border:4px solid #e2e8f0;border-top-color:#f39c12;border-radius:50%;animation:spin 1s linear infinite"></div>
+      <p style="font-size:.75rem;color:#aaa;margin-top:6px">Waiting for admin activation — this page will update automatically.</p>
+    </div>
+
+    <!-- Step 3b: Activated -->
+    <div id="cpStep3b" style="display:none">
+      <div style="font-size:2.5rem;margin-bottom:12px">🎉</div>
+      <h5 style="font-weight:800;color:#27ae60">Account Activated!</h5>
+      <p style="font-size:.85rem;color:#555;margin-top:8px">
+        Your school is now live.<br>
         Taking you to your dashboard...
       </p>
       <div style="margin:14px auto;width:36px;height:36px;border:4px solid #e2e8f0;border-top-color:#27ae60;border-radius:50%;animation:spin 1s linear infinite"></div>
@@ -305,11 +317,16 @@ function cpPoll() {
     '<?= $this->security->get_csrf_token_name() ?>': '<?= $this->security->get_csrf_hash() ?>',
     checkout_request_id: cpCheckoutId
   }, function(res) {
-    if (res.status === 'completed') {
+    if (res.status === 'awaiting') {
+      // M-Pesa confirmed, superadmin yet to activate
       clearInterval(cpPollTimer);
       document.getElementById('cpStep2').style.display = 'none';
       document.getElementById('cpStep3').style.display = 'block';
-      setTimeout(function() { window.location.href = '<?= base_url('dashboard') ?>'; }, 2500);
+      // Keep polling every 8 seconds for activation
+      cpPollTimer = setInterval(cpPollActivation, 8000);
+    } else if (res.status === 'activated') {
+      clearInterval(cpPollTimer);
+      cpShowActivated();
     } else if (res.status === 'failed' || res.status === 'cancelled') {
       clearInterval(cpPollTimer);
       document.getElementById('cpStep2').style.display = 'none';
@@ -319,5 +336,23 @@ function cpPoll() {
         : 'Payment failed. Please check your M-Pesa balance and try again.';
     }
   }, 'json');
+}
+
+function cpPollActivation() {
+  $.post('<?= base_url('subscription_payment/check') ?>', {
+    '<?= $this->security->get_csrf_token_name() ?>': '<?= $this->security->get_csrf_hash() ?>',
+    checkout_request_id: cpCheckoutId
+  }, function(res) {
+    if (res.status === 'activated') {
+      clearInterval(cpPollTimer);
+      cpShowActivated();
+    }
+  }, 'json');
+}
+
+function cpShowActivated() {
+  document.getElementById('cpStep3').style.display = 'none';
+  document.getElementById('cpStep3b').style.display = 'block';
+  setTimeout(function() { window.location.href = '<?= base_url('dashboard') ?>'; }, 2500);
 }
 </script>

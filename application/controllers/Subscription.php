@@ -17,10 +17,33 @@ class Subscription extends Admin_Controller
         $this->data['subscriptions']        = $this->subscription_model->getAllSubscriptions();
         $this->data['unsubscribed_branches'] = $this->subscription_model->getUnsubscribedBranches();
         $this->data['plans']                = $this->subscription_model->getPlans(true);
+        $this->data['pending_payments']     = $this->db
+            ->select('sp.*, b.school_name, b.name as branch_name, pl.name as plan_name')
+            ->from('subscription_payments sp')
+            ->join('branch b', 'b.id = sp.branch_id', 'left')
+            ->join('subscription_plans pl', 'pl.id = sp.plan_id', 'left')
+            ->where('sp.status', 'completed')
+            ->where('sp.plan_id IS NOT NULL', null, false)
+            ->order_by('sp.created_at', 'DESC')
+            ->get()->result_array();
         $this->data['title']                = 'Branch Subscriptions';
         $this->data['sub_page']             = 'subscription/index';
         $this->data['main_menu']            = 'subscription';
         $this->load->view('layout/index', $this->data);
+    }
+
+    public function confirm_payment($id = '')
+    {
+        $payment = $this->db->get_where('subscription_payments', array('id' => intval($id), 'status' => 'completed'))->row_array();
+        if (!$payment || empty($payment['plan_id'])) {
+            set_alert('error', 'Payment not found or already processed.');
+            redirect(base_url('subscription'));
+            return;
+        }
+        $this->subscription_model->assignPlan($payment['branch_id'], $payment['plan_id'], $payment['billing_cycle']);
+        $this->db->where('id', $payment['id'])->update('subscription_payments', array('status' => 'activated'));
+        set_alert('success', 'School subscription activated successfully.');
+        redirect(base_url('subscription'));
     }
 
     public function manual_activate()

@@ -97,16 +97,14 @@ class Subscription_payment extends Admin_Controller
             return;
         }
 
-        $invoiceId = null;
         if ($payment['status'] === 'completed') {
-            $inv = $this->db->get_where('subscription_vat_invoices', array('payment_id' => $payment['id']))->row_array();
-            $invoiceId = $inv ? $inv['id'] : null;
+            // Check if superadmin has activated the subscription yet
+            $active = $this->subscription_model->getActiveSubscription($branchId);
+            echo json_encode(array('status' => $active ? 'activated' : 'awaiting'));
+            return;
         }
 
-        echo json_encode(array(
-            'status'     => $payment['status'],
-            'invoice_id' => $invoiceId,
-        ));
+        echo json_encode(array('status' => $payment['status']));
     }
 
     // View / print invoice
@@ -172,11 +170,28 @@ class Subscription_payment extends Admin_Controller
         $existing = $this->subscription_model->getActiveSubscription($branchId);
         if ($existing) {
             redirect(base_url('dashboard'));
+            return;
+        }
+        // Paid but awaiting superadmin activation
+        $pending = $this->db
+            ->where('branch_id', $branchId)
+            ->where('status', 'completed')
+            ->where('plan_id IS NOT NULL', null, false)
+            ->order_by('id', 'DESC')
+            ->limit(1)
+            ->get('subscription_payments')->row_array();
+        if ($pending) {
+            $this->data['pending']   = $pending;
+            $this->data['title']     = 'Payment Received';
+            $this->data['sub_page']  = 'subscription/awaiting_activation';
+            $this->data['main_menu'] = 'dashboard';
+            $this->load->view('layout/index', $this->data);
+            return;
         }
         $plans = $this->subscription_model->getPlans(true);
-        $this->data['plans']    = $plans;
-        $this->data['title']    = 'Activate Your School Account';
-        $this->data['sub_page'] = 'subscription/choose_plan';
+        $this->data['plans']     = $plans;
+        $this->data['title']     = 'Activate Your School Account';
+        $this->data['sub_page']  = 'subscription/choose_plan';
         $this->data['main_menu'] = 'dashboard';
         $this->load->view('layout/index', $this->data);
     }

@@ -73,6 +73,51 @@
 	</div>
 </section>
 
+<?php if (!empty($pending_payments)): ?>
+<section class="panel" style="margin-top:20px;border-top:3px solid #f39c12;">
+  <header class="panel-heading" style="background:#fffbf0;">
+    <h4 class="panel-title" style="color:#d68910;">
+      <i class="fas fa-clock"></i>
+      Payments Awaiting Activation (<?= count($pending_payments) ?>)
+      <small style="font-weight:400;font-size:.8rem;color:#777;margin-left:8px">M-Pesa received. Click Activate to enable school access.</small>
+    </h4>
+  </header>
+  <div class="panel-body">
+    <div class="table-responsive">
+      <table class="table table-bordered table-condensed">
+        <thead>
+          <tr>
+            <th>#</th><th>School</th><th>Plan</th><th>Billing</th><th>Amount (KES)</th><th>Paid At</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php $n = 1; foreach ($pending_payments as $pp): ?>
+          <tr>
+            <td><?= $n++ ?></td>
+            <td>
+              <strong><?= htmlspecialchars($pp['school_name']) ?></strong>
+              <small class="text-muted d-block"><?= htmlspecialchars($pp['branch_name']) ?></small>
+            </td>
+            <td><?= htmlspecialchars($pp['plan_name'] ?: 'N/A') ?></td>
+            <td><?= ucfirst($pp['billing_cycle'] ?: '') ?></td>
+            <td><?= number_format($pp['amount']) ?></td>
+            <td><?= $pp['created_at'] ?></td>
+            <td>
+              <a href="<?= base_url('subscription/confirm_payment/' . $pp['id']) ?>"
+                 class="btn btn-warning btn-sm"
+                 onclick="return confirm('Activate this school? They will get immediate access.')">
+                <i class="fas fa-check"></i> Activate
+              </a>
+            </td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
+
 <?php if (!empty($unsubscribed_branches)): ?>
 <section class="panel" style="margin-top:20px;border-top:3px solid #e74c3c;">
   <header class="panel-heading" style="background:#fdf2f2;">

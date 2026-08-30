@@ -127,26 +127,16 @@ class Mpesa_callback extends CI_Controller
                 'status'        => 'completed',
                 'mpesa_receipt' => $mpesaReceipt,
                 'result_desc'   => $resultDesc,
-                'updated_at'    => date('Y-m-d H:i:s'),
             ));
 
-            // First-time payment: activate the subscription automatically
-            if (!empty($payment['plan_id']) && !empty($payment['billing_cycle'])) {
-                $this->load->model('subscription_model');
-                $this->subscription_model->assignPlan(
-                    $payment['branch_id'],
-                    $payment['plan_id'],
-                    $payment['billing_cycle']
-                );
-            }
-
+            // Superadmin manually activates the school after confirming payment.
+            // No auto-activation here.
             $this->_createVatInvoice($payment, $mpesaReceipt);
         } else {
             $status = ($resultCode == 1032) ? 'cancelled' : 'failed';
             $this->db->where('id', $payment['id'])->update('subscription_payments', array(
                 'status'      => $status,
                 'result_desc' => $resultDesc,
-                'updated_at'  => date('Y-m-d H:i:s'),
             ));
         }
 
@@ -161,13 +151,20 @@ class Mpesa_callback extends CI_Controller
 
         $branch = $this->db->get_where('branch', array('id' => $payment['branch_id']))->row_array();
 
-        $sub = $this->db->select('bs.billing_cycle, sp.name as plan_name')
-            ->from('branch_subscriptions bs')
-            ->join('subscription_plans sp', 'sp.id = bs.plan_id', 'left')
-            ->where('bs.branch_id', $payment['branch_id'])
-            ->where_in('bs.status', array('active', 'trial'))
-            ->order_by('bs.id', 'DESC')
-            ->limit(1)->get()->row_array();
+        // Use plan info from the payment record when available (first-time),
+        // otherwise fall back to the active subscription (renewal).
+        if (!empty($payment['plan_id'])) {
+            $plan = $this->db->get_where('subscription_plans', array('id' => $payment['plan_id']))->row_array();
+            $sub  = $plan ? array('plan_name' => $plan['name'], 'billing_cycle' => $payment['billing_cycle']) : null;
+        } else {
+            $sub = $this->db->select('bs.billing_cycle, sp.name as plan_name')
+                ->from('branch_subscriptions bs')
+                ->join('subscription_plans sp', 'sp.id = bs.plan_id', 'left')
+                ->where('bs.branch_id', $payment['branch_id'])
+                ->where_in('bs.status', array('active', 'trial'))
+                ->order_by('bs.id', 'DESC')
+                ->limit(1)->get()->row_array();
+        }
 
         $seq           = $this->db->count_all('subscription_vat_invoices') + 1;
         $invoiceNumber = 'CST-' . date('Y') . '-' . str_pad($seq, 4, '0', STR_PAD_LEFT);
