@@ -272,6 +272,166 @@ class Branch_model extends MY_Model
             }
         }
 
+        // 7D. CBC LEARNING OUTCOMES (key KICD outcomes per sub-strand)
+        // Format: 'level_LA_Strand_SubStrand' => array of outcome strings
+        // We look up sub-strand IDs from the sub-strand insertion done above
+        // Build a sub-strand lookup: 'level_LA_Strand_SubStrand' => id
+        $subStrandIds = array();
+        foreach ($subStrands as $key => $subList) {
+            $parts = explode('_', $key, 3);
+            if (count($parts) < 3) continue;
+            $strandKey = $key;
+            if (!isset($strandIds[$strandKey])) continue;
+            $strandId = $strandIds[$strandKey];
+            $lastUnderscore = strrpos($key, '_');
+            $laKey = substr($key, 0, $lastUnderscore);
+            $laId = isset($areaIds[$laKey]) ? $areaIds[$laKey] : null;
+            if (!$laId) continue;
+            foreach ($subList as $subName) {
+                $ssKey = $key . '_' . $subName;
+                // find the inserted ID by querying
+                $ssRow = $this->db->get_where('cbc_sub_strands', array('name' => $subName, 'strand_id' => $strandId, 'branch_id' => $branchId))->row();
+                if ($ssRow) {
+                    $subStrandIds[$ssKey] = array('id' => $ssRow->id, 'strand_id' => $strandId, 'la_id' => $laId);
+                }
+            }
+        }
+
+        $learningOutcomes = array(
+            // Lower Primary — Mathematics — Numbers — Whole Numbers
+            'lower_primary_Mathematics Activities_Numbers_Whole Numbers' => array(
+                array('LO1', 'Count objects up to 999'),
+                array('LO2', 'Read and write numbers up to 999 in numerals and words'),
+                array('LO3', 'Compare and order numbers up to 999 using <, > and ='),
+                array('LO4', 'Add numbers up to 999 with and without regrouping'),
+                array('LO5', 'Subtract numbers up to 999 with and without regrouping'),
+            ),
+            'lower_primary_Mathematics Activities_Numbers_Fractions' => array(
+                array('LO1', 'Identify and name unit fractions (½, ¼, ⅓)'),
+                array('LO2', 'Compare unit fractions using objects and diagrams'),
+                array('LO3', 'Add and subtract fractions with the same denominator'),
+            ),
+            // Lower Primary — Mathematics — Measurement — Length
+            'lower_primary_Mathematics Activities_Measurement_Length' => array(
+                array('LO1', 'Measure length using non-standard units'),
+                array('LO2', 'Measure length using centimetres and metres'),
+                array('LO3', 'Convert between centimetres and metres'),
+                array('LO4', 'Estimate and compare lengths of objects'),
+            ),
+            'lower_primary_Mathematics Activities_Measurement_Time' => array(
+                array('LO1', 'Read time on analogue and digital clocks to the hour and half hour'),
+                array('LO2', 'Name days of the week and months of the year in order'),
+                array('LO3', 'Read and interpret a simple calendar'),
+            ),
+            // Lower Primary — English — Reading — Phonics
+            'lower_primary_English Language Activities_Reading_Phonics' => array(
+                array('LO1', 'Identify and produce all letter sounds (phonemes)'),
+                array('LO2', 'Blend sounds to read three-letter CVC words'),
+                array('LO3', 'Segment spoken words into individual phonemes'),
+                array('LO4', 'Read simple decodable texts using phonic knowledge'),
+            ),
+            'lower_primary_English Language Activities_Reading_Comprehension' => array(
+                array('LO1', 'Answer literal questions about a text read aloud'),
+                array('LO2', 'Retell the main events of a short story in sequence'),
+                array('LO3', 'Predict what might happen next in a story'),
+                array('LO4', 'Identify the main character, setting, and problem in a story'),
+            ),
+            // Lower Primary — English — Writing
+            'lower_primary_English Language Activities_Writing_Handwriting' => array(
+                array('LO1', 'Sit correctly and hold a pencil with the correct grip'),
+                array('LO2', 'Form all uppercase and lowercase letters correctly'),
+                array('LO3', 'Write words and short sentences with consistent letter size and spacing'),
+            ),
+            'lower_primary_English Language Activities_Writing_Composition' => array(
+                array('LO1', 'Write a simple sentence using a capital letter and full stop'),
+                array('LO2', 'Write three or more sentences about a familiar topic'),
+                array('LO3', 'Use descriptive words to add detail to writing'),
+            ),
+            // Upper Primary — Mathematics — Numbers
+            'upper_primary_Mathematics_Numbers_Whole Numbers' => array(
+                array('LO1', 'Read, write and order numbers up to 1,000,000'),
+                array('LO2', 'Multiply whole numbers up to 4 digits by 2-digit numbers'),
+                array('LO3', 'Divide whole numbers using long division'),
+                array('LO4', 'Apply BODMAS/PEMDAS in multi-step calculations'),
+            ),
+            'upper_primary_Mathematics_Numbers_Fractions' => array(
+                array('LO1', 'Add and subtract fractions with different denominators'),
+                array('LO2', 'Multiply and divide fractions'),
+                array('LO3', 'Convert between fractions, decimals and percentages'),
+            ),
+            'upper_primary_Mathematics_Algebra_Patterns' => array(
+                array('LO1', 'Identify, describe and extend number patterns'),
+                array('LO2', 'Use symbols and letters to represent unknown values'),
+                array('LO3', 'Solve simple linear equations with one unknown'),
+            ),
+            // Upper Primary — English — Reading
+            'upper_primary_English_Reading_Comprehension' => array(
+                array('LO1', 'Read and understand narrative and expository texts'),
+                array('LO2', 'Identify the main idea and supporting details in a passage'),
+                array('LO3', 'Infer meaning of unfamiliar words from context'),
+                array('LO4', 'Evaluate the author\'s purpose and viewpoint'),
+            ),
+            // Upper Primary — Science — Living Things
+            'upper_primary_Science and Technology_Living Things_Cells' => array(
+                array('LO1', 'Describe the structure of plant and animal cells'),
+                array('LO2', 'Explain the functions of the main cell organelles'),
+                array('LO3', 'Distinguish between unicellular and multicellular organisms'),
+            ),
+            'upper_primary_Science and Technology_Living Things_Human Body Systems' => array(
+                array('LO1', 'Describe the structure and functions of the digestive system'),
+                array('LO2', 'Explain how the circulatory system transports substances'),
+                array('LO3', 'Describe the role of the respiratory system in gas exchange'),
+            ),
+            // Junior Secondary — Mathematics
+            'junior_secondary_Mathematics_Numbers_Integers' => array(
+                array('LO1', 'Add, subtract, multiply and divide integers'),
+                array('LO2', 'Apply the rules of indices for integer exponents'),
+                array('LO3', 'Simplify expressions involving integers and order of operations'),
+            ),
+            'junior_secondary_Mathematics_Algebra_Algebraic Expressions' => array(
+                array('LO1', 'Expand and simplify algebraic expressions'),
+                array('LO2', 'Factorise algebraic expressions by common factor and grouping'),
+                array('LO3', 'Apply the difference of two squares and perfect square identities'),
+            ),
+            'junior_secondary_Mathematics_Algebra_Linear Equations' => array(
+                array('LO1', 'Solve linear equations in one unknown'),
+                array('LO2', 'Solve simultaneous linear equations graphically and algebraically'),
+                array('LO3', 'Formulate and solve linear equations from real-life situations'),
+            ),
+            // Junior Secondary — Integrated Science — Biology
+            'junior_secondary_Integrated Science_Biology_Cells and Tissues' => array(
+                array('LO1', 'Describe cell structure using light and electron microscopy'),
+                array('LO2', 'Explain cell division by mitosis and meiosis'),
+                array('LO3', 'Describe how cells are organised into tissues, organs and systems'),
+            ),
+            'junior_secondary_Integrated Science_Biology_Nutrition' => array(
+                array('LO1', 'Identify the classes of food and their sources'),
+                array('LO2', 'Describe the process of digestion in humans'),
+                array('LO3', 'Explain the consequences of nutritional deficiencies'),
+            ),
+        );
+
+        foreach ($learningOutcomes as $key => $outcomes) {
+            // key: level_LA_Strand_SubStrand
+            // Find sub_strand_id from $subStrandIds
+            $ssData = isset($subStrandIds[$key]) ? $subStrandIds[$key] : null;
+            if (!$ssData) {
+                // Try to find without sub-strand (strand level only)
+                // key might be level_LA_Strand — not applicable here, skip
+                continue;
+            }
+            foreach ($outcomes as $lo) {
+                $this->db->insert('cbc_learning_outcomes', array(
+                    'code'             => $lo[0],
+                    'name'             => $lo[1],
+                    'sub_strand_id'    => $ssData['id'],
+                    'strand_id'        => $ssData['strand_id'],
+                    'learning_area_id' => $ssData['la_id'],
+                    'branch_id'        => $branchId,
+                ));
+            }
+        }
+
         // 8. EXAM TERMS
         $terms = array('Term 1', 'Term 2', 'Term 3');
         foreach ($terms as $term) {

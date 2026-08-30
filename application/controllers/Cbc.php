@@ -73,6 +73,7 @@ class Cbc extends Admin_Controller
             $this->db->delete('cbc_learning_areas');
             $this->db->where('learning_area_id', $id)->delete('cbc_strands');
             $this->db->where('learning_area_id', $id)->delete('cbc_sub_strands');
+            $this->db->where('learning_area_id', $id)->delete('cbc_learning_outcomes');
         }
     }
 
@@ -139,8 +140,8 @@ class Cbc extends Admin_Controller
             }
             $this->db->where('id', $id);
             $this->db->delete('cbc_strands');
-            // cascade delete sub-strands
             $this->db->where('strand_id', $id)->delete('cbc_sub_strands');
+            $this->db->where('strand_id', $id)->delete('cbc_learning_outcomes');
         }
     }
 
@@ -220,6 +221,85 @@ class Cbc extends Admin_Controller
         echo $html;
     }
 
+    // --- Learning Outcomes CRUD ---
+
+    public function learning_outcomes()
+    {
+        if (!get_permission('cbc_learning_outcomes', 'is_view')) {
+            access_denied();
+        }
+        $branchID = $this->application_model->get_branch_id();
+        if (isset($_POST['save'])) {
+            if (!get_permission('cbc_learning_outcomes', 'is_add')) {
+                access_denied();
+            }
+            $this->form_validation->set_rules('name', 'Learning Outcome', 'trim|required');
+            $this->form_validation->set_rules('strand_id', 'Strand', 'trim|required');
+            $this->form_validation->set_rules('learning_area_id', 'Learning Area', 'trim|required');
+            if ($this->form_validation->run() !== false) {
+                $this->cbc_model->saveLearningOutcome($this->input->post());
+                set_alert('success', translate('information_has_been_saved_successfully'));
+                redirect(current_url());
+            }
+        }
+        $this->data['outcomes']       = $this->cbc_model->getLearningOutcomes('', '', $branchID);
+        $this->data['learning_areas'] = $this->cbc_model->getLearningAreas($branchID);
+        $this->data['strands']        = $this->cbc_model->getStrands('', $branchID);
+        $this->data['sub_strands']    = $this->cbc_model->getSubStrands('', $branchID);
+        $this->data['branch_id']      = $branchID;
+        $this->data['title']          = 'CBC Learning Outcomes';
+        $this->data['sub_page']       = 'cbc/learning_outcomes';
+        $this->data['main_menu']      = 'cbc';
+        $this->load->view('layout/index', $this->data);
+    }
+
+    public function learning_outcome_edit()
+    {
+        if ($_POST) {
+            if (!get_permission('cbc_learning_outcomes', 'is_edit')) {
+                ajax_access_denied();
+            }
+            $this->form_validation->set_rules('name', 'Learning Outcome', 'trim|required');
+            $this->form_validation->set_rules('strand_id', 'Strand', 'trim|required');
+            $this->form_validation->set_rules('learning_area_id', 'Learning Area', 'trim|required');
+            if ($this->form_validation->run() !== false) {
+                $this->cbc_model->saveLearningOutcome($this->input->post());
+                set_alert('success', translate('information_has_been_updated_successfully'));
+                $array = array('status' => 'success', 'url' => base_url('cbc/learning_outcomes'));
+            } else {
+                $array = array('status' => 'fail', 'error' => $this->form_validation->error_array());
+            }
+            echo json_encode($array);
+        }
+    }
+
+    public function learning_outcome_delete($id)
+    {
+        if (get_permission('cbc_learning_outcomes', 'is_delete')) {
+            if (!is_superadmin_loggedin()) {
+                $this->db->where('branch_id', get_loggedin_branch_id());
+            }
+            $this->db->where('id', $id)->delete('cbc_learning_outcomes');
+        }
+    }
+
+    // AJAX: learning outcomes by sub-strand (for assessment form)
+    public function getLearningOutcomesBySubStrand()
+    {
+        $html = '<option value="">' . translate('select') . ' (optional)</option>';
+        $branchID = $this->application_model->get_branch_id();
+        $subStrandId = intval($this->input->post('sub_strand_id'));
+        $strandId    = intval($this->input->post('strand_id'));
+        if ($subStrandId || $strandId) {
+            $outcomes = $this->cbc_model->getLearningOutcomes($subStrandId ?: '', $strandId ?: '', $branchID);
+            foreach ($outcomes as $lo) {
+                $label = $lo['code'] ? '[' . $lo['code'] . '] ' . $lo['name'] : $lo['name'];
+                $html .= '<option value="' . $lo['id'] . '">' . htmlspecialchars($label) . '</option>';
+            }
+        }
+        echo $html;
+    }
+
     // AJAX: sub-strands by strand (for assessment entry)
     public function getSubStrandsByStrand()
     {
@@ -251,15 +331,17 @@ class Cbc extends Admin_Controller
             $examID = $this->input->post('exam_id');
             $learningAreaID = $this->input->post('learning_area_id');
 
-            $strandID    = $this->input->post('strand_id');
-            $subStrandID = $this->input->post('sub_strand_id');
+            $strandID          = $this->input->post('strand_id');
+            $subStrandID       = $this->input->post('sub_strand_id');
+            $learningOutcomeID = $this->input->post('learning_outcome_id');
 
-            $this->data['class_id']       = $classID;
-            $this->data['section_id']     = $sectionID;
-            $this->data['exam_id']        = $examID;
-            $this->data['learning_area_id'] = $learningAreaID;
-            $this->data['strand_id']      = $strandID;
-            $this->data['sub_strand_id']  = $subStrandID;
+            $this->data['class_id']            = $classID;
+            $this->data['section_id']          = $sectionID;
+            $this->data['exam_id']             = $examID;
+            $this->data['learning_area_id']    = $learningAreaID;
+            $this->data['strand_id']           = $strandID;
+            $this->data['sub_strand_id']       = $subStrandID;
+            $this->data['learning_outcome_id'] = $learningOutcomeID;
             $this->data['students']       = $this->cbc_model->getStudentsForAssessment($classID, $sectionID, $branchID);
             $this->data['strands']        = $this->cbc_model->getStrands($learningAreaID, $branchID);
 
@@ -296,9 +378,10 @@ class Cbc extends Admin_Controller
                             'student_id'       => $studentId,
                             'exam_id'          => $examID,
                             'learning_area_id' => $learningAreaID,
-                            'strand_id'        => isset($data['strand_id'])     ? $data['strand_id']     : null,
-                            'sub_strand_id'    => isset($data['sub_strand_id']) ? $data['sub_strand_id'] : null,
-                            'competency_level' => $data['competency_level'],
+                            'strand_id'           => isset($data['strand_id'])           ? $data['strand_id']           : null,
+                            'sub_strand_id'       => isset($data['sub_strand_id'])       ? $data['sub_strand_id']       : null,
+                            'learning_outcome_id' => isset($data['learning_outcome_id']) ? $data['learning_outcome_id'] : null,
+                            'competency_level'    => $data['competency_level'],
                             'class_id'         => $classID,
                             'section_id'       => $sectionID,
                             'remarks'          => isset($data['remarks']) ? $data['remarks'] : '',

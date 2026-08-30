@@ -56,14 +56,18 @@ class Cbc_model extends MY_Model
         if (!empty($data['sub_strand_id'])) {
             $where['sub_strand_id'] = $data['sub_strand_id'];
         }
+        if (!empty($data['learning_outcome_id'])) {
+            $where['learning_outcome_id'] = $data['learning_outcome_id'];
+        }
         $query = $this->db->get_where('cbc_assessment', $where);
         $record = array(
-            'student_id'       => $data['student_id'],
-            'exam_id'          => $data['exam_id'],
-            'learning_area_id' => $data['learning_area_id'],
-            'strand_id'        => !empty($data['strand_id'])     ? $data['strand_id']     : null,
-            'sub_strand_id'    => !empty($data['sub_strand_id']) ? $data['sub_strand_id'] : null,
-            'competency_level' => $data['competency_level'],
+            'student_id'          => $data['student_id'],
+            'exam_id'             => $data['exam_id'],
+            'learning_area_id'    => $data['learning_area_id'],
+            'strand_id'           => !empty($data['strand_id'])           ? $data['strand_id']           : null,
+            'sub_strand_id'       => !empty($data['sub_strand_id'])       ? $data['sub_strand_id']       : null,
+            'learning_outcome_id' => !empty($data['learning_outcome_id']) ? $data['learning_outcome_id'] : null,
+            'competency_level'    => $data['competency_level'],
             'class_id'         => $data['class_id'],
             'section_id'       => $data['section_id'],
             'remarks'          => isset($data['remarks']) ? $data['remarks'] : '',
@@ -135,6 +139,47 @@ class Cbc_model extends MY_Model
             $this->db->where('id', $data['sub_strand_id']);
             $this->db->update('cbc_sub_strands', $array);
         }
+    }
+
+    public function saveLearningOutcome($data)
+    {
+        $array = array(
+            'code'             => isset($data['code']) ? trim($data['code']) : null,
+            'name'             => $data['name'],
+            'sub_strand_id'    => !empty($data['sub_strand_id']) ? $data['sub_strand_id'] : null,
+            'strand_id'        => $data['strand_id'],
+            'learning_area_id' => $data['learning_area_id'],
+            'branch_id'        => $this->application_model->get_branch_id(),
+        );
+        if (!isset($data['learning_outcome_id'])) {
+            $this->db->insert('cbc_learning_outcomes', $array);
+        } else {
+            $this->db->where('id', $data['learning_outcome_id']);
+            $this->db->update('cbc_learning_outcomes', $array);
+        }
+    }
+
+    public function getLearningOutcomes($subStrandId = '', $strandId = '', $branchId = '')
+    {
+        $this->db->select('lo.*, ss.name as sub_strand_name, s.name as strand_name, la.name as learning_area_name');
+        $this->db->from('cbc_learning_outcomes as lo');
+        $this->db->join('cbc_strands as s', 's.id = lo.strand_id', 'left');
+        $this->db->join('cbc_learning_areas as la', 'la.id = lo.learning_area_id', 'left');
+        $this->db->join('cbc_sub_strands as ss', 'ss.id = lo.sub_strand_id', 'left');
+        if (!empty($subStrandId)) {
+            $this->db->where('lo.sub_strand_id', $subStrandId);
+        }
+        if (!empty($strandId)) {
+            $this->db->where('lo.strand_id', $strandId);
+        }
+        if (!empty($branchId)) {
+            $this->db->where('lo.branch_id', $branchId);
+        }
+        $this->db->order_by('la.name', 'ASC');
+        $this->db->order_by('s.name', 'ASC');
+        $this->db->order_by('lo.code', 'ASC');
+        $this->db->order_by('lo.name', 'ASC');
+        return $this->db->get()->result_array();
     }
 
     public function getSubStrands($strandId = '', $branchId = '')
@@ -221,11 +266,12 @@ class Cbc_model extends MY_Model
         $this->db->where('e.session_id', $sessionId);
         $result['student'] = $this->db->get()->row_array();
 
-        $this->db->select('a.*, la.name as learning_area_name, s.name as strand_name, ss.name as sub_strand_name');
+        $this->db->select('a.*, la.name as learning_area_name, s.name as strand_name, ss.name as sub_strand_name, lo.name as learning_outcome_name, lo.code as learning_outcome_code');
         $this->db->from('cbc_assessment as a');
         $this->db->join('cbc_learning_areas as la', 'la.id = a.learning_area_id', 'left');
         $this->db->join('cbc_strands as s', 's.id = a.strand_id', 'left');
         $this->db->join('cbc_sub_strands as ss', 'ss.id = a.sub_strand_id', 'left');
+        $this->db->join('cbc_learning_outcomes as lo', 'lo.id = a.learning_outcome_id', 'left');
         $this->db->where('a.student_id', $studentId);
         $this->db->where('a.exam_id', $examId);
         $this->db->where('a.session_id', $sessionId);

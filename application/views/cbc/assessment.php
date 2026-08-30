@@ -60,8 +60,16 @@
 			<div class="col-md-2">
 				<div class="form-group">
 					<label class="control-label">Sub-Strand <small class="text-muted">(optional)</small></label>
-					<select name="sub_strand_id" id="assessment_sub_strand_id" class="form-control" data-plugin-selectTwo data-width="100%">
+					<select name="sub_strand_id" id="assessment_sub_strand_id" class="form-control" data-plugin-selectTwo data-width="100%" onchange="getLearningOutcomesForAssessment(this.value, $('#assessment_strand_id').val())">
 						<option value="">All sub-strands</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class="form-group">
+					<label class="control-label">Learning Outcome <small class="text-muted">(optional)</small></label>
+					<select name="learning_outcome_id" id="assessment_lo_id" class="form-control" data-plugin-selectTwo data-width="100%">
+						<option value="">All outcomes</option>
 					</select>
 				</div>
 			</div>
@@ -83,6 +91,7 @@
 			<input type="hidden" name="learning_area_id" value="<?=$learning_area_id?>">
 			<input type="hidden" name="strand_id" value="<?=isset($strand_id) ? $strand_id : ''?>">
 			<input type="hidden" name="sub_strand_id" value="<?=isset($sub_strand_id) ? $sub_strand_id : ''?>">
+			<input type="hidden" name="learning_outcome_id" value="<?=isset($learning_outcome_id) ? $learning_outcome_id : ''?>">
 			<?php if (is_superadmin_loggedin()): ?>
 			<input type="hidden" name="branch_id" value="<?=$branch_id?>">
 			<?php endif; ?>
@@ -183,9 +192,21 @@
 	}
 
 	function getSubStrandsForAssessment(strandId) {
-		if (!strandId) { $('#assessment_sub_strand_id').html('<option value="">All sub-strands</option>'); return; }
+		if (!strandId) {
+			$('#assessment_sub_strand_id').html('<option value="">All sub-strands</option>');
+			$('#assessment_lo_id').html('<option value="">All outcomes</option>');
+			return;
+		}
 		$.post(base_url + 'cbc/getSubStrandsByStrand', {strand_id: strandId}, function(data) {
-			$('#assessment_sub_strand_id').html(data);
+			$('#assessment_sub_strand_id').html('<option value="">All sub-strands</option>' + data);
+			$('#assessment_lo_id').html('<option value="">All outcomes</option>');
+		});
+	}
+
+	function getLearningOutcomesForAssessment(ssId, strandId) {
+		if (!ssId && !strandId) { $('#assessment_lo_id').html('<option value="">All outcomes</option>'); return; }
+		$.post(base_url + 'cbc/getLearningOutcomesBySubStrand', {sub_strand_id: ssId, strand_id: strandId}, function(data) {
+			$('#assessment_lo_id').html('<option value="">All outcomes</option>' + data.replace('<option value="">Select (optional)</option>', ''));
 		});
 	}
 
