@@ -769,6 +769,12 @@
                                     <span><i class="fas fa-caret-right"></i> Projects</span>
                                 </a>
                             </li>
+                            <?php endif; if (get_permission('cbc_holistic', 'is_view')): ?>
+                            <li class="<?php if ($sub_page == 'cbc/holistic' || $sub_page == 'cbc/holistic_entry') echo 'nav-active';?>">
+                                <a href="<?=base_url('cbc/holistic')?>">
+                                    <span><i class="fas fa-caret-right"></i> Holistic Profile</span>
+                                </a>
+                            </li>
                             <?php endif; if (get_permission('cbc_assessment', 'is_view')): ?>
                             <li class="<?php if ($sub_page == 'cbc/analytics') echo 'nav-active';?>">
                                 <a href="<?=base_url('cbc/analytics')?>">

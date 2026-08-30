@@ -449,6 +449,16 @@ class Userrole extends User_Controller
         $this->load->view('layout/index', $this->data);
     }
 
+    public function holistic()
+    {
+        $this->load->model('cbc_model');
+        $this->data['stu']       = $this->userrole_model->getStudentDetails();
+        $this->data['title']     = 'Holistic Development Profile';
+        $this->data['main_menu'] = 'exam';
+        $this->data['sub_page']  = 'userrole/holistic';
+        $this->load->view('layout/index', $this->data);
+    }
+
     public function homework()
     {
         $stu = $this->userrole_model->getStudentDetails();

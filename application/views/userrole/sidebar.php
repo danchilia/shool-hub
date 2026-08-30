@@ -129,6 +129,12 @@ if ((is_parent_loggedin() && !empty(get_activeChildren_id())) || is_student_logg
                                     <i class="fas fa-folder-open"></i><span>Portfolio</span>
                                 </a>
                             </li>
+                            <!-- Holistic Profile -->
+                            <li class="<?php if ($sub_page == 'userrole/holistic') echo 'nav-active'; ?>">
+                                <a href="<?=base_url('userrole/holistic')?>">
+                                    <i class="fas fa-user-check"></i><span>Holistic Profile</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 

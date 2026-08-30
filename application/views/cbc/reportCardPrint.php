@@ -285,6 +285,45 @@ if (!empty($student_array)) {
 	</table>
 	<?php endif; ?>
 
+	<!-- HOLISTIC DEVELOPMENT PROFILE -->
+	<?php
+	$holisticData = $this->cbc_model->getStudentHolisticByExam($studentID, $getExam['branch_id']);
+	if (!empty($holisticData) && isset($holisticData[$examID])):
+		$hExam = $holisticData[$examID];
+		$hLvlBg = array('EE'=>'#1e7e34','ME'=>'#004085','AE'=>'#856404','BE'=>'#721c24');
+	?>
+	<table class="assessment-table" style="margin-top:10px;">
+		<thead>
+			<tr class="section-header"><th colspan="3" style="border:none;">HOLISTIC DEVELOPMENT PROFILE</th></tr>
+			<tr>
+				<th style="text-align:left; width:40%;">Domain / Indicator</th>
+				<th style="width:80px; text-align:center;">Rating</th>
+				<th style="text-align:left;">Remarks</th>
+			</tr>
+		</thead>
+		<tbody>
+		<?php foreach ($hExam['domains'] as $hDomain): ?>
+			<tr style="background:#eaf2f8;">
+				<td colspan="3" style="font-weight:700; color:#1a5276; padding:5px 8px; font-size:12px;">
+					<?=htmlspecialchars($hDomain['name'])?>
+				</td>
+			</tr>
+			<?php foreach ($hDomain['indicators'] as $hInd):
+				$hBg = isset($hLvlBg[$hInd['rating']]) ? $hLvlBg[$hInd['rating']] : '#6c757d';
+			?>
+			<tr>
+				<td style="padding-left:20px; font-size:12px;"><?=htmlspecialchars($hInd['name'])?></td>
+				<td style="text-align:center;">
+					<span style="background:<?=$hBg?>;color:#fff;padding:1px 8px;border-radius:3px;font-size:11px;font-weight:700;"><?=$hInd['rating']?></span>
+				</td>
+				<td style="font-size:11px; color:#555;"><?=htmlspecialchars($hInd['remarks'] ?: '')?></td>
+			</tr>
+			<?php endforeach; ?>
+		<?php endforeach; ?>
+		</tbody>
+	</table>
+	<?php endif; ?>
+
 	<!-- SIGNATURES -->
 	<table class="signature-table" style="width:100%;">
 		<tr>

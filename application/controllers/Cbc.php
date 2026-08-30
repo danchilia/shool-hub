@@ -804,6 +804,68 @@ class Cbc extends Admin_Controller
         echo $html;
     }
 
+    // --- CBC Holistic Development Profile ---
+
+    public function holistic()
+    {
+        if (!get_permission('cbc_holistic', 'is_view')) { access_denied(); }
+        $branchID  = $this->application_model->get_branch_id();
+        $classID   = intval($this->input->post('class_id'));
+        $sectionID = intval($this->input->post('section_id'));
+        $examID    = intval($this->input->post('exam_id'));
+
+        $this->data['branch_id']  = $branchID;
+        $this->data['class_id']   = $classID;
+        $this->data['section_id'] = $sectionID;
+        $this->data['exam_id']    = $examID;
+        $this->data['students']   = ($classID && $sectionID && $examID) ? $this->cbc_model->getStudentsForAssessment($classID, $sectionID, $branchID) : array();
+        $this->data['exams']      = $this->cbc_model->getCbcExams($branchID);
+        $this->data['title']      = 'Holistic Development Profile';
+        $this->data['sub_page']   = 'cbc/holistic';
+        $this->data['main_menu']  = 'cbc';
+        $this->load->view('layout/index', $this->data);
+    }
+
+    public function holistic_entry($studentId = '')
+    {
+        if (!get_permission('cbc_holistic', 'is_view')) { access_denied(); }
+        $branchID  = $this->application_model->get_branch_id();
+        $examID    = intval($this->input->get('exam_id'));
+        $studentId = intval($studentId);
+        if (!$studentId || !$examID) { redirect('cbc/holistic'); }
+
+        $this->db->select('s.*, c.class as class_name, sec.section as section_name');
+        $this->db->from('student s');
+        $this->db->join('enroll e', 'e.student_id = s.id AND e.session_id = ' . (int)get_session_id() . ' AND e.branch_id = ' . $branchID, 'left');
+        $this->db->join('class c', 'c.id = e.class_id', 'left');
+        $this->db->join('section sec', 'sec.id = e.section_id', 'left');
+        $this->db->where('s.id', $studentId);
+        $student = $this->db->get()->row_array();
+
+        $this->data['branch_id'] = $branchID;
+        $this->data['exam_id']   = $examID;
+        $this->data['student']   = $student;
+        $this->data['domains']   = $this->cbc_model->getHolisticDomains($branchID);
+        $this->data['ratings']   = $this->cbc_model->getHolisticRatings($studentId, $examID);
+        $this->data['title']     = 'Holistic Profile';
+        $this->data['sub_page']  = 'cbc/holistic';
+        $this->data['main_menu'] = 'cbc';
+        $this->load->view('layout/index', $this->data);
+    }
+
+    public function holistic_save()
+    {
+        if (!get_permission('cbc_holistic', 'is_add')) { ajax_access_denied(); }
+        $branchID  = $this->application_model->get_branch_id();
+        $studentId = intval($this->input->post('student_id'));
+        $examID    = intval($this->input->post('exam_id'));
+        $ratingsPost = $this->input->post('ratings');
+        if (!$studentId || !$examID) { set_alert('error', 'Invalid data.'); redirect('cbc/holistic'); }
+        $this->cbc_model->saveHolisticRatings($branchID, $studentId, $examID, $ratingsPost ?: array(), get_loggedin_id());
+        set_alert('success', 'Holistic profile saved successfully.');
+        redirect('cbc/holistic_entry/' . $studentId . '?exam_id=' . $examID);
+    }
+
     public function getLearningAreasByBranch()
     {
         $html = '<option value="">' . translate('select') . '</option>';

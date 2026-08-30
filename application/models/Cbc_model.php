@@ -491,4 +491,84 @@ class Cbc_model extends MY_Model
                 ORDER BY e.id ASC, a.competency_level ASC";
         return $this->db->query($sql, array($branchId, $classId, $sectionId, $sessionId, $sessionId))->result_array();
     }
+
+    // --- Holistic Development Profile ---
+
+    public function getHolisticDomains($branchId)
+    {
+        $this->db->where_in('branch_id', array(0, $branchId));
+        $this->db->where('is_active', 1);
+        $this->db->order_by('branch_id', 'ASC');
+        $this->db->order_by('sort_order', 'ASC');
+        $domains = $this->db->get('cbc_holistic_domains')->result_array();
+        foreach ($domains as &$d) {
+            $d['indicators'] = $this->db->where('domain_id', $d['id'])->order_by('sort_order', 'ASC')->get('cbc_holistic_indicators')->result_array();
+        }
+        return $domains;
+    }
+
+    public function getHolisticRatings($studentId, $examId)
+    {
+        $rows = $this->db->where('student_id', $studentId)->where('exam_id', $examId)->get('cbc_holistic_ratings')->result_array();
+        $keyed = array();
+        foreach ($rows as $r) {
+            $keyed[$r['indicator_id']] = $r;
+        }
+        return $keyed;
+    }
+
+    public function saveHolisticRatings($branchId, $studentId, $examId, $ratings, $userId)
+    {
+        foreach ($ratings as $indicatorId => $data) {
+            $rating  = !empty($data['rating'])  ? $data['rating']        : null;
+            $remarks = !empty($data['remarks']) ? trim($data['remarks']) : '';
+            $exists = $this->db->where('student_id', $studentId)->where('exam_id', $examId)->where('indicator_id', $indicatorId)->get('cbc_holistic_ratings')->row_array();
+            if ($exists) {
+                $this->db->where('id', $exists['id'])->update('cbc_holistic_ratings', array('rating' => $rating, 'remarks' => $remarks));
+            } else {
+                $this->db->insert('cbc_holistic_ratings', array(
+                    'branch_id'    => $branchId,
+                    'student_id'   => $studentId,
+                    'exam_id'      => $examId,
+                    'indicator_id' => $indicatorId,
+                    'rating'       => $rating,
+                    'remarks'      => $remarks,
+                    'created_by'   => $userId,
+                    'created_at'   => date('Y-m-d H:i:s'),
+                ));
+            }
+        }
+    }
+
+    public function getStudentHolisticByExam($studentId, $branchId)
+    {
+        // Returns ratings grouped by exam_id → domain_id → indicator_id for portal view
+        $sql = "SELECT hr.exam_id, e.name as exam_name, hd.id as domain_id, hd.name as domain_name,
+                       hi.id as indicator_id, hi.name as indicator_name, hr.rating, hr.remarks
+                FROM cbc_holistic_ratings hr
+                INNER JOIN cbc_holistic_indicators hi ON hi.id = hr.indicator_id
+                INNER JOIN cbc_holistic_domains hd ON hd.id = hi.domain_id
+                INNER JOIN exam e ON e.id = hr.exam_id
+                WHERE hr.student_id = ? AND hr.branch_id = ? AND hr.rating IS NOT NULL
+                ORDER BY hr.exam_id DESC, hd.sort_order ASC, hi.sort_order ASC";
+        $rows = $this->db->query($sql, array($studentId, $branchId))->result_array();
+
+        $grouped = array();
+        foreach ($rows as $r) {
+            $eid = $r['exam_id'];
+            $did = $r['domain_id'];
+            if (!isset($grouped[$eid])) {
+                $grouped[$eid] = array('exam_name' => $r['exam_name'], 'domains' => array());
+            }
+            if (!isset($grouped[$eid]['domains'][$did])) {
+                $grouped[$eid]['domains'][$did] = array('name' => $r['domain_name'], 'indicators' => array());
+            }
+            $grouped[$eid]['domains'][$did]['indicators'][] = array(
+                'name'    => $r['indicator_name'],
+                'rating'  => $r['rating'],
+                'remarks' => $r['remarks'],
+            );
+        }
+        return $grouped;
+    }
 }
