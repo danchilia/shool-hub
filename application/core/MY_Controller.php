@@ -40,21 +40,31 @@ class Admin_Controller extends MY_Controller
         }
 
         if (!is_superadmin_loggedin()) {
-            $branchId = get_loggedin_branch_id();
+            $branchId   = get_loggedin_branch_id();
+            $controller = strtolower($this->router->fetch_class());
+
             if (!empty($branchId)) {
-                $sub = $this->db->select('status, end_date')
+                // Always accessible regardless of subscription state
+                $subExcluded = array('authentication', 'profile', 'subscription_payment');
+
+                $sub = $this->db->select('id, status, end_date')
                     ->where('branch_id', $branchId)
                     ->order_by('id', 'DESC')
                     ->limit(1)
                     ->get('branch_subscriptions')->row();
-                if ($sub && ($sub->status == 'expired' || (strtotime($sub->end_date) < time() && $sub->status == 'active'))) {
-                    if ($sub->status == 'active') {
-                        $this->db->where('id', $sub->id ?? 0);
-                        $this->db->update('branch_subscriptions', array('status' => 'expired'));
+
+                if (!$sub) {
+                    // No subscription record — must choose a plan and pay first
+                    if (!in_array($controller, $subExcluded)) {
+                        redirect(base_url('subscription_payment/choose_plan'));
                     }
-                    $allowed = array('dashboard', 'authentication', 'profile', 'userrole');
-                    $controller = $this->router->fetch_class();
-                    if (!in_array(strtolower($controller), $allowed)) {
+                } elseif ($sub->status === 'expired' || strtotime($sub->end_date) < time()) {
+                    // Subscription expired — auto-mark and restrict access
+                    if ($sub->status !== 'expired') {
+                        $this->db->where('id', $sub->id)->update('branch_subscriptions', array('status' => 'expired'));
+                    }
+                    $allowedExpired = array('dashboard', 'authentication', 'profile', 'userrole', 'subscription_payment');
+                    if (!in_array($controller, $allowedExpired)) {
                         redirect(base_url('dashboard'));
                     }
                 }

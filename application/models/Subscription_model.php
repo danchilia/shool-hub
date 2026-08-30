@@ -159,6 +159,15 @@ class Subscription_model extends MY_Model
         ));
     }
 
+    public function getUnsubscribedBranches()
+    {
+        $this->db->select('b.id, b.school_name, b.name as branch_name, b.email');
+        $this->db->from('branch b');
+        $this->db->where('b.status', 1);
+        $this->db->where('NOT EXISTS (SELECT 1 FROM branch_subscriptions bs WHERE bs.branch_id = b.id)', null, false);
+        return $this->db->get()->result_array();
+    }
+
     public function checkExpiredSubscriptions()
     {
         $this->db->where('end_date <', date('Y-m-d'));

@@ -130,6 +130,16 @@ class Mpesa_callback extends CI_Controller
                 'updated_at'    => date('Y-m-d H:i:s'),
             ));
 
+            // First-time payment: activate the subscription automatically
+            if (!empty($payment['plan_id']) && !empty($payment['billing_cycle'])) {
+                $this->load->model('subscription_model');
+                $this->subscription_model->assignPlan(
+                    $payment['branch_id'],
+                    $payment['plan_id'],
+                    $payment['billing_cycle']
+                );
+            }
+
             $this->_createVatInvoice($payment, $mpesaReceipt);
         } else {
             $status = ($resultCode == 1032) ? 'cancelled' : 'failed';

@@ -73,6 +73,88 @@
 	</div>
 </section>
 
+<?php if (!empty($unsubscribed_branches)): ?>
+<section class="panel" style="margin-top:20px;border-top:3px solid #e74c3c;">
+  <header class="panel-heading" style="background:#fdf2f2;">
+    <h4 class="panel-title" style="color:#c0392b;">
+      <i class="fas fa-exclamation-triangle"></i>
+      Schools Without Subscription (<?= count($unsubscribed_branches) ?>)
+      <small style="font-weight:400;font-size:.8rem;color:#777;margin-left:8px">These schools have no plan assigned. Activate them manually or wait for them to pay.</small>
+    </h4>
+  </header>
+  <div class="panel-body">
+    <div class="table-responsive">
+      <table class="table table-bordered table-condensed">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>School Name</th>
+            <th>Branch</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php $n = 1; foreach ($unsubscribed_branches as $b): ?>
+          <tr>
+            <td><?= $n++ ?></td>
+            <td><strong><?= htmlspecialchars($b['school_name']) ?></strong></td>
+            <td><?= htmlspecialchars($b['branch_name']) ?></td>
+            <td>
+              <button class="btn btn-success btn-sm" onclick="manualActivate(<?= $b['id'] ?>, '<?= htmlspecialchars(addslashes($b['school_name'])) ?>')">
+                <i class="fas fa-check"></i> Activate Manually
+              </button>
+            </td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
+
+<!-- Manual Activate Modal -->
+<div class="zoom-anim-dialog modal-block modal-block-primary mfp-hide" id="manualActivateModal">
+  <section class="panel">
+    <?php echo form_open('subscription/manual_activate', array('id' => 'manualActivateForm')); ?>
+      <header class="panel-heading">
+        <h4 class="panel-title"><i class="fas fa-check-circle"></i> Manually Activate: <span id="maSchoolName"></span></h4>
+      </header>
+      <div class="panel-body">
+        <input type="hidden" name="branch_id" id="maBranchId">
+        <div class="form-group">
+          <label class="control-label">Subscription Plan <span class="required">*</span></label>
+          <select name="plan_id" class="form-control" required>
+            <option value="">— select plan —</option>
+            <?php foreach ($plans as $p): ?>
+            <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['name']) ?> — KES <?= number_format($p['monthly_price']) ?>/mo</option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="control-label">Billing Cycle <span class="required">*</span></label>
+          <select name="billing_cycle" class="form-control" required>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+        <p class="text-muted" style="font-size:.82rem">
+          <i class="fas fa-info-circle"></i>
+          This creates an active subscription from today. The school will immediately have full access.
+        </p>
+      </div>
+      <footer class="panel-footer">
+        <div class="row">
+          <div class="col-md-12 text-right">
+            <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Activate Now</button>
+            <button type="button" class="btn btn-default modal-dismiss"><?= translate('cancel') ?></button>
+          </div>
+        </div>
+      </footer>
+    <?php echo form_close(); ?>
+  </section>
+</div>
+
 <!-- Extend Modal -->
 <div class="zoom-anim-dialog modal-block modal-block-primary mfp-hide" id="extendModal">
 	<section class="panel">
@@ -108,5 +190,10 @@
 	function extendSub(id) {
 		$('#extendForm').attr('action', base_url + 'subscription/extend/' + id);
 		mfp_modal('#extendModal');
+	}
+	function manualActivate(branchId, schoolName) {
+		document.getElementById('maBranchId').value = branchId;
+		document.getElementById('maSchoolName').textContent = schoolName;
+		mfp_modal('#manualActivateModal');
 	}
 </script>

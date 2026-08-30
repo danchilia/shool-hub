@@ -14,12 +14,25 @@ class Subscription extends Admin_Controller
 
     public function index()
     {
-        $this->data['subscriptions'] = $this->subscription_model->getAllSubscriptions();
-        $this->data['plans'] = $this->subscription_model->getPlans(true);
-        $this->data['title'] = 'Branch Subscriptions';
-        $this->data['sub_page'] = 'subscription/index';
-        $this->data['main_menu'] = 'subscription';
+        $this->data['subscriptions']        = $this->subscription_model->getAllSubscriptions();
+        $this->data['unsubscribed_branches'] = $this->subscription_model->getUnsubscribedBranches();
+        $this->data['plans']                = $this->subscription_model->getPlans(true);
+        $this->data['title']                = 'Branch Subscriptions';
+        $this->data['sub_page']             = 'subscription/index';
+        $this->data['main_menu']            = 'subscription';
         $this->load->view('layout/index', $this->data);
+    }
+
+    public function manual_activate()
+    {
+        if ($_POST) {
+            $branchId = intval($this->input->post('branch_id'));
+            $planId   = intval($this->input->post('plan_id'));
+            $billing  = $this->input->post('billing_cycle') === 'yearly' ? 'yearly' : 'monthly';
+            $this->subscription_model->assignPlan($branchId, $planId, $billing);
+            set_alert('success', 'School subscription manually activated.');
+        }
+        redirect(base_url('subscription'));
     }
 
     public function plans()
