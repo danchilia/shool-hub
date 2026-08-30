@@ -49,10 +49,26 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
 .nav__links a:hover{color:#fff}
 .nav__sign{margin-left:16px;padding:8px 22px;background:var(--gold);color:var(--navy);font-weight:600;font-size:.87rem;border-radius:3px;transition:background .2s;white-space:nowrap}
 .nav__sign:hover{background:#dbb230}
+/* Hamburger */
+.nav__burger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;margin-left:auto}
+.nav__burger span{display:block;width:24px;height:2px;background:#fff;transition:all .3s}
+.nav__burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav__burger.open span:nth-child(2){opacity:0}
+.nav__burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.nav__mobile{display:none;position:fixed;top:66px;left:0;right:0;background:var(--navy);border-bottom:1px solid rgba(255,255,255,.1);padding:20px 28px 24px;z-index:199;flex-direction:column;gap:0}
+.nav__mobile.open{display:flex}
+.nav__mobile a{color:rgba(255,255,255,.72);padding:13px 0;font-size:.95rem;font-weight:500;border-bottom:1px solid rgba(255,255,255,.07);display:block;transition:color .2s}
+.nav__mobile a:last-child{border-bottom:none;margin-top:12px;padding:12px 20px;background:var(--gold);color:var(--navy);border-radius:3px;text-align:center;font-weight:700}
+.nav__mobile a:hover{color:#fff}
 
 /* HERO */
 .hero{background:var(--navy);min-height:90vh;display:flex;align-items:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,transparent,transparent 60px,rgba(255,255,255,.012) 60px,rgba(255,255,255,.012) 61px)}
+.hero__bg{position:absolute;inset:0;background-image:url('<?= base_url('assets/images/hero-bg.png') ?>');background-size:cover;background-position:center top;opacity:.22}
+.hero::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,31,63,.97) 40%,rgba(12,31,63,.55) 100%)}
+@media(max-width:960px){
+  .hero__bg{opacity:.18}
+  .hero::after{background:linear-gradient(180deg,rgba(12,31,63,.92) 0%,rgba(12,31,63,.82) 100%)}
+}
 .hero__inner{position:relative;z-index:2;max-width:1160px;margin:0 auto;padding:90px 28px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
 .hero__eyebrow{display:inline-block;font-size:.75rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
 .hero__title{color:#fff;margin-bottom:22px}
@@ -162,6 +178,11 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
 .footer__bottom a{color:rgba(255,255,255,.36)}
 .footer__bottom a:hover{color:rgba(255,255,255,.65)}
 
+/* WhatsApp float */
+.wa-float{position:fixed;bottom:28px;right:28px;z-index:300;width:56px;height:56px;background:#25d366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,.22);transition:transform .2s,box-shadow .2s;text-decoration:none}
+.wa-float:hover{transform:scale(1.1);box-shadow:0 10px 28px rgba(0,0,0,.3)}
+.wa-float svg{width:30px;height:30px;fill:#fff}
+
 /* RESPONSIVE */
 @media(max-width:960px){
   .hero__inner{grid-template-columns:1fr;gap:48px}
@@ -174,11 +195,15 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
   .stat{border-right:none}
   .footer__inner{grid-template-columns:1fr;gap:32px}
   .nav__links{display:none}
+  .nav__sign{display:none}
+  .nav__burger{display:flex}
 }
 @media(max-width:600px){
   .features__grid{grid-template-columns:1fr}
   .trust__label{display:none}
   .footer__bottom{flex-direction:column;gap:6px;text-align:center}
+  .wa-float{bottom:18px;right:18px;width:50px;height:50px}
+  .hero__inner{padding:70px 28px 60px}
 }
 .fi{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
 .fi.v{opacity:1;transform:none}
@@ -202,11 +227,24 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
       <li><a href="#contact">Contact</a></li>
     </ul>
     <a href="<?= base_url('authentication') ?>" class="nav__sign">Sign In</a>
+    <button class="nav__burger" id="navBurger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <!-- Mobile menu -->
+  <div class="nav__mobile" id="navMobile">
+    <a href="#features">Features</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="<?= base_url('careers') ?>">Careers</a>
+    <a href="#contact">Contact</a>
+    <a href="<?= base_url('authentication') ?>">Sign In</a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
+  <div class="hero__bg"></div>
   <div class="hero__inner">
     <div>
       <span class="hero__eyebrow">School Management Platform</span>
@@ -217,7 +255,7 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
       </p>
       <div class="hero__actions">
         <a href="<?= base_url('contact') ?>" class="btn btn--gold">Request a Demo</a>
-        <a href="<?= base_url('authentication') ?>" class="btn btn--ghost">Sign In</a>
+        <a href="#features" class="btn btn--ghost">View Features <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:2px"><polyline points="6 9 12 15 18 9"/></svg></a>
       </div>
     </div>
     <div class="hero__visual">
@@ -537,11 +575,70 @@ document.querySelectorAll('.fi').forEach(el => obs.observe(el));
   document.getElementById('heroSlider').addEventListener('mouseenter', function(){ clearInterval(timer); });
   document.getElementById('heroSlider').addEventListener('mouseleave', function(){ timer = setInterval(function(){ goTo(current + 1); }, 5000); });
 
-  // set track style for sliding
   track.style.display = 'flex';
   track.style.width = (total * 100) + '%';
   track.querySelectorAll('.slider__slide').forEach(function(s){ s.style.minWidth = (100/total) + '%'; });
 })();
+
+// Hamburger menu
+(function(){
+  var burger = document.getElementById('navBurger');
+  var mobile = document.getElementById('navMobile');
+  burger.addEventListener('click', function(){
+    burger.classList.toggle('open');
+    mobile.classList.toggle('open');
+  });
+  mobile.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){
+      burger.classList.remove('open');
+      mobile.classList.remove('open');
+    });
+  });
+})();
+
+// Animated stat counters
+(function(){
+  var counted = false;
+  var stats = [
+    { el: document.querySelectorAll('.stat__n')[0], target: 20,   suffix: '+',   duration: 1400 },
+    { el: document.querySelectorAll('.stat__n')[1], target: 5000, suffix: '+',   duration: 1800 },
+    { el: document.querySelectorAll('.stat__n')[2], target: 30,   suffix: '+',   duration: 1200 },
+    { el: document.querySelectorAll('.stat__n')[3], target: 99.9, suffix: '%',   duration: 1600, decimal: true }
+  ];
+
+  function animateCount(item) {
+    var start = 0;
+    var startTime = null;
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var progress = Math.min((ts - startTime) / item.duration, 1);
+      var ease = 1 - Math.pow(1 - progress, 3);
+      var val = item.decimal ? (ease * item.target).toFixed(1) : Math.floor(ease * item.target);
+      if (item.el) item.el.textContent = (item.target >= 1000 ? Number(val).toLocaleString() : val) + item.suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  var statsSection = document.querySelector('.stats');
+  if (statsSection) {
+    var countObs = new IntersectionObserver(function(entries){
+      if (entries[0].isIntersecting && !counted) {
+        counted = true;
+        stats.forEach(function(s){ animateCount(s); });
+      }
+    }, { threshold: 0.3 });
+    countObs.observe(statsSection);
+  }
+})();
 </script>
+<!-- WhatsApp float -->
+<a href="https://wa.me/254700000000?text=Hi%2C%20I%27d%20like%20to%20learn%20more%20about%20CST%20SchoolHub"
+   class="wa-float" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
 </body>
 </html>
