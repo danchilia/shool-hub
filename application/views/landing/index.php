@@ -80,6 +80,10 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
 .slider__track{display:flex;width:100%;height:100%}
 .slider__slide{min-width:100%;height:100%;position:relative;transition:opacity .8s ease}
 .slider__slide img{width:100%;height:100%;object-fit:cover;object-position:center}
+.slide__caption{position:absolute;bottom:0;left:0;right:0;padding:28px 22px 22px;background:linear-gradient(to top,rgba(12,31,63,.88) 0%,rgba(12,31,63,.3) 70%,transparent 100%);z-index:5}
+.slide__tag{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.slide__title{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;color:#fff;line-height:1.25;text-wrap:balance}
+.slide__sub{font-size:.75rem;color:rgba(255,255,255,.62);margin-top:5px;font-weight:400}
 .slider__dots{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10}
 .slider__dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);border:none;cursor:pointer;padding:0;transition:background .3s,transform .3s}
 .slider__dot.active{background:var(--gold);transform:scale(1.2)}
@@ -263,12 +267,27 @@ h3{font-size:1.1rem;font-weight:600;font-family:'DM Sans',sans-serif}
         <div class="slider__track" id="sliderTrack">
           <div class="slider__slide">
             <img src="<?= base_url('uploads/login_image/slider_1.jpg') ?>" alt="School Management">
+            <div class="slide__caption">
+              <div class="slide__tag">Kenyan Schools</div>
+              <div class="slide__title">Rooted in Kenya,<br>Built for Tomorrow.</div>
+              <div class="slide__sub">CBC · NEMIS · M-Pesa · KNEC — all in one place</div>
+            </div>
           </div>
           <div class="slider__slide">
             <img src="<?= base_url('uploads/login_image/slider_2.jpg') ?>" alt="School Administration">
+            <div class="slide__caption">
+              <div class="slide__tag">Student Management</div>
+              <div class="slide__title">Every Student.<br>Every Score. Every Day.</div>
+              <div class="slide__sub">Automated marks, grades and instant report cards</div>
+            </div>
           </div>
           <div class="slider__slide">
             <img src="<?= base_url('uploads/login_image/slider_3.jpg') ?>" alt="School Dashboard">
+            <div class="slide__caption">
+              <div class="slide__tag">Multi-Branch</div>
+              <div class="slide__title">One Dashboard.<br>Every Campus.</div>
+              <div class="slide__sub">Manage all your branches from a single superadmin view</div>
+            </div>
           </div>
         </div>
         <div class="slider__dots" id="sliderDots">
