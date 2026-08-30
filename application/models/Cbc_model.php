@@ -310,4 +310,37 @@ class Cbc_model extends MY_Model
         }
         return $this->getLearningAreas($branchId, $class->level);
     }
+
+    public function getAnalyticsData($examId, $classId, $sectionId, $branchId)
+    {
+        // Per-LA, per-level student count
+        $sql = "SELECT la.name as la_name, la.id as la_id,
+                       a.competency_level,
+                       COUNT(DISTINCT a.student_id) as cnt
+                FROM cbc_assessment a
+                INNER JOIN cbc_learning_areas la ON la.id = a.learning_area_id
+                INNER JOIN enroll en ON en.student_id = a.student_id
+                WHERE a.exam_id = ? AND a.branch_id = ?
+                  AND en.class_id = ? AND en.section_id = ?
+                  AND en.session_id = a.session_id
+                GROUP BY la.id, a.competency_level
+                ORDER BY la.name ASC, a.competency_level ASC";
+        return $this->db->query($sql, array($examId, $branchId, $classId, $sectionId))->result_array();
+    }
+
+    public function getAnalyticsTrend($classId, $sectionId, $branchId, $sessionId)
+    {
+        // Per-exam, per-level total count (trend across exams in session)
+        $sql = "SELECT e.name as exam_name, e.id as exam_id,
+                       a.competency_level,
+                       COUNT(DISTINCT a.student_id) as cnt
+                FROM cbc_assessment a
+                INNER JOIN exam e ON e.id = a.exam_id
+                INNER JOIN enroll en ON en.student_id = a.student_id
+                WHERE a.branch_id = ? AND en.class_id = ? AND en.section_id = ?
+                  AND a.session_id = ? AND en.session_id = ?
+                GROUP BY a.exam_id, a.competency_level
+                ORDER BY e.id ASC, a.competency_level ASC";
+        return $this->db->query($sql, array($branchId, $classId, $sectionId, $sessionId, $sessionId))->result_array();
+    }
 }

@@ -511,6 +511,47 @@ class Cbc extends Admin_Controller
         }
     }
 
+    // --- CBC Analytics ---
+
+    public function analytics()
+    {
+        if (!get_permission('cbc_assessment', 'is_view')) {
+            access_denied();
+        }
+        $branchID = $this->application_model->get_branch_id();
+        $this->data['branch_id']  = $branchID;
+        $this->data['title']      = 'CBC Analytics';
+        $this->data['sub_page']   = 'cbc/analytics';
+        $this->data['main_menu']  = 'cbc';
+        $this->load->view('layout/index', $this->data);
+    }
+
+    public function getAnalyticsData()
+    {
+        if (!get_permission('cbc_assessment', 'is_view')) {
+            echo json_encode(array('error' => 'access denied')); return;
+        }
+        $branchID  = $this->application_model->get_branch_id();
+        $examId    = intval($this->input->post('exam_id'));
+        $classId   = intval($this->input->post('class_id'));
+        $sectionId = intval($this->input->post('section_id'));
+        $sessionId = get_session_id();
+
+        $rows    = $this->cbc_model->getAnalyticsData($examId, $classId, $sectionId, $branchID);
+        $trend   = $this->cbc_model->getAnalyticsTrend($classId, $sectionId, $branchID, $sessionId);
+
+        // Total enrolled students in this class/section
+        $totalStudents = $this->db
+            ->where(array('class_id' => $classId, 'section_id' => $sectionId, 'session_id' => $sessionId, 'branch_id' => $branchID))
+            ->count_all_results('enroll');
+
+        echo json_encode(array(
+            'rows'    => $rows,
+            'trend'   => $trend,
+            'total'   => $totalStudents,
+        ));
+    }
+
     // --- AJAX helpers ---
 
     public function getLearningAreasByBranch()
