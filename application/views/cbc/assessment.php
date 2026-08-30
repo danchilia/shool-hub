@@ -44,12 +44,28 @@
 			<div class="col-md-2">
 				<div class="form-group">
 					<label class="control-label">Learning Area</label>
-					<select name="learning_area_id" id="learning_area_id" class="form-control" data-plugin-selectTwo data-width="100%">
+					<select name="learning_area_id" id="learning_area_id" class="form-control" data-plugin-selectTwo data-width="100%" onchange="getStrandsForAssessment(this.value)">
 						<option value=""><?=translate('select')?></option>
 					</select>
 				</div>
 			</div>
 			<div class="col-md-2">
+				<div class="form-group">
+					<label class="control-label">Strand <small class="text-muted">(optional)</small></label>
+					<select name="strand_id" id="assessment_strand_id" class="form-control" data-plugin-selectTwo data-width="100%" onchange="getSubStrandsForAssessment(this.value)">
+						<option value="">All strands</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class="form-group">
+					<label class="control-label">Sub-Strand <small class="text-muted">(optional)</small></label>
+					<select name="sub_strand_id" id="assessment_sub_strand_id" class="form-control" data-plugin-selectTwo data-width="100%">
+						<option value="">All sub-strands</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-md-1">
 				<div class="form-group mt-lg">
 					<button type="submit" name="search" value="1" class="btn btn-default btn-block">
 						<i class="fas fa-filter"></i> <?=translate('search')?>
@@ -65,6 +81,8 @@
 			<input type="hidden" name="section_id" value="<?=$section_id?>">
 			<input type="hidden" name="exam_id" value="<?=$exam_id?>">
 			<input type="hidden" name="learning_area_id" value="<?=$learning_area_id?>">
+			<input type="hidden" name="strand_id" value="<?=isset($strand_id) ? $strand_id : ''?>">
+			<input type="hidden" name="sub_strand_id" value="<?=isset($sub_strand_id) ? $sub_strand_id : ''?>">
 			<?php if (is_superadmin_loggedin()): ?>
 			<input type="hidden" name="branch_id" value="<?=$branch_id?>">
 			<?php endif; ?>
@@ -150,7 +168,24 @@
 			data: {class_id: classId},
 			success: function(data) {
 				$('#learning_area_id').html(data);
+				$('#assessment_strand_id').html('<option value="">All strands</option>');
+				$('#assessment_sub_strand_id').html('<option value="">All sub-strands</option>');
 			}
+		});
+	}
+
+	function getStrandsForAssessment(laId) {
+		if (!laId) { $('#assessment_strand_id').html('<option value="">All strands</option>'); return; }
+		$.post(base_url + 'cbc/getStrandsByLearningArea', {learning_area_id: laId}, function(data) {
+			$('#assessment_strand_id').html('<option value="">All strands</option>' + data);
+			$('#assessment_sub_strand_id').html('<option value="">All sub-strands</option>');
+		});
+	}
+
+	function getSubStrandsForAssessment(strandId) {
+		if (!strandId) { $('#assessment_sub_strand_id').html('<option value="">All sub-strands</option>'); return; }
+		$.post(base_url + 'cbc/getSubStrandsByStrand', {strand_id: strandId}, function(data) {
+			$('#assessment_sub_strand_id').html(data);
 		});
 	}
 

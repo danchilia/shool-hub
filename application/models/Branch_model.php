@@ -160,11 +160,115 @@ class Branch_model extends MY_Model
             'junior_secondary_Mathematics' => array('Numbers', 'Algebra', 'Geometry', 'Measurements', 'Statistics and Probability'),
             'junior_secondary_Integrated Science' => array('Biology', 'Chemistry', 'Physics', 'Earth Science'),
         );
+        $strandIds = array();
         foreach ($strands as $key => $strandList) {
             if (isset($areaIds[$key])) {
                 foreach ($strandList as $strandName) {
                     $this->db->insert('cbc_strands', array('learning_area_id' => $areaIds[$key], 'name' => $strandName, 'branch_id' => $branchId));
+                    $strandIds[$key . '_' . $strandName] = $this->db->insert_id();
                 }
+            }
+        }
+
+        // 7C. CBC SUB-STRANDS (official KICD 3rd level)
+        $subStrands = array(
+            // Lower Primary — Mathematics Activities
+            'lower_primary_Mathematics Activities_Numbers'      => array('Whole Numbers', 'Place Value', 'Fractions', 'Decimals'),
+            'lower_primary_Mathematics Activities_Measurement'  => array('Length', 'Mass', 'Capacity', 'Time', 'Area'),
+            'lower_primary_Mathematics Activities_Geometry'     => array('2D Shapes', '3D Objects', 'Lines and Angles', 'Position and Movement'),
+            'lower_primary_Mathematics Activities_Data Handling' => array('Data Collection', 'Data Representation', 'Interpretation'),
+            // Lower Primary — English Language Activities
+            'lower_primary_English Language Activities_Listening and Speaking' => array('Oral Drills', 'Rhymes and Songs', 'Storytelling', 'Conversation'),
+            'lower_primary_English Language Activities_Reading'  => array('Phonics', 'Sight Words', 'Fluency', 'Comprehension'),
+            'lower_primary_English Language Activities_Writing'  => array('Handwriting', 'Spelling', 'Composition', 'Punctuation'),
+            'lower_primary_English Language Activities_Grammar'  => array('Word Classes', 'Sentence Structure', 'Tenses', 'Punctuation'),
+            // Lower Primary — Kiswahili Language Activities
+            'lower_primary_Kiswahili Language Activities_Kusikiliza na Kuzungumza' => array('Mazungumzo', 'Hadithi', 'Nyimbo', 'Matamshi'),
+            'lower_primary_Kiswahili Language Activities_Kusoma'    => array('Herufi', 'Maneno', 'Sentensi', 'Ufahamu'),
+            'lower_primary_Kiswahili Language Activities_Kuandika'  => array('Maandishi', 'Insha', 'Tahajia', 'Alama za Uakifishaji'),
+            'lower_primary_Kiswahili Language Activities_Sarufi'    => array('Nomino', 'Kitenzi', 'Vivumishi', 'Vihusishi'),
+            // Lower Primary — Literacy Activities
+            'lower_primary_Literacy Activities_Reading'             => array('Phonemic Awareness', 'Phonics', 'Fluency', 'Comprehension'),
+            'lower_primary_Literacy Activities_Writing'             => array('Letter Formation', 'Word Building', 'Composition', 'Spelling'),
+            'lower_primary_Literacy Activities_Oral Communication'  => array('Listening Skills', 'Speaking Skills', 'Presentation'),
+            'lower_primary_Literacy Activities_Handwriting'         => array('Posture', 'Pencil Grip', 'Letter Formation', 'Spacing'),
+            // Lower Primary — Environmental Activities
+            'lower_primary_Environmental Activities_Living Things'  => array('Plants', 'Animals', 'Human Body', 'Habitats'),
+            'lower_primary_Environmental Activities_The Environment' => array('Soil', 'Water', 'Air', 'Conservation'),
+            'lower_primary_Environmental Activities_Weather'        => array('Weather Patterns', 'Seasons', 'Climate'),
+            'lower_primary_Environmental Activities_Resources'      => array('Natural Resources', 'Energy', 'Conservation'),
+            // Lower Primary — Movement and Creative Activities
+            'lower_primary_Movement and Creative Activities_Movement' => array('Body Awareness', 'Locomotor Skills', 'Non-Locomotor Skills'),
+            'lower_primary_Movement and Creative Activities_Music'    => array('Singing', 'Rhythm', 'Instruments'),
+            'lower_primary_Movement and Creative Activities_Art and Craft' => array('Drawing', 'Painting', 'Modelling', 'Craft'),
+            'lower_primary_Movement and Creative Activities_Games'    => array('Indoor Games', 'Outdoor Games', 'Team Games'),
+            // Upper Primary — Mathematics
+            'upper_primary_Mathematics_Numbers'     => array('Whole Numbers', 'Fractions', 'Decimals', 'Percentages', 'Ratio and Proportion'),
+            'upper_primary_Mathematics_Measurement' => array('Length', 'Area', 'Volume', 'Mass', 'Time', 'Money'),
+            'upper_primary_Mathematics_Geometry'    => array('Angles', '2D Shapes', '3D Objects', 'Symmetry', 'Coordinates'),
+            'upper_primary_Mathematics_Algebra'     => array('Patterns', 'Expressions', 'Simple Equations', 'Formulae'),
+            'upper_primary_Mathematics_Statistics'  => array('Data Collection', 'Data Representation', 'Mean, Mode and Median', 'Probability'),
+            // Upper Primary — English
+            'upper_primary_English_Listening and Speaking' => array('Listening Skills', 'Speaking Skills', 'Debate and Discussion', 'Oral Presentation'),
+            'upper_primary_English_Reading'          => array('Reading Strategies', 'Comprehension', 'Literature', 'Critical Reading'),
+            'upper_primary_English_Writing'          => array('Creative Writing', 'Essay Writing', 'Letter Writing', 'Revision and Editing'),
+            'upper_primary_English_Grammar'          => array('Parts of Speech', 'Tenses', 'Sentence Construction', 'Punctuation'),
+            // Upper Primary — Science and Technology
+            'upper_primary_Science and Technology_Living Things' => array('Cells', 'Plants', 'Animals', 'Human Body Systems'),
+            'upper_primary_Science and Technology_Energy'        => array('Forms of Energy', 'Light', 'Sound', 'Heat', 'Electricity'),
+            'upper_primary_Science and Technology_Matter'        => array('Properties of Matter', 'States of Matter', 'Mixtures and Solutions'),
+            'upper_primary_Science and Technology_Environment'   => array('Ecosystems', 'Pollution', 'Conservation', 'Climate Change'),
+            'upper_primary_Science and Technology_Technology'    => array('Simple Machines', 'ICT Basics', 'Innovation and Invention'),
+            // Upper Primary — Social Studies
+            'upper_primary_Social Studies_History'      => array('Kenya History', 'African History', 'World History'),
+            'upper_primary_Social Studies_Geography'    => array('Physical Geography', 'Human Geography', 'Maps and Mapping'),
+            'upper_primary_Social Studies_Government'   => array('Government Systems', 'Constitution', 'Devolution'),
+            'upper_primary_Social Studies_Citizenship'  => array('Rights and Responsibilities', 'National Values', 'Patriotism'),
+            // Junior Secondary — Mathematics
+            'junior_secondary_Mathematics_Numbers'                => array('Integers', 'Fractions and Decimals', 'Surds', 'Indices and Logarithms'),
+            'junior_secondary_Mathematics_Algebra'                => array('Algebraic Expressions', 'Linear Equations', 'Inequalities', 'Sequences and Series'),
+            'junior_secondary_Mathematics_Geometry'               => array('Polygons', 'Circles', 'Constructions', 'Transformations'),
+            'junior_secondary_Mathematics_Measurements'           => array('Area', 'Volume and Surface Area', 'Trigonometry', 'Vectors'),
+            'junior_secondary_Mathematics_Statistics and Probability' => array('Data Analysis', 'Probability', 'Distributions', 'Sampling'),
+            // Junior Secondary — Integrated Science
+            'junior_secondary_Integrated Science_Biology'     => array('Cells and Tissues', 'Nutrition', 'Reproduction', 'Genetics', 'Ecology'),
+            'junior_secondary_Integrated Science_Chemistry'   => array('Elements and Compounds', 'Chemical Reactions', 'Acids, Bases and Salts', 'Organic Chemistry'),
+            'junior_secondary_Integrated Science_Physics'     => array('Motion and Forces', 'Energy', 'Waves', 'Electricity and Magnetism'),
+            'junior_secondary_Integrated Science_Earth Science' => array('Geology', 'Atmosphere', 'Space and Solar System', 'Natural Disasters'),
+            // Junior Secondary — English
+            'junior_secondary_English_Listening and Speaking' => array('Listening Comprehension', 'Oral Presentation', 'Debate', 'Drama'),
+            'junior_secondary_English_Reading'                => array('Intensive Reading', 'Extensive Reading', 'Critical Analysis', 'Literature'),
+            'junior_secondary_English_Writing'                => array('Formal Writing', 'Creative Writing', 'Research Writing', 'Editing'),
+            'junior_secondary_English_Grammar in Use'         => array('Advanced Grammar', 'Vocabulary', 'Style and Register', 'Discourse'),
+        );
+        foreach ($subStrands as $key => $subList) {
+            // key format: level_LearningAreaName_StrandName
+            $parts = explode('_', $key, 3);
+            if (count($parts) < 3) continue;
+            $level    = $parts[0] . '_' . $parts[1]; // restore two-part level
+            // Actually key is: level_LA_Strand — but level itself can have underscore
+            // Rebuild: strandIds key = 'level_LA_StrandName'
+            // strandIds were stored as: $key . '_' . $strandName where $key = level_LA
+            // So strandIds key = e.g. 'lower_primary_Mathematics Activities_Numbers'
+            // subStrands key = 'lower_primary_Mathematics Activities_Numbers'
+            // So strand key = everything except last segment after last underscore? No.
+            // Actually subStrands key = level_LA_Strand, strandIds key = level_LA_Strand too. They match directly.
+            $strandKey = $key; // same key format
+            if (!isset($strandIds[$strandKey])) continue;
+            $strandId = $strandIds[$strandKey];
+            // Get learning_area_id: level_LA key
+            // level_LA = everything before last '_StrandName'
+            $lastUnderscore = strrpos($key, '_');
+            $laKey = substr($key, 0, $lastUnderscore);
+            $laId = isset($areaIds[$laKey]) ? $areaIds[$laKey] : null;
+            if (!$laId) continue;
+            foreach ($subList as $subName) {
+                $this->db->insert('cbc_sub_strands', array(
+                    'name'             => $subName,
+                    'strand_id'        => $strandId,
+                    'learning_area_id' => $laId,
+                    'branch_id'        => $branchId,
+                ));
             }
         }
 

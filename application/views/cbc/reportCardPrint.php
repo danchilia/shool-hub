@@ -143,12 +143,14 @@ if (!empty($student_array)) {
 	<!-- LEARNING AREAS ASSESSMENT -->
 	<table class="assessment-table">
 		<thead>
-			<tr class="section-header"><th colspan="4" style="border:none;">LEARNING AREAS ASSESSMENT</th></tr>
+			<tr class="section-header"><th colspan="6" style="border:none;">LEARNING AREAS ASSESSMENT</th></tr>
 			<tr>
-				<th style="width:5%; text-align:center;">#</th>
-				<th style="width:40%; text-align:left;">Learning Area</th>
-				<th style="width:18%; text-align:center;">Competency Level</th>
-				<th style="width:37%; text-align:left;">Teacher's Remarks</th>
+				<th style="width:4%; text-align:center;">#</th>
+				<th style="width:22%; text-align:left;">Learning Area</th>
+				<th style="width:18%; text-align:left;">Strand</th>
+				<th style="width:18%; text-align:left;">Sub-Strand</th>
+				<th style="width:14%; text-align:center;">Competency Level</th>
+				<th style="width:24%; text-align:left;">Teacher's Remarks</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -158,7 +160,6 @@ if (!empty($student_array)) {
 			$num = 1;
 			foreach ($assessments as $a) {
 				$lvl = $a['competency_level'];
-				// normalise old 4-level values
 				if ($lvl === 'EE') $lvl = 'EE2';
 				elseif ($lvl === 'ME') $lvl = 'ME2';
 				elseif ($lvl === 'AE') $lvl = 'AE1';
@@ -169,13 +170,15 @@ if (!empty($student_array)) {
 			<tr>
 				<td style="text-align:center;"><?=$num++?></td>
 				<td><?=$a['learning_area_name']?></td>
+				<td style="font-size:12px;"><?=!empty($a['strand_name']) ? $a['strand_name'] : '<span style="color:#aaa;">—</span>'?></td>
+				<td style="font-size:12px;"><?=!empty($a['sub_strand_name']) ? $a['sub_strand_name'] : '<span style="color:#aaa;">—</span>'?></td>
 				<td class="<?=$levelClass?>" style="font-weight:700;text-align:center;"><?=$lvl?></td>
 				<td style="font-size:12px;"><?=$a['remarks']?></td>
 			</tr>
 		<?php } ?>
 			<tr class="summary-row">
-				<td colspan="2" style="text-align:right; padding-right:15px;font-size:11px;">KNEC 8-Level Summary:</td>
-				<td colspan="2" style="font-size:10px;">
+				<td colspan="3" style="text-align:right; padding-right:15px;font-size:11px;">KNEC 8-Level Summary:</td>
+				<td colspan="3" style="font-size:10px;">
 					<?php foreach ($counts as $lv => $cnt): if ($cnt > 0): ?>
 					<?php
 						$bg = '#6c757d';

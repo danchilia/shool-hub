@@ -44,28 +44,32 @@ class Cbc_model extends MY_Model
     public function saveAssessment($data)
     {
         $where = array(
-            'student_id' => $data['student_id'],
-            'exam_id' => $data['exam_id'],
+            'student_id'       => $data['student_id'],
+            'exam_id'          => $data['exam_id'],
             'learning_area_id' => $data['learning_area_id'],
-            'session_id' => $data['session_id'],
-            'branch_id' => $data['branch_id'],
+            'session_id'       => $data['session_id'],
+            'branch_id'        => $data['branch_id'],
         );
         if (!empty($data['strand_id'])) {
             $where['strand_id'] = $data['strand_id'];
         }
+        if (!empty($data['sub_strand_id'])) {
+            $where['sub_strand_id'] = $data['sub_strand_id'];
+        }
         $query = $this->db->get_where('cbc_assessment', $where);
         $record = array(
-            'student_id' => $data['student_id'],
-            'exam_id' => $data['exam_id'],
+            'student_id'       => $data['student_id'],
+            'exam_id'          => $data['exam_id'],
             'learning_area_id' => $data['learning_area_id'],
-            'strand_id' => !empty($data['strand_id']) ? $data['strand_id'] : null,
+            'strand_id'        => !empty($data['strand_id'])     ? $data['strand_id']     : null,
+            'sub_strand_id'    => !empty($data['sub_strand_id']) ? $data['sub_strand_id'] : null,
             'competency_level' => $data['competency_level'],
-            'class_id' => $data['class_id'],
-            'section_id' => $data['section_id'],
-            'remarks' => isset($data['remarks']) ? $data['remarks'] : '',
-            'assessed_by' => get_loggedin_user_id(),
-            'session_id' => $data['session_id'],
-            'branch_id' => $data['branch_id'],
+            'class_id'         => $data['class_id'],
+            'section_id'       => $data['section_id'],
+            'remarks'          => isset($data['remarks']) ? $data['remarks'] : '',
+            'assessed_by'      => get_loggedin_user_id(),
+            'session_id'       => $data['session_id'],
+            'branch_id'        => $data['branch_id'],
         );
         if ($query->num_rows() > 0) {
             $this->db->where('id', $query->row()->id);
@@ -114,6 +118,40 @@ class Cbc_model extends MY_Model
             $this->db->where('la.level', $level);
         }
         $this->db->order_by('la.name', 'ASC');
+        return $this->db->get()->result_array();
+    }
+
+    public function saveSubStrand($data)
+    {
+        $array = array(
+            'name'             => $data['name'],
+            'strand_id'        => $data['strand_id'],
+            'learning_area_id' => $data['learning_area_id'],
+            'branch_id'        => $this->application_model->get_branch_id(),
+        );
+        if (!isset($data['sub_strand_id'])) {
+            $this->db->insert('cbc_sub_strands', $array);
+        } else {
+            $this->db->where('id', $data['sub_strand_id']);
+            $this->db->update('cbc_sub_strands', $array);
+        }
+    }
+
+    public function getSubStrands($strandId = '', $branchId = '')
+    {
+        $this->db->select('ss.*, s.name as strand_name, la.name as learning_area_name');
+        $this->db->from('cbc_sub_strands as ss');
+        $this->db->join('cbc_strands as s', 's.id = ss.strand_id', 'left');
+        $this->db->join('cbc_learning_areas as la', 'la.id = ss.learning_area_id', 'left');
+        if (!empty($strandId)) {
+            $this->db->where('ss.strand_id', $strandId);
+        }
+        if (!empty($branchId)) {
+            $this->db->where('ss.branch_id', $branchId);
+        }
+        $this->db->order_by('la.name', 'ASC');
+        $this->db->order_by('s.name', 'ASC');
+        $this->db->order_by('ss.name', 'ASC');
         return $this->db->get()->result_array();
     }
 
@@ -183,13 +221,17 @@ class Cbc_model extends MY_Model
         $this->db->where('e.session_id', $sessionId);
         $result['student'] = $this->db->get()->row_array();
 
-        $this->db->select('a.*, la.name as learning_area_name');
+        $this->db->select('a.*, la.name as learning_area_name, s.name as strand_name, ss.name as sub_strand_name');
         $this->db->from('cbc_assessment as a');
         $this->db->join('cbc_learning_areas as la', 'la.id = a.learning_area_id', 'left');
+        $this->db->join('cbc_strands as s', 's.id = a.strand_id', 'left');
+        $this->db->join('cbc_sub_strands as ss', 'ss.id = a.sub_strand_id', 'left');
         $this->db->where('a.student_id', $studentId);
         $this->db->where('a.exam_id', $examId);
         $this->db->where('a.session_id', $sessionId);
         $this->db->order_by('la.name', 'ASC');
+        $this->db->order_by('s.name', 'ASC');
+        $this->db->order_by('ss.name', 'ASC');
         $result['assessments'] = $this->db->get()->result_array();
 
         $this->db->where('student_id', $studentId);
