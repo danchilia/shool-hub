@@ -59,13 +59,12 @@ class Admin_Controller extends MY_Controller
                         redirect(base_url('subscription_payment/choose_plan'));
                     }
                 } elseif ($sub->status === 'expired' || strtotime($sub->end_date) < time()) {
-                    // Subscription expired — auto-mark and restrict access
+                    // Subscription expired — mark and force back to plan selection
                     if ($sub->status !== 'expired') {
                         $this->db->where('id', $sub->id)->update('branch_subscriptions', array('status' => 'expired'));
                     }
-                    $allowedExpired = array('dashboard', 'authentication', 'profile', 'userrole', 'subscription_payment');
-                    if (!in_array($controller, $allowedExpired)) {
-                        redirect(base_url('dashboard'));
+                    if (!in_array($controller, $subExcluded)) {
+                        redirect(base_url('subscription_payment/choose_plan'));
                     }
                 }
             }
