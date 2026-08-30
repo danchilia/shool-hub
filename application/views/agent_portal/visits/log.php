@@ -81,7 +81,7 @@
           <option value="">— select plan —</option>
           <?php foreach ($plans as $p): ?>
           <option value="<?= $p['id'] ?>">
-            <?= htmlspecialchars($p['name']) ?> (KSh <?= number_format($p['price']) ?>) — Commission: KSh <?= number_format($p['commission_amount']) ?>
+            <?= htmlspecialchars($p['name']) ?> (KSh <?= number_format($p['price']) ?>) | Commission: KSh <?= number_format($p['commission_amount']) ?>
           </option>
           <?php endforeach; ?>
         </select>
@@ -135,7 +135,7 @@ function captureGps() {
       document.getElementById('fLng').value = lng;
       document.getElementById('fAcc').value = acc;
       icon.innerHTML = '<i class="fas fa-check-circle" style="color:#38a169"></i>';
-      status.innerHTML = '<strong style="color:#276749">Check-in recorded</strong> — ' + lat + ', ' + lng +
+      status.innerHTML = '<strong style="color:#276749">Check-in recorded</strong> ' + lat + ', ' + lng +
         ' (±' + acc + 'm) &nbsp;<a href="https://www.google.com/maps?q=' + lat + ',' + lng +
         '" target="_blank" style="font-size:.77rem">View on Map</a>';
       document.getElementById('gpsBox').style.background = '#f0fff4';

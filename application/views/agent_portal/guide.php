@@ -1,4 +1,4 @@
-<style>
+﻿<style>
 .guide-step {
   display: flex; gap: 20px; margin-bottom: 32px; align-items: flex-start;
 }
@@ -51,13 +51,13 @@
 
 <div class="alert-info-custom">
   <i class="fas fa-info-circle"></i>
-  This guide walks you through everything — from adding your first school to receiving your commission.
+  This guide walks you through everything from adding your first school to receiving your commission.
   Follow the steps in order. Each step builds on the previous one.
 </div>
 
 <!-- SECTION 1: GETTING STARTED -->
 <div class="guide-section">
-  <div class="guide-section-title"><i class="fas fa-play-circle me-2"></i>Part 1 — Getting Started</div>
+  <div class="guide-section-title"><i class="fas fa-play-circle me-2"></i>Part 1 Getting Started</div>
 
   <div class="guide-step">
     <div class="step-num">1</div>
@@ -82,7 +82,7 @@
           <li>Your recent visits</li>
           <li>Earnings summary</li>
         </ul>
-        Always check the dashboard first — overdue follow-ups are listed at the top.
+        Always check the dashboard first overdue follow-ups are listed at the top.
       </div>
     </div>
   </div>
@@ -106,7 +106,7 @@
 
 <!-- SECTION 2: MANAGING SCHOOLS -->
 <div class="guide-section">
-  <div class="guide-section-title"><i class="fas fa-school me-2"></i>Part 2 — Managing Your Schools</div>
+  <div class="guide-section-title"><i class="fas fa-school me-2"></i>Part 2 Managing Your Schools</div>
 
   <div class="guide-step">
     <div class="step-num">4</div>
@@ -122,7 +122,7 @@
           <li>Approximate number of students</li>
           <li>Whether they currently use any school system</li>
         </ul>
-        The school is saved with status <strong>"Lead"</strong> — meaning you have identified them but not yet visited.
+        The school is saved with status <strong>"Lead"</strong> meaning you have identified them but not yet visited.
       </div>
     </div>
   </div>
@@ -167,8 +167,8 @@
       </div>
       <div class="step-desc" style="margin-top:10px">
         The stage updates automatically based on your visit outcome.
-        <strong>Closed Won</strong> means the school has agreed to sign up — this is when you proceed to the onboarding step below.
-        <strong>Closed Lost</strong> means they declined — you can re-approach them later.
+        <strong>Closed Won</strong> means the school has agreed to sign up this is when you proceed to the onboarding step below.
+        <strong>Closed Lost</strong> means they declined you can re-approach them later.
       </div>
     </div>
   </div>
@@ -176,7 +176,7 @@
 
 <!-- SECTION 3: ONBOARDING A SCHOOL -->
 <div class="guide-section">
-  <div class="guide-section-title"><i class="fas fa-clipboard-check me-2"></i>Part 3 — Submitting a School for Setup (Onboarding)</div>
+  <div class="guide-section-title"><i class="fas fa-clipboard-check me-2"></i>Part 3 Submitting a School for Setup (Onboarding)</div>
 
   <div class="guide-step">
     <div class="step-num orange">7</div>
@@ -191,14 +191,14 @@
           <li>School contacts (phone, email, website)</li>
           <li>Principal details</li>
           <li>Number of students, teaching staff, non-teaching staff, and streams</li>
-          <li>System administrator — the person who will manage the system daily</li>
+          <li>System administrator the person who will manage the system daily</li>
           <li>Subscription plan and billing preference</li>
         </ul>
         Make sure all information is accurate and the form is signed by the school.
       </div>
       <div class="step-tip">
         <i class="fas fa-exclamation-triangle"></i>
-        The <strong>System Administrator</strong> details are very important — this is the person who will receive their login
+        The <strong>System Administrator</strong> details are very important this is the person who will receive their login
         credentials. Get their correct full name, phone number, and email address.
       </div>
     </div>
@@ -222,7 +222,7 @@
       </div>
       <div class="step-tip">
         <i class="fas fa-lightbulb"></i>
-        Uploading the filled form is optional but strongly recommended — it helps the CST team verify all details quickly.
+        Uploading the filled form is optional but strongly recommended it helps the CST team verify all details quickly.
       </div>
     </div>
   </div>
@@ -235,10 +235,10 @@
         After you submit, CST SchoolHub will review the details. You can check the status anytime under
         <strong>Onboarding → My Submissions</strong>. The status will be one of:
         <ul style="margin-top:6px;padding-left:18px;line-height:2">
-          <li><strong>Pending</strong> — waiting for review</li>
-          <li><strong>Reviewed</strong> — CST team has looked at it, may have notes</li>
-          <li><strong>Approved</strong> — school has been created in the system</li>
-          <li><strong>Rejected</strong> — missing information or issue (check admin notes)</li>
+          <li><strong>Pending</strong> waiting for review</li>
+          <li><strong>Reviewed</strong> CST team has looked at it, may have notes</li>
+          <li><strong>Approved</strong> school has been created in the system</li>
+          <li><strong>Rejected</strong> missing information or issue (check admin notes)</li>
         </ul>
       </div>
     </div>
@@ -247,7 +247,7 @@
 
 <!-- SECTION 4: HELPING WITH SETUP -->
 <div class="guide-section">
-  <div class="guide-section-title"><i class="fas fa-cogs me-2"></i>Part 4 — Helping the School Set Up</div>
+  <div class="guide-section-title"><i class="fas fa-cogs me-2"></i>Part 4 Helping the School Set Up</div>
 
   <div class="guide-step">
     <div class="step-num done">10</div>
@@ -255,7 +255,7 @@
       <div class="step-title">Receive the School Admin Login Credentials</div>
       <div class="step-desc">
         Once the CST team approves the submission and creates the school's account, they will
-        <strong>contact you with the school admin login credentials</strong> — the email and password for the
+        <strong>contact you with the school admin login credentials</strong> the email and password for the
         school's system administrator account.
         These are the same credentials you will use to help the school set up their system.
       </div>
@@ -290,15 +290,15 @@
   <div class="guide-step">
     <div class="step-num done">12</div>
     <div class="step-body">
-      <div class="step-title">CST Marks Setup Complete — You Get Paid</div>
+      <div class="step-title">CST Marks Setup Complete You Get Paid</div>
       <div class="step-desc">
         After setup is confirmed complete by CST SchoolHub, your <strong>commission earning</strong> is automatically
         added to your account. You can see it under <strong>Finances → My Earnings</strong>.
         Earnings go through these statuses:
         <ul style="margin-top:6px;padding-left:18px;line-height:2">
-          <li><strong>Pending</strong> — logged, waiting for approval</li>
-          <li><strong>Approved</strong> — confirmed, being processed for payment</li>
-          <li><strong>Paid</strong> — money has been sent to you</li>
+          <li><strong>Pending</strong> logged, waiting for approval</li>
+          <li><strong>Approved</strong> confirmed, being processed for payment</li>
+          <li><strong>Paid</strong> money has been sent to you</li>
         </ul>
       </div>
     </div>
@@ -307,7 +307,7 @@
 
 <!-- SECTION 5: OTHER FEATURES -->
 <div class="guide-section">
-  <div class="guide-section-title"><i class="fas fa-tools me-2"></i>Part 5 — Other Features</div>
+  <div class="guide-section-title"><i class="fas fa-tools me-2"></i>Part 5 Other Features</div>
 
   <div class="guide-step">
     <div class="step-num" style="background:var(--ap-navy2)">A</div>
@@ -340,8 +340,8 @@
       <div class="step-desc">
         Under <strong>Demo Tools</strong> in the sidebar, you will find:
         <ul style="margin-top:6px;padding-left:18px;line-height:2">
-          <li><strong>Demo Credentials</strong> — a sample school login you can show to prospects during demos</li>
-          <li><strong>All Modules</strong> — a list of all features available in the system to show schools what they get</li>
+          <li><strong>Demo Credentials</strong> a sample school login you can show to prospects during demos</li>
+          <li><strong>All Modules</strong> a list of all features available in the system to show schools what they get</li>
         </ul>
         Use these tools when presenting CST SchoolHub to a school for the first time.
       </div>
@@ -363,7 +363,7 @@
 
 <!-- QUICK REFERENCE -->
 <div class="ap-card mb-4" style="border-left:3px solid var(--ap-green)">
-  <div class="ap-card-header"><i class="fas fa-bolt me-2" style="color:var(--ap-green)"></i>Quick Reference — Full Agent Workflow</div>
+  <div class="ap-card-header"><i class="fas fa-bolt me-2" style="color:var(--ap-green)"></i>Quick Reference Full Agent Workflow</div>
   <div class="ap-card-body" style="font-size:.85rem">
     <ol style="padding-left:20px;line-height:2.2;margin:0">
       <li>Download the Data Collection Form from the portal</li>

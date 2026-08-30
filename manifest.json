@@ -1,7 +1,7 @@
 {
   "name": "CST SchoolHub",
   "short_name": "SchoolHub",
-  "description": "CST SchoolHub — School Management System by DCK Solutions",
+  "description": "CST SchoolHub: School Management System by CST Solutions",
   "start_url": "/authentication",
   "scope": "/",
   "display": "standalone",
@@ -28,7 +28,7 @@
     {
       "name": "Agent Portal",
       "short_name": "Agent",
-      "description": "Field agent portal — schools, visits, earnings",
+      "description": "Field agent portal: schools, visits, earnings",
       "url": "/agent_portal",
       "icons": [{ "src": "/assets/images/favicon.png", "sizes": "96x96" }]
     },

@@ -232,7 +232,7 @@ class Agent_portal extends CI_Controller
                 'school_id'   => $schoolId,
                 'type'        => 'visit_fee',
                 'amount'      => $visitFee,
-                'description' => 'Visit fee — ' . $school['school_name'],
+                'description' => 'Visit fee: ' . $school['school_name'],
                 'status'      => 'pending',
             ));
 
@@ -241,7 +241,7 @@ class Agent_portal extends CI_Controller
 
         $data['school'] = $school;
         $data['plans']  = $this->agent_model->getPlans(true);
-        $data['title']  = 'Log Visit — ' . $school['school_name'];
+        $data['title']  = 'Log Visit: ' . $school['school_name'];
         $this->_render('agent_portal/visits/log', $data);
     }
 
@@ -452,7 +452,7 @@ class Agent_portal extends CI_Controller
 
         $data['school']  = $school;
         $data['sub_plans'] = $this->db->order_by('monthly_price','ASC')->get_where('subscription_plans', array('is_active' => 1))->result_array();
-        $data['title']   = 'Submit School for Setup — ' . $school['school_name'];
+        $data['title']   = 'Submit School for Setup: ' . $school['school_name'];
         $this->_render('agent_portal/schools/submit', $data);
     }
 
@@ -487,7 +487,7 @@ class Agent_portal extends CI_Controller
     public function demo()
     {
         $this->_require_auth();
-        $this->_render('agent_portal/demo', array('title' => 'Demo School — Sunrise Academy'));
+        $this->_render('agent_portal/demo', array('title' => 'Demo School: Sunrise Academy'));
     }
 
     // ─── ALL MODULES SHOWCASE ──────────────────────────────────────

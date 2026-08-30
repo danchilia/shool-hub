@@ -25,7 +25,7 @@
   <div id="dupWarning" style="display:none;background:#fff8e1;border:2px solid #f6ad55;border-radius:8px;padding:14px 16px;margin-bottom:20px;font-size:.88rem">
     <strong style="color:#c05621"><i class="fas fa-exclamation-triangle me-1"></i>School Already in System!</strong>
     <p id="dupMsg" style="margin:6px 0 0;color:#744210"></p>
-    <small style="color:#975a16">You can still save this lead — the superadmin will review duplicates.</small>
+    <small style="color:#975a16">You can still save this lead. The superadmin will review duplicates.</small>
   </div>
 
   <form method="post" action="<?= base_url('agent_portal/add_school') ?>">
@@ -109,8 +109,8 @@ function captureGps() {
       document.getElementById('fLng').value = lng;
       document.getElementById('fAcc').value = acc;
       icon.innerHTML = '<i class="fas fa-check-circle" style="color:#38a169"></i>';
-      status.innerHTML = '<strong style="color:#276749">Location captured</strong> — ' +
-        lat + ', ' + lng + ' (±' + acc + 'm) — ' +
+      status.innerHTML = '<strong style="color:#276749">Location captured</strong> ' +
+        lat + ', ' + lng + ' (±' + acc + 'm) ' +
         '<a href="https://www.google.com/maps?q=' + lat + ',' + lng + '" target="_blank" style="font-size:.78rem">View on Map</a>';
       document.getElementById('gpsBox').style.borderColor = '#9ae6b4';
       document.getElementById('gpsBox').style.background = '#f0fff4';

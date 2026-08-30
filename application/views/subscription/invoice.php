@@ -132,7 +132,7 @@
 
   <div class="inv-footer">
     This is a computer-generated invoice. No signature required.<br>
-    CST Solutions &mdash; Empowering Kenyan Schools &mdash; cstschoolhub.co.ke
+    CST Solutions | Empowering Kenyan Schools | cstschoolhub.co.ke
   </div>
 
 </div>

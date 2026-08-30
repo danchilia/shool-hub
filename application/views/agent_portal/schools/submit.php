@@ -182,7 +182,7 @@
           <option value="">— Not confirmed yet —</option>
           <?php foreach ($sub_plans as $p): ?>
             <option value="<?= $p['id'] ?>" <?= set_value('subscription_plan_id') == $p['id'] ? 'selected' : '' ?>>
-              <?= htmlspecialchars($p['name']) ?> — KES <?= number_format($p['monthly_price'],0) ?>/mo &nbsp;|&nbsp; up to <?= $p['max_students'] == 0 ? 'Unlimited' : number_format($p['max_students']) ?> students
+              <?= htmlspecialchars($p['name']) ?> | KES <?= number_format($p['monthly_price'],0) ?>/mo &nbsp;|&nbsp; up to <?= $p['max_students'] == 0 ? 'Unlimited' : number_format($p['max_students']) ?> students
             </option>
           <?php endforeach; ?>
         </select>
@@ -211,7 +211,7 @@
   <div class="ap-card-body">
     <p style="font-size:.83rem;color:var(--ap-muted);margin-bottom:12px">
       If you filled and signed the physical Data Collection Form with the school, upload it here so the CST team can verify the details.
-      Accepted formats: <strong>.docx, .doc, .pdf</strong> — max 10 MB.
+      Accepted formats: <strong>.docx, .doc, .pdf</strong> (max 10 MB).
     </p>
     <input type="file" name="filled_form" class="form-control form-control-sm" accept=".doc,.docx,.pdf">
   </div>
