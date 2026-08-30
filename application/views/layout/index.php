@@ -13,6 +13,63 @@
 <!-- Offline / sync status banner -->
 <div id="dck-offline-banner"></div>
 
+<?php if (!is_superadmin_loggedin()): ?>
+<!-- PWA Install Banner -->
+<div id="pwa-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9990;
+     background:#1a2e4a;color:#fff;padding:12px 20px;
+     display:none;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+     box-shadow:0 -3px 15px rgba(0,0,0,.25)">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="<?php echo base_url('assets/images/favicon.png'); ?>" style="width:36px;height:36px;border-radius:8px" onerror="this.style.display='none'">
+    <div>
+      <div style="font-weight:700;font-size:.95rem">Install CST SchoolHub</div>
+      <div style="font-size:.78rem;color:#94a3b8">Add to your desktop or home screen for quick access</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <button id="pwa-install-btn" onclick="installPWA()"
+            style="background:#c9a84c;color:#fff;border:none;padding:9px 20px;border-radius:6px;font-weight:700;font-size:.88rem;cursor:pointer">
+      <i class="fas fa-download me-1"></i> Install App
+    </button>
+    <button onclick="dismissPwaBanner()"
+            style="background:transparent;border:1px solid #475569;color:#94a3b8;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:.82rem">
+      Not now
+    </button>
+  </div>
+</div>
+<script>
+(function() {
+  if (localStorage.getItem('pwa-banner-dismissed') === '1') return;
+  var banner = document.getElementById('pwa-banner');
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    window.deferredPrompt = e;
+    banner.style.display = 'flex';
+  });
+  window.addEventListener('appinstalled', function() {
+    banner.style.display = 'none';
+    localStorage.setItem('pwa-banner-dismissed', '1');
+  });
+})();
+function installPWA() {
+  if (window.deferredPrompt) {
+    window.deferredPrompt.prompt();
+    window.deferredPrompt.userChoice.then(function(r) {
+      if (r.outcome === 'accepted') {
+        document.getElementById('pwa-banner').style.display = 'none';
+        localStorage.setItem('pwa-banner-dismissed', '1');
+      }
+      window.deferredPrompt = null;
+    });
+  }
+}
+function dismissPwaBanner() {
+  document.getElementById('pwa-banner').style.display = 'none';
+  localStorage.setItem('pwa-banner-dismissed', '1');
+}
+</script>
+<?php endif; ?>
+
 <!-- Mobile sidebar overlay -->
 <div class="dck-sidebar-overlay" id="dckSidebarOverlay"></div>
 
