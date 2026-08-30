@@ -47,7 +47,7 @@
   <div class="inv-header">
     <div class="inv-logo">
       CST SchoolHub
-      <small>by DCK Solutions Ltd</small>
+      <small>by CST Solutions</small>
       <small style="font-size:.72rem;color:#aaa">P.O Box, Nairobi, Kenya | cstschoolhub.co.ke</small>
     </div>
     <div class="inv-meta">
@@ -64,7 +64,7 @@
   <div class="inv-parties">
     <div class="inv-party">
       <h6>Issued By</h6>
-      <strong>CST SchoolHub / DCK Solutions Ltd</strong><br>
+      <strong>CST SchoolHub / CST Solutions</strong><br>
       cstschoolhub.co.ke<br>
       KRA PIN: [PIN]
     </div>
@@ -132,7 +132,7 @@
 
   <div class="inv-footer">
     This is a computer-generated invoice. No signature required.<br>
-    CST SchoolHub &mdash; Empowering Kenyan Schools &mdash; cstschoolhub.co.ke
+    CST Solutions &mdash; Empowering Kenyan Schools &mdash; cstschoolhub.co.ke
   </div>
 
 </div>
