@@ -104,4 +104,6 @@ INSERT INTO `cbc_holistic_indicators` (`domain_id`, `name`, `sort_order`)
 SELECT id, 'Makes healthy food and lifestyle choices', 3 FROM `cbc_holistic_domains` WHERE `name` = 'Physical Health and Wellbeing' AND branch_id = 0 LIMIT 1;
 
 -- Permission
-INSERT IGNORE INTO `permissions` (`prefix`, `name`) VALUES ('cbc_holistic', 'CBC Holistic Profile');
+INSERT INTO `permission` (`module_id`, `name`, `prefix`, `show_view`, `show_add`, `show_edit`, `show_delete`, `created_at`)
+SELECT 20, 'CBC Holistic Profile', 'cbc_holistic', 1, 1, 1, 1, NOW()
+WHERE NOT EXISTS (SELECT 1 FROM `permission` WHERE `prefix` = 'cbc_holistic');
