@@ -13,9 +13,26 @@
   <div class="alert alert-danger" style="font-size:.85rem"><?= validation_errors() ?></div>
   <?php endif; ?>
 
+  <!-- GPS check-in -->
+  <div id="gpsBox" style="background:#f0f9ff;border:1px solid #bee3f8;border-radius:8px;padding:12px 16px;margin-bottom:18px;font-size:.84rem">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span id="gpsIcon" style="font-size:1.1rem;color:#3182ce"><i class="fas fa-map-marker-alt fa-pulse"></i></span>
+      <div>
+        <strong style="color:#2b6cb0">GPS Check-in</strong>
+        <div id="gpsStatus" style="color:#4a5568;font-size:.79rem">Capturing your location for this visit…</div>
+      </div>
+      <button type="button" id="gpsRetry" onclick="captureGps()" style="display:none;margin-left:auto" class="btn btn-xs btn-outline-secondary">
+        <i class="fas fa-redo"></i> Retry
+      </button>
+    </div>
+  </div>
+
   <form method="post" action="<?= base_url('agent_portal/log_visit/' . $school['id']) ?>">
     <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
     <input type="hidden" name="save" value="1">
+    <input type="hidden" name="lat" id="fLat">
+    <input type="hidden" name="lng" id="fLng">
+    <input type="hidden" name="gps_accuracy" id="fAcc">
 
     <div class="row g-3 mb-3">
       <div class="col-md-6">
@@ -99,6 +116,43 @@
 </div>
 
 <script>
+function captureGps() {
+  var icon   = document.getElementById('gpsIcon');
+  var status = document.getElementById('gpsStatus');
+  var retry  = document.getElementById('gpsRetry');
+  icon.innerHTML = '<i class="fas fa-map-marker-alt fa-pulse" style="color:#3182ce"></i>';
+  retry.style.display = 'none';
+  if (!navigator.geolocation) {
+    status.textContent = 'GPS not supported on this device.';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      var lat = pos.coords.latitude.toFixed(6);
+      var lng = pos.coords.longitude.toFixed(6);
+      var acc = Math.round(pos.coords.accuracy);
+      document.getElementById('fLat').value = lat;
+      document.getElementById('fLng').value = lng;
+      document.getElementById('fAcc').value = acc;
+      icon.innerHTML = '<i class="fas fa-check-circle" style="color:#38a169"></i>';
+      status.innerHTML = '<strong style="color:#276749">Check-in recorded</strong> — ' + lat + ', ' + lng +
+        ' (±' + acc + 'm) &nbsp;<a href="https://www.google.com/maps?q=' + lat + ',' + lng +
+        '" target="_blank" style="font-size:.77rem">View on Map</a>';
+      document.getElementById('gpsBox').style.background = '#f0fff4';
+      document.getElementById('gpsBox').style.borderColor = '#9ae6b4';
+    },
+    function(err) {
+      icon.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#dd6b20"></i>';
+      status.textContent = err.code === 1 ? 'Location denied. Enable GPS in browser settings and retry.' : 'Could not get location.';
+      retry.style.display = 'inline-block';
+      document.getElementById('gpsBox').style.background = '#fffaf0';
+      document.getElementById('gpsBox').style.borderColor = '#fbd38d';
+    },
+    {timeout: 12000, enableHighAccuracy: true}
+  );
+}
+captureGps();
+
 var plans = <?= json_encode(array_column($plans, null, 'id')) ?>;
 var defaultVisitFee = <?= !empty($plans) ? (float)$plans[0]['visit_fee'] : 500 ?>;
 

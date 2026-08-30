@@ -51,12 +51,13 @@ $pip_colors = array(
           <th>Interest</th>
           <th>Status</th>
           <th>Plan</th>
+          <th>GPS</th>
           <th>Added</th>
         </tr>
       </thead>
       <tbody>
         <?php if (empty($schools)): ?>
-          <tr><td colspan="8" class="text-center text-muted py-4">No schools found.</td></tr>
+          <tr><td colspan="9" class="text-center text-muted py-4">No schools found.</td></tr>
         <?php endif; ?>
         <?php foreach ($schools as $sch): ?>
         <tr>
@@ -81,6 +82,17 @@ $pip_colors = array(
             </span>
           </td>
           <td><?= $sch['plan_name'] ? htmlspecialchars($sch['plan_name']) : '—' ?></td>
+          <td>
+            <?php if (!empty($sch['lat']) && !empty($sch['lng'])): ?>
+              <a href="https://www.google.com/maps?q=<?= $sch['lat'] ?>,<?= $sch['lng'] ?>" target="_blank"
+                 title="<?= $sch['lat'] ?>, <?= $sch['lng'] ?><?= !empty($sch['gps_accuracy']) ? ' (±'.round($sch['gps_accuracy']).'m)' : '' ?>"
+                 style="color:#2b6cb0;font-size:.8rem">
+                <i class="fas fa-map-marker-alt"></i> Map
+              </a>
+            <?php else: ?>
+              <span class="text-muted" style="font-size:.75rem">—</span>
+            <?php endif; ?>
+          </td>
           <td><?= date('d M Y', strtotime($sch['created_at'])) ?></td>
         </tr>
         <?php endforeach; ?>

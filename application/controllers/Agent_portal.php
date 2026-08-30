@@ -128,6 +128,9 @@ class Agent_portal extends CI_Controller
                     'notes'          => $this->input->post('notes'),
                     'status'         => 'lead',
                     'interest_level' => 'unknown',
+                    'lat'            => $this->input->post('lat')  ?: null,
+                    'lng'            => $this->input->post('lng')  ?: null,
+                    'gps_accuracy'   => $this->input->post('gps_accuracy') ?: null,
                 ));
                 redirect('agent_portal/schools');
             }
@@ -196,6 +199,9 @@ class Agent_portal extends CI_Controller
                 'outcome'            => $outcome,
                 'next_followup_date' => $this->input->post('next_followup_date') ?: null,
                 'plan_id'            => $planId,
+                'lat'                => $this->input->post('lat') ?: null,
+                'lng'                => $this->input->post('lng') ?: null,
+                'gps_accuracy'       => $this->input->post('gps_accuracy') ?: null,
             );
             $visitId = $this->agent_model->logVisit($visitData);
 
@@ -237,6 +243,47 @@ class Agent_portal extends CI_Controller
         $data['plans']  = $this->agent_model->getPlans(true);
         $data['title']  = 'Log Visit — ' . $school['school_name'];
         $this->_render('agent_portal/visits/log', $data);
+    }
+
+    // AJAX — duplicate school check
+    public function check_duplicate()
+    {
+        if (!$this->session->userdata('agent_loggedin')) {
+            echo json_encode(array('found' => false));
+            return;
+        }
+        $name  = trim($this->input->post('school_name'));
+        $phone = trim($this->input->post('phone'));
+
+        $this->db->select('s.school_name, s.county, s.created_at, a.first_name, a.last_name');
+        $this->db->from('agent_school s');
+        $this->db->join('agent a', 'a.id = s.agent_id', 'left');
+        if ($name) {
+            $this->db->group_start();
+            $this->db->like('s.school_name', $name, 'both');
+            if ($phone) {
+                $this->db->or_where('s.phone', $phone);
+            }
+            $this->db->group_end();
+        } elseif ($phone) {
+            $this->db->where('s.phone', $phone);
+        } else {
+            echo json_encode(array('found' => false));
+            return;
+        }
+        $row = $this->db->limit(1)->get()->row_array();
+
+        if ($row) {
+            echo json_encode(array(
+                'found'       => true,
+                'school_name' => $row['school_name'],
+                'agent_name'  => trim($row['first_name'] . ' ' . $row['last_name']),
+                'county'      => $row['county'],
+                'added_on'    => date('d M Y', strtotime($row['created_at'])),
+            ));
+        } else {
+            echo json_encode(array('found' => false));
+        }
     }
 
     // ─── FOLLOW-UPS ────────────────────────────────────────────────
