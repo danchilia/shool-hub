@@ -111,8 +111,11 @@ class Branch extends Admin_Controller
                 'award', 'leave_application', 'live_class',
                 'mark', 'hall_allocation', 'custom_field',
                 'branch_subscriptions', 'subscription_invoices',
+                'subscription_payments', 'subscription_vat_invoices',
             );
             foreach ($tables_with_branch_id as $table) {
+                // Skip tables that don't exist to avoid a fatal error
+                if (!$this->db->table_exists($table)) continue;
                 $this->db->where('branch_id', $id);
                 $this->db->delete($table);
             }
