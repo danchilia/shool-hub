@@ -13,11 +13,11 @@ CREATE TABLE IF NOT EXISTS `cbc_pathways` (
 
 -- Link learning areas to a pathway (senior secondary only)
 ALTER TABLE `cbc_learning_areas`
-  ADD COLUMN IF NOT EXISTS `pathway_id` INT(11) DEFAULT NULL AFTER `level`;
+  ADD COLUMN `pathway_id` INT(11) DEFAULT NULL AFTER `level`;
 
 -- Record which pathway each student is in (senior secondary only)
 ALTER TABLE `student`
-  ADD COLUMN IF NOT EXISTS `cbc_pathway_id` INT(11) DEFAULT NULL;
+  ADD COLUMN `cbc_pathway_id` INT(11) DEFAULT NULL;
 
 -- Permission entry
 INSERT INTO `permission` (`module_id`, `name`, `prefix`, `show_view`, `show_add`, `show_edit`, `show_delete`, `created_at`)
