@@ -414,6 +414,31 @@ class Userrole extends User_Controller
         $this->load->view('layout/index', $this->data);
     }
 
+    public function cbc_report()
+    {
+        $this->load->model('cbc_model');
+        $stu = $this->userrole_model->getStudentDetails();
+        $studentID = $stu['student_id'];
+        $branchID  = $stu['branch_id'];
+
+        // All CBC exams this student has been assessed on
+        $exams = $this->db
+            ->select('DISTINCT e.id as exam_id, e.name as exam_name, e.term_id, e.session_id')
+            ->from('cbc_assessment a')
+            ->join('exam e', 'e.id = a.exam_id', 'left')
+            ->where('a.student_id', $studentID)
+            ->where('a.branch_id', $branchID)
+            ->order_by('e.id', 'DESC')
+            ->get()->result_array();
+
+        $this->data['stu']    = $stu;
+        $this->data['exams']  = $exams;
+        $this->data['title']  = 'CBC Progress Report';
+        $this->data['main_menu'] = 'exam';
+        $this->data['sub_page']  = 'userrole/cbc_report';
+        $this->load->view('layout/index', $this->data);
+    }
+
     public function homework()
     {
         $stu = $this->userrole_model->getStudentDetails();

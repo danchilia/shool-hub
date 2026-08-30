@@ -117,6 +117,12 @@ if ((is_parent_loggedin() && !empty(get_activeChildren_id())) || is_student_logg
                                     <i class="fas fa-marker"></i><span><?=translate('report_card')?></span>
                                 </a>
                             </li>
+                            <!-- CBC report -->
+                            <li class="<?php if ($sub_page == 'userrole/cbc_report') echo 'nav-active'; ?>">
+                                <a href="<?=base_url('userrole/cbc_report')?>">
+                                    <i class="fas fa-clipboard-check"></i><span>CBC Report</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
