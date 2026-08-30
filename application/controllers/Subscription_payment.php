@@ -196,6 +196,15 @@ class Subscription_payment extends Admin_Controller
         $this->load->view('layout/index', $this->data);
     }
 
+    // Non-admin employees see this when school subscription is inactive
+    public function inactive()
+    {
+        $this->data['title']     = 'School Subscription Inactive';
+        $this->data['sub_page']  = 'subscription/inactive_notice';
+        $this->data['main_menu'] = 'dashboard';
+        $this->load->view('layout/index', $this->data);
+    }
+
     // AJAX — first-time STK Push with plan selection
     public function initiate_plan()
     {

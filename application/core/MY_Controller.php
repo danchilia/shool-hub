@@ -53,18 +53,26 @@ class Admin_Controller extends MY_Controller
                     ->limit(1)
                     ->get('branch_subscriptions')->row();
 
+                $isSchoolAdmin = (loggedin_role_id() == 2);
+
                 if (!$sub) {
-                    // No subscription record — must choose a plan and pay first
                     if (!in_array($controller, $subExcluded)) {
-                        redirect(base_url('subscription_payment/choose_plan'));
+                        if ($isSchoolAdmin) {
+                            redirect(base_url('subscription_payment/choose_plan'));
+                        } else {
+                            redirect(base_url('subscription_payment/inactive'));
+                        }
                     }
                 } elseif ($sub->status === 'expired' || strtotime($sub->end_date) < time()) {
-                    // Subscription expired — mark and force back to plan selection
                     if ($sub->status !== 'expired') {
                         $this->db->where('id', $sub->id)->update('branch_subscriptions', array('status' => 'expired'));
                     }
                     if (!in_array($controller, $subExcluded)) {
-                        redirect(base_url('subscription_payment/choose_plan'));
+                        if ($isSchoolAdmin) {
+                            redirect(base_url('subscription_payment/choose_plan'));
+                        } else {
+                            redirect(base_url('subscription_payment/inactive'));
+                        }
                     }
                 }
             }
