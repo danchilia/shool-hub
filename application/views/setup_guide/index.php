@@ -21,6 +21,7 @@
     --phase-4: #22c55e;
     --phase-5: #f59e0b;
     --phase-6: #ef4444;
+    --phase-7: #6366f1;
 }
 @media (prefers-color-scheme: dark) {
     :root {
@@ -202,6 +203,7 @@ $phaseDescs = array(
     4 => 'Fee types, groups with amounts, and allocation to students.',
     5 => 'Admit students into classes. Bulk CSV import available for large intakes.',
     6 => 'Exam terms, assessment components, grade bands, and exam creation.',
+    7 => 'Set up the CBC curriculum hierarchy — learning areas, strands, sub-strands — then start entering competency-based assessments and holistic ratings.',
 );
 
 $phaseColors = array(
@@ -211,6 +213,7 @@ $phaseColors = array(
     4 => '#22c55e',
     5 => '#f59e0b',
     6 => '#ef4444',
+    7 => '#6366f1',
 );
 
 // Find selected branch name for superadmin
