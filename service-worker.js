@@ -1,16 +1,18 @@
 // DCK School Management PWA Service Worker
-const CACHE_NAME = 'dck-schools-v1';
-const OFFLINE_URL = '/multibranchschoolmanagementsystem/pwa_offline';
+const CACHE_NAME = 'dck-schools-v2';
 
-// Assets to cache on install
 const STATIC_ASSETS = [
-    '/multibranchschoolmanagementsystem/assets/images/favicon.png',
+    '/assets/images/favicon.png',
 ];
 
 self.addEventListener('install', function(event) {
     event.waitUntil(
         caches.open(CACHE_NAME).then(function(cache) {
-            return cache.addAll(STATIC_ASSETS);
+            return Promise.all(
+                STATIC_ASSETS.map(function(url) {
+                    return cache.add(url).catch(function() { /* ignore if missing */ });
+                })
+            );
         }).then(function() {
             return self.skipWaiting();
         })
@@ -31,7 +33,6 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-    // Network-first for API/POST requests
     if (event.request.method !== 'GET') return;
 
     event.respondWith(
@@ -46,15 +47,14 @@ self.addEventListener('fetch', function(event) {
     );
 });
 
-// Push notification handler
 self.addEventListener('push', function(event) {
-    var data = event.data ? event.data.json() : { title: 'DCK Schools', body: 'New notification' };
+    var data = event.data ? event.data.json() : { title: 'CST SchoolHub', body: 'New notification' };
     event.waitUntil(
-        self.registration.showNotification(data.title || 'DCK Schools', {
+        self.registration.showNotification(data.title || 'CST SchoolHub', {
             body: data.body || '',
-            icon: '/multibranchschoolmanagementsystem/assets/images/favicon.png',
-            badge: '/multibranchschoolmanagementsystem/assets/images/favicon.png',
-            data: { url: data.url || '/multibranchschoolmanagementsystem/userrole/dashboard' }
+            icon: '/assets/images/favicon.png',
+            badge: '/assets/images/favicon.png',
+            data: { url: data.url || '/dashboard' }
         })
     );
 });
@@ -63,6 +63,6 @@ self.addEventListener('notificationclick', function(event) {
     event.notification.close();
     var url = event.notification.data && event.notification.data.url
         ? event.notification.data.url
-        : '/multibranchschoolmanagementsystem/userrole/dashboard';
+        : '/dashboard';
     event.waitUntil(clients.openWindow(url));
 });
