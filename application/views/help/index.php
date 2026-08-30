@@ -500,12 +500,12 @@ $l   = $cfg['light'];
     <!-- Render sections -->
     <?php foreach ($sections as $i => $sec): ?>
     <div class="ug-section">
-        <button class="ug-section-head" data-toggle="collapse" data-target="#ugs<?=$i?>" aria-expanded="<?=$i===0?'true':'false'?>">
+        <button class="ug-section-head <?=$i===0?'':'collapsed'?>" data-ugs="ugs<?=$i?>">
             <i class="<?=$sec['icon']?> sec-icon"></i>
             <?=htmlspecialchars($sec['title'])?>
             <i class="fas fa-chevron-down ug-chevron"></i>
         </button>
-        <div id="ugs<?=$i?>" class="panel-collapse collapse <?=$i===0?'in':''?>">
+        <div id="ugs<?=$i?>" class="ug-body" style="display:<?=$i===0?'block':'none'?>">
             <div class="ug-section-body">
                 <?php if (!empty($sec['tip'])): ?>
                 <div class="ug-tip"><i class="fas fa-lightbulb"></i><?=htmlspecialchars($sec['tip'])?></div>
@@ -534,14 +534,12 @@ $l   = $cfg['light'];
 </div>
 
 <script>
-// Rotate chevron when collapsed
 document.querySelectorAll('.ug-section-head').forEach(function(btn) {
-    var target = document.querySelector(btn.getAttribute('data-target'));
-    if (!target) return;
-    target.addEventListener('shown.bs.collapse',  function() { btn.classList.remove('collapsed'); });
-    target.addEventListener('hidden.bs.collapse', function() { btn.classList.add('collapsed');    });
-    target.addEventListener('show.bs.collapse',   function() { btn.classList.remove('collapsed'); });
-    target.addEventListener('hide.bs.collapse',   function() { btn.classList.add('collapsed');    });
-    if (!target.classList.contains('in')) btn.classList.add('collapsed');
+    btn.addEventListener('click', function() {
+        var body = document.getElementById(this.getAttribute('data-ugs'));
+        var open = body.style.display !== 'none';
+        body.style.display = open ? 'none' : 'block';
+        this.classList.toggle('collapsed', open);
+    });
 });
 </script>
