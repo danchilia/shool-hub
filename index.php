@@ -54,6 +54,8 @@
  * NOTE: If you change these, also change the error_reporting() code below
  */
 define('ENVIRONMENT', 'production');
+// PHP 8.1+ changed mysqli default to throw exceptions; CI3 expects FALSE returns.
+mysqli_report(MYSQLI_REPORT_OFF);
 // SECURITY: Force HTTPS in production
 if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] !== 'localhost' && (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on')) {
     header('Location: https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], true, 301);
