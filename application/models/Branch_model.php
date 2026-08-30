@@ -924,6 +924,31 @@ class Branch_model extends MY_Model
         // 40. VIRTUAL CLASS SAMPLE
         $this->db->insert('virtual_classes', array('title' => 'Mathematics Online Revision', 'description' => 'Online revision session for exam preparation. Link will be shared before class.', 'platform' => 'meet', 'meeting_link' => 'https://meet.google.com/placeholder', 'scheduled_at' => date('Y-m-d H:i:s', strtotime('+7 days 15:00:00')), 'duration_mins' => 60, 'status' => 'upcoming', 'branch_id' => $branchId));
 
+        // 41. HOLISTIC DEVELOPMENT PROFILE — 7 CBC domains + 21 indicators
+        // Seed per-branch only when global (branch_id=0) domains don't exist (i.e. migration 008 not yet run)
+        $hdTableExists = $this->db->query("SHOW TABLES LIKE 'cbc_holistic_domains'")->num_rows() > 0;
+        if ($hdTableExists) {
+            $globalHdCount = $this->db->where('branch_id', 0)->count_all_results('cbc_holistic_domains');
+            if ($globalHdCount === 0) {
+                $holisticDomains = array(
+                    array('Communication and Collaboration',       'Ability to express ideas clearly and work effectively with others',     1, array('Expresses ideas clearly in speech and writing', 'Listens actively and respects others\' views', 'Collaborates effectively in group tasks')),
+                    array('Creativity and Imagination',            'Ability to generate novel ideas and produce original work',              2, array('Generates original and innovative ideas', 'Shows initiative and takes creative risks', 'Produces work that demonstrates imagination')),
+                    array('Critical Thinking and Problem Solving', 'Ability to analyse situations and make informed decisions',              3, array('Identifies and analyses problems systematically', 'Makes informed and reasoned decisions', 'Evaluates evidence before drawing conclusions')),
+                    array('Citizenship',                           'Values, attitudes and participation in community and civic life',        4, array('Demonstrates respect and integrity towards others', 'Actively participates in school and community activities', 'Upholds national values and responsible citizenship')),
+                    array('Digital Literacy',                      'Responsible and effective use of digital technologies',                  5, array('Uses digital tools effectively for learning', 'Accesses and evaluates online information responsibly', 'Demonstrates online safety and ethical digital behaviour')),
+                    array('Learning to Learn',                     'Self-management, goal setting and reflection on learning',               6, array('Sets personal learning goals and works toward them', 'Manages time and organises tasks independently', 'Reflects on own learning and seeks improvement')),
+                    array('Physical Health and Wellbeing',         'Physical fitness, health habits and personal wellbeing',                 7, array('Participates actively in physical education and sport', 'Maintains personal hygiene and healthy habits', 'Makes healthy food and lifestyle choices')),
+                );
+                foreach ($holisticDomains as $dom) {
+                    $this->db->insert('cbc_holistic_domains', array('branch_id' => $branchId, 'name' => $dom[0], 'description' => $dom[1], 'sort_order' => $dom[2], 'is_active' => 1));
+                    $domId = $this->db->insert_id();
+                    foreach ($dom[3] as $i => $indName) {
+                        $this->db->insert('cbc_holistic_indicators', array('domain_id' => $domId, 'name' => $indName, 'sort_order' => $i + 1));
+                    }
+                }
+            }
+        }
+
         // No auto-subscription: school admin must select a plan and pay (or superadmin activates manually).
     }
 

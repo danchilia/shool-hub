@@ -496,11 +496,11 @@ class Cbc_model extends MY_Model
 
     public function getHolisticDomains($branchId)
     {
-        $this->db->where_in('branch_id', array(0, $branchId));
-        $this->db->where('is_active', 1);
-        $this->db->order_by('branch_id', 'ASC');
-        $this->db->order_by('sort_order', 'ASC');
-        $domains = $this->db->get('cbc_holistic_domains')->result_array();
+        // Prefer branch-specific; fall back to global (branch_id=0) if none exist
+        $domains = $this->db->where('branch_id', $branchId)->where('is_active', 1)->order_by('sort_order', 'ASC')->get('cbc_holistic_domains')->result_array();
+        if (empty($domains)) {
+            $domains = $this->db->where('branch_id', 0)->where('is_active', 1)->order_by('sort_order', 'ASC')->get('cbc_holistic_domains')->result_array();
+        }
         foreach ($domains as &$d) {
             $d['indicators'] = $this->db->where('domain_id', $d['id'])->order_by('sort_order', 'ASC')->get('cbc_holistic_indicators')->result_array();
         }
