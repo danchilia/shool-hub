@@ -25,6 +25,9 @@ class Branch_model extends MY_Model
             'address' => $data['address'],
         );
         if (!isset($data['branch_id'])) {
+            if (!empty($data['university_template'])) {
+                $arrayBranch['branch_type'] = 'university';
+            }
             $this->db->insert('branch', $arrayBranch);
             $branchId = $this->db->insert_id();
             if (isset($data['kenya_template']) && $data['kenya_template']) {

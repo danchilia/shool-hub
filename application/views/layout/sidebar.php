@@ -694,14 +694,15 @@
                     </li>
                     <?php } ?>
                     <?php
-                    if (get_permission('cbc_assessment', 'is_view') ||
+                    if (!is_university_branch() && (
+                    get_permission('cbc_assessment', 'is_view') ||
                     get_permission('cbc_learning_areas', 'is_view') ||
                     get_permission('cbc_strands', 'is_view') ||
                     get_permission('cbc_sub_strands', 'is_view') ||
                     get_permission('cbc_learning_outcomes', 'is_view') ||
                     get_permission('cbc_pathways', 'is_view') ||
                     get_permission('cbc_report_card', 'is_view') ||
-                    get_permission('cbc_behaviour', 'is_view')) {
+                    get_permission('cbc_behaviour', 'is_view'))) {
                     ?>
                     <!-- CBC Assessment -->
                     <li class="nav-parent <?php if ($main_menu == 'cbc') echo 'nav-expanded nav-active';?>">

@@ -431,6 +431,14 @@ function ajax_access_denied()
     exit();
 }
 
+function is_university_branch() {
+    $CI =& get_instance();
+    $branchId = get_loggedin_branch_id();
+    if (!$branchId) return false;
+    $branch = $CI->db->select('branch_type')->where('id', $branchId)->get('branch')->row();
+    return ($branch && $branch->branch_type === 'university');
+}
+
 function slugify($text){
     // replace non letter or digits by -
     $text = preg_replace('~[^\pL\d]+~u', '_', $text);

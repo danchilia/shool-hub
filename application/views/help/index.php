@@ -146,7 +146,7 @@ $l   = $cfg['light'];
             ),
             'url' => 'exam', 'btn' => 'Go to Exams',
         ),
-        array(
+        ...(!empty($is_uni) ? [] : [array(
             'icon'  => 'fas fa-book-open',
             'title' => 'CBC Curriculum Setup',
             'tip'   => 'This is needed for CBC assessments. The Kenya template pre-seeds all learning areas and strands.',
@@ -160,7 +160,7 @@ $l   = $cfg['light'];
                 array('CBC Analytics', 'Go to <strong>CBC → Analytics</strong> to see class-wide competency distribution charts.'),
             ),
             'url' => 'cbc/learning_areas', 'btn' => 'Go to CBC',
-        ),
+        )]),
         array(
             'icon'  => 'fas fa-bullhorn',
             'title' => 'Notice Board & Communication',
@@ -319,6 +319,7 @@ $l   = $cfg['light'];
             ),
             'url' => 'userrole/report_card', 'btn' => 'View Report Card',
         ),
+        ...(!empty($is_uni) ? [] : [
         array(
             'icon'  => 'fas fa-clipboard-check',
             'title' => 'CBC Progress Report',
@@ -353,6 +354,7 @@ $l   = $cfg['light'];
             ),
             'url' => 'userrole/portfolio', 'btn' => 'My Portfolio',
         ),
+        ]),
         array(
             'icon'  => 'fas fa-chart-bar',
             'title' => 'Attendance Record',

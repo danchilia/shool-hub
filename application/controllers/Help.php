@@ -18,10 +18,11 @@ class Help extends Admin_Controller
             $role = 'admin';
         }
 
-        $this->data['role']      = $role;
-        $this->data['title']     = 'User Guide';
-        $this->data['sub_page']  = 'help/index';
-        $this->data['main_menu'] = 'help';
+        $this->data['role']        = $role;
+        $this->data['is_uni']      = is_university_branch();
+        $this->data['title']       = 'User Guide';
+        $this->data['sub_page']    = 'help/index';
+        $this->data['main_menu']   = 'help';
         $this->load->view('layout/index', $this->data);
     }
 }

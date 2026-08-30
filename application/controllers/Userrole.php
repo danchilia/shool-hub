@@ -462,6 +462,7 @@ class Userrole extends User_Controller
     public function help()
     {
         $this->data['role']      = is_parent_loggedin() ? 'parent' : 'student';
+        $this->data['is_uni']    = is_university_branch();
         $this->data['title']     = 'User Guide';
         $this->data['main_menu'] = 'help';
         $this->data['sub_page']  = 'help/index';
