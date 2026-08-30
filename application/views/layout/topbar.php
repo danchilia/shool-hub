@@ -35,6 +35,54 @@ $userRole  = ucfirst(loggedin_role_name());
     <!-- Right actions -->
     <div class="dck-topbar-actions">
 
+        <?php if (!is_superadmin_loggedin()): ?>
+        <!-- PWA Install button -->
+        <button id="pwa-topbar-btn" onclick="triggerPwaInstall()" title="Install App on this device"
+                style="background:none;border:1px solid #c9a84c;color:#c9a84c;border-radius:6px;padding:5px 11px;font-size:.78rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap">
+            <i class="fas fa-download"></i>
+            <span class="d-none d-md-inline">Install App</span>
+        </button>
+        <!-- Manual install modal -->
+        <div id="pwaManualModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center">
+          <div style="background:#fff;border-radius:12px;padding:28px;max-width:400px;width:90%;position:relative">
+            <button onclick="document.getElementById('pwaManualModal').style.display='none'"
+                    style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:#aaa">&times;</button>
+            <div style="text-align:center;margin-bottom:16px">
+              <div style="font-size:2rem;color:#1a2e4a"><i class="fas fa-download"></i></div>
+              <h5 style="font-weight:700;margin:8px 0 4px">Install CST SchoolHub</h5>
+              <p style="font-size:.85rem;color:#666;margin:0">Add to your desktop or home screen</p>
+            </div>
+            <div style="font-size:.85rem;line-height:1.8">
+              <strong>Chrome / Edge (Windows/Mac):</strong><br>
+              Click the <strong>⊕ icon</strong> in the address bar (right side) → Install<br><br>
+              <strong>Chrome (Android):</strong><br>
+              Tap <strong>3-dot menu</strong> → Add to Home screen<br><br>
+              <strong>Safari (iPhone/iPad):</strong><br>
+              Tap <strong>Share button</strong> → Add to Home Screen
+            </div>
+            <button onclick="document.getElementById('pwaManualModal').style.display='none'"
+                    class="btn btn-primary btn-sm mt-3" style="width:100%">Got it</button>
+          </div>
+        </div>
+        <script>
+        function triggerPwaInstall() {
+          if (window.deferredPrompt) {
+            window.deferredPrompt.prompt();
+            window.deferredPrompt.userChoice.then(function(r) {
+              if (r.outcome === 'accepted') {
+                localStorage.setItem('pwa-banner-dismissed', '1');
+                var b = document.getElementById('pwa-banner');
+                if (b) b.style.display = 'none';
+              }
+              window.deferredPrompt = null;
+            });
+          } else {
+            document.getElementById('pwaManualModal').style.display = 'flex';
+          }
+        }
+        </script>
+        <?php endif; ?>
+
         <!-- ── Quick links ───────────────────────────────────────────── -->
         <?php
         $showQuick = get_permission('student', 'is_add') ||
