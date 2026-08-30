@@ -139,6 +139,42 @@ class Branch_model extends MY_Model
             }
         }
 
+        // 7C. SENIOR SECONDARY PATHWAYS + LEARNING AREAS
+        $seniorPathways = array(
+            'STEM'                  => 'Science, Technology, Engineering and Mathematics pathway',
+            'Arts & Sports Science' => 'Arts and Sports Science pathway',
+            'Social Sciences'       => 'Humanities and Social Sciences pathway',
+        );
+        $pathwayIds = array();
+        foreach ($seniorPathways as $pName => $pDesc) {
+            $this->db->insert('cbc_pathways', array('name' => $pName, 'description' => $pDesc, 'branch_id' => $branchId));
+            $pathwayIds[$pName] = $this->db->insert_id();
+        }
+        // Core Senior Secondary (all pathways — pathway_id = null)
+        $seniorCore = array('English', 'Kiswahili', 'Community Service Learning', 'Physical Education', 'Life Skills Education', 'Religious Education');
+        foreach ($seniorCore as $laName) {
+            $this->db->insert('cbc_learning_areas', array('name' => $laName, 'level' => 'senior_secondary', 'pathway_id' => null, 'branch_id' => $branchId));
+            $areaIds['senior_secondary_' . $laName] = $this->db->insert_id();
+        }
+        // STEM-specific
+        $stemAreas = array('Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Agriculture and Nutrition', 'Technical Drawing');
+        foreach ($stemAreas as $laName) {
+            $this->db->insert('cbc_learning_areas', array('name' => $laName, 'level' => 'senior_secondary', 'pathway_id' => $pathwayIds['STEM'], 'branch_id' => $branchId));
+            $areaIds['senior_secondary_' . $laName] = $this->db->insert_id();
+        }
+        // Arts & Sports Science-specific
+        $artsAreas = array('Visual Arts', 'Performing Arts', 'Sports Science', 'Music', 'Theatre and Film');
+        foreach ($artsAreas as $laName) {
+            $this->db->insert('cbc_learning_areas', array('name' => $laName, 'level' => 'senior_secondary', 'pathway_id' => $pathwayIds['Arts & Sports Science'], 'branch_id' => $branchId));
+            $areaIds['senior_secondary_' . $laName] = $this->db->insert_id();
+        }
+        // Social Sciences-specific
+        $socialAreas = array('History & Government', 'Geography', 'Business Studies', 'Economics', 'Foreign Languages', 'Sociology');
+        foreach ($socialAreas as $laName) {
+            $this->db->insert('cbc_learning_areas', array('name' => $laName, 'level' => 'senior_secondary', 'pathway_id' => $pathwayIds['Social Sciences'], 'branch_id' => $branchId));
+            $areaIds['senior_secondary_' . $laName] = $this->db->insert_id();
+        }
+
         // 7B. CBC STRANDS (sub-topics per learning area)
         $strands = array(
             'lower_primary_Literacy Activities' => array('Reading', 'Writing', 'Oral Communication', 'Handwriting'),

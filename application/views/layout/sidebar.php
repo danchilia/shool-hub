@@ -699,6 +699,7 @@
                     get_permission('cbc_strands', 'is_view') ||
                     get_permission('cbc_sub_strands', 'is_view') ||
                     get_permission('cbc_learning_outcomes', 'is_view') ||
+                    get_permission('cbc_pathways', 'is_view') ||
                     get_permission('cbc_report_card', 'is_view') ||
                     get_permission('cbc_behaviour', 'is_view')) {
                     ?>
@@ -730,6 +731,12 @@
                             <li class="<?php if ($sub_page == 'cbc/learning_outcomes') echo 'nav-active';?>">
                                 <a href="<?=base_url('cbc/learning_outcomes')?>">
                                     <span><i class="fas fa-caret-right"></i> Learning Outcomes</span>
+                                </a>
+                            </li>
+                            <?php endif; if (get_permission('cbc_pathways', 'is_view')): ?>
+                            <li class="<?php if ($sub_page == 'cbc/pathways') echo 'nav-active';?>">
+                                <a href="<?=base_url('cbc/pathways')?>">
+                                    <span><i class="fas fa-caret-right"></i> SS Pathways</span>
                                 </a>
                             </li>
                             <?php endif; if (get_permission('cbc_assessment', 'is_add')): ?>

@@ -511,6 +511,71 @@ class Cbc extends Admin_Controller
         }
     }
 
+    // --- CBC Pathways (Senior Secondary) ---
+
+    public function pathways()
+    {
+        if (!get_permission('cbc_pathways', 'is_view')) { access_denied(); }
+        $branchID = $this->application_model->get_branch_id();
+
+        if ($this->input->post('save')) {
+            if (!get_permission('cbc_pathways', 'is_add')) { access_denied(); }
+            $this->form_validation->set_rules('name', 'Pathway Name', 'trim|required');
+            if ($this->form_validation->run()) {
+                $this->cbc_model->savePathway(array(
+                    'name'        => $this->input->post('name'),
+                    'description' => $this->input->post('description'),
+                    'branch_id'   => $branchID,
+                ));
+                set_alert('success', translate('information_has_been_saved_successfully'));
+                redirect(base_url('cbc/pathways'));
+            }
+        }
+
+        $this->data['pathways']       = $this->cbc_model->getPathways($branchID);
+        $this->data['learning_areas'] = $this->cbc_model->getLearningAreas($branchID, 'senior_secondary');
+        $this->data['title']          = 'CBC Pathways';
+        $this->data['sub_page']       = 'cbc/pathways';
+        $this->data['main_menu']      = 'cbc';
+        $this->load->view('layout/index', $this->data);
+    }
+
+    public function pathway_edit()
+    {
+        if (!get_permission('cbc_pathways', 'is_edit')) { ajax_access_denied(); }
+        $this->form_validation->set_rules('name', 'Pathway Name', 'trim|required');
+        if ($this->form_validation->run()) {
+            $this->cbc_model->savePathway(array(
+                'pathway_id'  => $this->input->post('pathway_id'),
+                'name'        => $this->input->post('name'),
+                'description' => $this->input->post('description'),
+            ));
+            set_alert('success', translate('information_has_been_updated_successfully'));
+        }
+        $array = array('status' => validation_errors() ? 'fail' : 'success', 'error' => validation_errors());
+        echo json_encode($array);
+    }
+
+    public function pathway_delete($id = '')
+    {
+        if (!get_permission('cbc_pathways', 'is_delete')) { access_denied(); }
+        $branchID = $this->application_model->get_branch_id();
+        $this->db->where('id', $id)->where('branch_id', $branchID)->delete('cbc_pathways');
+        // Unlink from learning areas
+        $this->db->where('pathway_id', $id)->set('pathway_id', null)->update('cbc_learning_areas');
+        // Unlink from students
+        $this->db->where('cbc_pathway_id', $id)->set('cbc_pathway_id', null)->update('student');
+    }
+
+    public function pathway_assign_la()
+    {
+        if (!get_permission('cbc_pathways', 'is_edit')) { ajax_access_denied(); }
+        $laId      = intval($this->input->post('la_id'));
+        $pathwayId = $this->input->post('pathway_id'); // may be empty to unassign
+        $this->db->where('id', $laId)->update('cbc_learning_areas', array('pathway_id' => ($pathwayId ?: null)));
+        echo json_encode(array('status' => 'success'));
+    }
+
     // --- CBC Analytics ---
 
     public function analytics()

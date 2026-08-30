@@ -110,16 +110,23 @@ class Cbc_model extends MY_Model
         }
     }
 
-    public function getLearningAreas($branchId = '', $level = '')
+    public function getLearningAreas($branchId = '', $level = '', $pathwayId = null)
     {
-        $this->db->select('la.*, b.name as branch_name');
+        $this->db->select('la.*, b.name as branch_name, COALESCE(p.name, "") as pathway_name');
         $this->db->from('cbc_learning_areas as la');
         $this->db->join('branch as b', 'b.id = la.branch_id', 'left');
+        $this->db->join('cbc_pathways as p', 'p.id = la.pathway_id', 'left');
         if (!empty($branchId)) {
             $this->db->where('la.branch_id', $branchId);
         }
         if (!empty($level)) {
             $this->db->where('la.level', $level);
+        }
+        if ($pathwayId !== null) {
+            $this->db->group_start()
+                     ->where('la.pathway_id', $pathwayId)
+                     ->or_where('la.pathway_id IS NULL', null, false)
+                     ->group_end();
         }
         $this->db->order_by('la.name', 'ASC');
         return $this->db->get()->result_array();
@@ -326,6 +333,21 @@ class Cbc_model extends MY_Model
                 GROUP BY la.id, a.competency_level
                 ORDER BY la.name ASC, a.competency_level ASC";
         return $this->db->query($sql, array($examId, $branchId, $classId, $sectionId))->result_array();
+    }
+
+    public function getPathways($branchId)
+    {
+        return $this->db->where('branch_id', $branchId)->get('cbc_pathways')->result_array();
+    }
+
+    public function savePathway($data)
+    {
+        if (!empty($data['pathway_id'])) {
+            $this->db->where('id', $data['pathway_id'])->update('cbc_pathways', array('name' => $data['name'], 'description' => $data['description']));
+            return $data['pathway_id'];
+        }
+        $this->db->insert('cbc_pathways', array('name' => $data['name'], 'description' => $data['description'], 'branch_id' => $data['branch_id']));
+        return $this->db->insert_id();
     }
 
     public function getAnalyticsTrend($classId, $sectionId, $branchId, $sessionId)

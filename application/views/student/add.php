@@ -66,6 +66,19 @@
 							<input type="text" class="form-control" name="upi_number" value="<?=set_value('upi_number')?>" placeholder="Enter if available" />
 						</div>
 					</div>
+					<div class="col-md-3 mb-sm">
+						<div class="form-group">
+							<label class="control-label">CBC Pathway <?=help_tip('Senior Secondary (Grade 10–12) only. Select the learner\'s chosen pathway: STEM, Arts &amp; Sports Science, or Social Sciences.')?></label>
+							<?php
+								$branchIdForPathway = $this->application_model->get_branch_id();
+								$pathwayOptions = array('' => '— Not applicable —');
+								$pathwayRows = $this->db->where('branch_id', $branchIdForPathway)->get('cbc_pathways')->result_array();
+								foreach ($pathwayRows as $pw) { $pathwayOptions[$pw['id']] = $pw['name']; }
+								$selectedPathway = isset($student['cbc_pathway_id']) ? $student['cbc_pathway_id'] : set_value('cbc_pathway_id');
+								echo form_dropdown('cbc_pathway_id', $pathwayOptions, $selectedPathway, "class='form-control' data-plugin-selectTwo data-width='100%'");
+							?>
+						</div>
+					</div>
 				</div>
 
 				<div class="row mb-md">

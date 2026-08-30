@@ -24,6 +24,7 @@ class Student_model extends MY_Model
         $inser_data1 = array(
             'register_no' => $data['register_no'],
             'upi_number' => isset($data['upi_number']) ? $data['upi_number'] : '',
+            'cbc_pathway_id' => !empty($data['cbc_pathway_id']) ? intval($data['cbc_pathway_id']) : null,
             'admission_date' => date("Y-m-d", strtotime($data['admission_date'])),
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
