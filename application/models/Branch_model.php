@@ -624,11 +624,7 @@ class Branch_model extends MY_Model
         // 40. VIRTUAL CLASS SAMPLE
         $this->db->insert('virtual_classes', array('title' => 'Mathematics Online Revision', 'description' => 'Online revision session for exam preparation. Link will be shared before class.', 'platform' => 'meet', 'meeting_link' => 'https://meet.google.com/placeholder', 'scheduled_at' => date('Y-m-d H:i:s', strtotime('+7 days 15:00:00')), 'duration_mins' => 60, 'status' => 'upcoming', 'branch_id' => $branchId));
 
-        // 41. SUBSCRIPTION (1-year trial)
-        $existSub = $this->db->where('branch_id', $branchId)->count_all_results('branch_subscriptions');
-        if ($existSub == 0) {
-            $this->db->insert('branch_subscriptions', array('branch_id' => $branchId, 'plan_id' => 2, 'billing_cycle' => 'yearly', 'start_date' => date('Y-m-d'), 'end_date' => date('Y-m-d', strtotime('+1 year')), 'status' => 'trial', 'auto_renew' => 0));
-        }
+        // No auto-subscription: school admin must select a plan and pay (or superadmin activates manually).
     }
 
     public function seedUniversityDefaults($branchId)
@@ -1136,10 +1132,6 @@ class Branch_model extends MY_Model
         // 34. VIRTUAL CLASS SAMPLE
         $this->db->insert('virtual_classes', array('title' => 'Introduction to Programming — Online Lecture', 'description' => 'First online lecture for ICS 101. Please install Python before the session. Recording will be available on LMS.', 'platform' => 'meet', 'meeting_link' => 'https://meet.google.com/placeholder', 'scheduled_at' => date('Y-m-d H:i:s', strtotime('+7 days 10:00:00')), 'duration_mins' => 90, 'status' => 'upcoming', 'branch_id' => $branchId));
 
-        // 35. SUBSCRIPTION (1-year trial)
-        $existSub = $this->db->where('branch_id', $branchId)->count_all_results('branch_subscriptions');
-        if ($existSub == 0) {
-            $this->db->insert('branch_subscriptions', array('branch_id' => $branchId, 'plan_id' => 3, 'billing_cycle' => 'yearly', 'start_date' => date('Y-m-d'), 'end_date' => date('Y-m-d', strtotime('+1 year')), 'status' => 'trial', 'auto_renew' => 0));
-        }
+        // No auto-subscription: school admin must select a plan and pay (or superadmin activates manually).
     }
 }
