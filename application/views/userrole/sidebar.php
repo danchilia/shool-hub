@@ -123,6 +123,12 @@ if ((is_parent_loggedin() && !empty(get_activeChildren_id())) || is_student_logg
                                     <i class="fas fa-clipboard-check"></i><span>CBC Report</span>
                                 </a>
                             </li>
+                            <!-- Portfolio -->
+                            <li class="<?php if ($sub_page == 'userrole/portfolio') echo 'nav-active'; ?>">
+                                <a href="<?=base_url('userrole/portfolio')?>">
+                                    <i class="fas fa-folder-open"></i><span>Portfolio</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 

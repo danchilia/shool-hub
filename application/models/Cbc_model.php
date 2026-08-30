@@ -335,6 +335,132 @@ class Cbc_model extends MY_Model
         return $this->db->query($sql, array($examId, $branchId, $classId, $sectionId))->result_array();
     }
 
+    // --- Portfolio ---
+
+    public function savePortfolioEntry($data)
+    {
+        if (!empty($data['portfolio_id'])) {
+            $id = intval($data['portfolio_id']);
+            $this->db->where('id', $id)->update('cbc_portfolio', array(
+                'learning_area_id'  => $data['learning_area_id'],
+                'strand_id'         => !empty($data['strand_id']) ? $data['strand_id'] : null,
+                'title'             => $data['title'],
+                'description'       => $data['description'],
+                'competency_level'  => $data['competency_level'],
+                'entry_date'        => $data['entry_date'],
+                'evidence_file'     => $data['evidence_file'],
+            ));
+            return $id;
+        }
+        $this->db->insert('cbc_portfolio', array(
+            'student_id'        => $data['student_id'],
+            'learning_area_id'  => $data['learning_area_id'],
+            'strand_id'         => !empty($data['strand_id']) ? $data['strand_id'] : null,
+            'title'             => $data['title'],
+            'description'       => $data['description'],
+            'competency_level'  => $data['competency_level'],
+            'evidence_file'     => $data['evidence_file'],
+            'entry_date'        => $data['entry_date'],
+            'session_id'        => $data['session_id'],
+            'branch_id'         => $data['branch_id'],
+            'created_by'        => $data['created_by'],
+        ));
+        return $this->db->insert_id();
+    }
+
+    public function getPortfolio($studentId, $branchId)
+    {
+        $this->db->select('p.*, la.name as learning_area_name, s.name as strand_name');
+        $this->db->from('cbc_portfolio as p');
+        $this->db->join('cbc_learning_areas as la', 'la.id = p.learning_area_id', 'left');
+        $this->db->join('cbc_strands as s', 's.id = p.strand_id', 'left');
+        $this->db->where('p.student_id', $studentId);
+        $this->db->where('p.branch_id', $branchId);
+        $this->db->order_by('p.entry_date', 'DESC');
+        return $this->db->get()->result_array();
+    }
+
+    // --- Projects ---
+
+    public function saveProject($data)
+    {
+        if (!empty($data['project_id'])) {
+            $this->db->where('id', $data['project_id'])->update('cbc_projects', array(
+                'name'              => $data['name'],
+                'description'       => $data['description'],
+                'learning_area_id'  => !empty($data['learning_area_id']) ? $data['learning_area_id'] : null,
+                'due_date'          => !empty($data['due_date']) ? $data['due_date'] : null,
+                'max_score'         => $data['max_score'],
+            ));
+            return $data['project_id'];
+        }
+        $this->db->insert('cbc_projects', array(
+            'name'              => $data['name'],
+            'description'       => $data['description'],
+            'learning_area_id'  => !empty($data['learning_area_id']) ? $data['learning_area_id'] : null,
+            'class_id'          => $data['class_id'],
+            'section_id'        => $data['section_id'],
+            'due_date'          => !empty($data['due_date']) ? $data['due_date'] : null,
+            'max_score'         => $data['max_score'],
+            'session_id'        => $data['session_id'],
+            'branch_id'         => $data['branch_id'],
+        ));
+        return $this->db->insert_id();
+    }
+
+    public function getProjects($branchId, $classId = null, $sectionId = null)
+    {
+        $this->db->select('pr.*, la.name as learning_area_name, c.name as class_name, s.name as section_name');
+        $this->db->from('cbc_projects as pr');
+        $this->db->join('cbc_learning_areas as la', 'la.id = pr.learning_area_id', 'left');
+        $this->db->join('class as c', 'c.id = pr.class_id', 'left');
+        $this->db->join('section as s', 's.id = pr.section_id', 'left');
+        $this->db->where('pr.branch_id', $branchId);
+        if ($classId)   $this->db->where('pr.class_id', $classId);
+        if ($sectionId) $this->db->where('pr.section_id', $sectionId);
+        $this->db->order_by('pr.id', 'DESC');
+        return $this->db->get()->result_array();
+    }
+
+    public function saveProjectScores($projectId, $scores, $branchId)
+    {
+        foreach ($scores as $studentId => $data) {
+            $row = array(
+                'project_id'       => $projectId,
+                'student_id'       => $studentId,
+                'score'            => isset($data['score']) && $data['score'] !== '' ? $data['score'] : null,
+                'competency_level' => !empty($data['competency_level']) ? $data['competency_level'] : null,
+                'remarks'          => isset($data['remarks']) ? $data['remarks'] : '',
+                'branch_id'        => $branchId,
+            );
+            $exists = $this->db->where(array('project_id' => $projectId, 'student_id' => $studentId))->get('cbc_project_scores')->num_rows();
+            if ($exists) {
+                $this->db->where(array('project_id' => $projectId, 'student_id' => $studentId))->update('cbc_project_scores', $row);
+            } else {
+                $this->db->insert('cbc_project_scores', $row);
+            }
+        }
+    }
+
+    public function getProjectScores($projectId)
+    {
+        return $this->db->where('project_id', $projectId)->get('cbc_project_scores')->result_array();
+    }
+
+    public function getStudentProjects($studentId, $branchId, $sessionId)
+    {
+        $this->db->select('pr.*, ps.score, ps.competency_level, ps.remarks, la.name as learning_area_name, c.name as class_name');
+        $this->db->from('cbc_projects as pr');
+        $this->db->join('cbc_project_scores as ps', 'ps.project_id = pr.id AND ps.student_id = ' . intval($studentId), 'left');
+        $this->db->join('cbc_learning_areas as la', 'la.id = pr.learning_area_id', 'left');
+        $this->db->join('class as c', 'c.id = pr.class_id', 'left');
+        $this->db->join('enroll as e', 'e.class_id = pr.class_id AND e.section_id = pr.section_id AND e.student_id = ' . intval($studentId), 'inner');
+        $this->db->where('pr.branch_id', $branchId);
+        $this->db->where('pr.session_id', $sessionId);
+        $this->db->order_by('pr.due_date', 'ASC');
+        return $this->db->get()->result_array();
+    }
+
     public function getPathways($branchId)
     {
         return $this->db->where('branch_id', $branchId)->get('cbc_pathways')->result_array();

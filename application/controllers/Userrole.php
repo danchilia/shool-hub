@@ -414,6 +414,16 @@ class Userrole extends User_Controller
         $this->load->view('layout/index', $this->data);
     }
 
+    public function portfolio()
+    {
+        $this->load->model('cbc_model');
+        $this->data['stu']       = $this->userrole_model->getStudentDetails();
+        $this->data['title']     = 'My Portfolio';
+        $this->data['main_menu'] = 'exam';
+        $this->data['sub_page']  = 'userrole/portfolio';
+        $this->load->view('layout/index', $this->data);
+    }
+
     public function cbc_report()
     {
         $this->load->model('cbc_model');

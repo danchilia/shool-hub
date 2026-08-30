@@ -511,6 +511,171 @@ class Cbc extends Admin_Controller
         }
     }
 
+    // --- CBC Portfolio ---
+
+    public function portfolio()
+    {
+        if (!get_permission('cbc_portfolio', 'is_view')) { access_denied(); }
+        $branchID = $this->application_model->get_branch_id();
+
+        // Student filter
+        $studentId = intval($this->input->get('student_id'));
+
+        $this->data['branch_id']      = $branchID;
+        $this->data['student_id']     = $studentId;
+        $this->data['learning_areas'] = $this->cbc_model->getLearningAreas($branchID);
+        $this->data['portfolio']      = $studentId ? $this->cbc_model->getPortfolio($studentId, $branchID) : array();
+        $this->data['title']          = 'CBC Portfolio';
+        $this->data['sub_page']       = 'cbc/portfolio';
+        $this->data['main_menu']      = 'cbc';
+        $this->load->view('layout/index', $this->data);
+    }
+
+    public function portfolio_save()
+    {
+        if (!get_permission('cbc_portfolio', 'is_add')) { ajax_access_denied(); }
+        $this->form_validation->set_rules('student_id',       'Student',        'trim|required');
+        $this->form_validation->set_rules('learning_area_id', 'Learning Area',  'trim|required');
+        $this->form_validation->set_rules('title',            'Title',          'trim|required');
+        $this->form_validation->set_rules('entry_date',       'Date',           'trim|required');
+
+        if ($this->form_validation->run()) {
+            $branchID = $this->application_model->get_branch_id();
+
+            // Handle file upload
+            $evidenceFile = '';
+            if (!empty($_FILES['evidence_file']['name'])) {
+                $config = array(
+                    'upload_path'   => FCPATH . 'uploads/cbc_portfolio/',
+                    'allowed_types' => 'jpg|jpeg|png|gif|pdf|doc|docx|mp4|mov',
+                    'max_size'      => 10240,
+                    'encrypt_name'  => true,
+                );
+                if (!is_dir($config['upload_path'])) mkdir($config['upload_path'], 0755, true);
+                $this->load->library('upload', $config);
+                if ($this->upload->do_upload('evidence_file')) {
+                    $evidenceFile = $this->upload->data('file_name');
+                }
+            }
+
+            $this->cbc_model->savePortfolioEntry(array(
+                'portfolio_id'      => $this->input->post('portfolio_id'),
+                'student_id'        => $this->input->post('student_id'),
+                'learning_area_id'  => $this->input->post('learning_area_id'),
+                'strand_id'         => $this->input->post('strand_id'),
+                'title'             => $this->input->post('title'),
+                'description'       => $this->input->post('description'),
+                'competency_level'  => $this->input->post('competency_level'),
+                'evidence_file'     => $evidenceFile,
+                'entry_date'        => $this->input->post('entry_date'),
+                'session_id'        => get_session_id(),
+                'branch_id'         => $branchID,
+                'created_by'        => get_loggedin_user_id(),
+            ));
+            set_alert('success', translate('information_has_been_saved_successfully'));
+        }
+        redirect(base_url('cbc/portfolio?student_id=' . $this->input->post('student_id')));
+    }
+
+    public function portfolio_delete($id = '')
+    {
+        if (!get_permission('cbc_portfolio', 'is_delete')) { access_denied(); }
+        $branchID = $this->application_model->get_branch_id();
+        $this->db->where('id', $id)->where('branch_id', $branchID)->delete('cbc_portfolio');
+    }
+
+    // --- CBC Projects ---
+
+    public function projects()
+    {
+        if (!get_permission('cbc_projects', 'is_view')) { access_denied(); }
+        $branchID  = $this->application_model->get_branch_id();
+        $classId   = intval($this->input->get('class_id'));
+        $sectionId = intval($this->input->get('section_id'));
+
+        $this->data['branch_id']      = $branchID;
+        $this->data['class_id']       = $classId;
+        $this->data['section_id']     = $sectionId;
+        $this->data['projects']       = $this->cbc_model->getProjects($branchID, $classId ?: null, $sectionId ?: null);
+        $this->data['learning_areas'] = $this->cbc_model->getLearningAreas($branchID);
+        $this->data['title']          = 'CBC Projects';
+        $this->data['sub_page']       = 'cbc/projects';
+        $this->data['main_menu']      = 'cbc';
+        $this->load->view('layout/index', $this->data);
+    }
+
+    public function project_save()
+    {
+        if (!get_permission('cbc_projects', 'is_add')) { ajax_access_denied(); }
+        $this->form_validation->set_rules('name',       'Project Name', 'trim|required');
+        $this->form_validation->set_rules('class_id',   'Class',        'trim|required');
+        $this->form_validation->set_rules('section_id', 'Section',      'trim|required');
+        $this->form_validation->set_rules('max_score',  'Max Score',    'trim|required|numeric');
+
+        if ($this->form_validation->run()) {
+            $branchID = $this->application_model->get_branch_id();
+            $this->cbc_model->saveProject(array(
+                'project_id'        => $this->input->post('project_id'),
+                'name'              => $this->input->post('name'),
+                'description'       => $this->input->post('description'),
+                'learning_area_id'  => $this->input->post('learning_area_id'),
+                'class_id'          => $this->input->post('class_id'),
+                'section_id'        => $this->input->post('section_id'),
+                'due_date'          => $this->input->post('due_date'),
+                'max_score'         => $this->input->post('max_score'),
+                'session_id'        => get_session_id(),
+                'branch_id'         => $branchID,
+            ));
+            set_alert('success', translate('information_has_been_saved_successfully'));
+        }
+        redirect(base_url('cbc/projects'));
+    }
+
+    public function project_delete($id = '')
+    {
+        if (!get_permission('cbc_projects', 'is_delete')) { access_denied(); }
+        $branchID = $this->application_model->get_branch_id();
+        $this->db->where('id', $id)->where('branch_id', $branchID)->delete('cbc_projects');
+        $this->db->where('project_id', $id)->delete('cbc_project_scores');
+    }
+
+    public function project_scores($projectId = '')
+    {
+        if (!get_permission('cbc_projects', 'is_add')) { access_denied(); }
+        $branchID = $this->application_model->get_branch_id();
+        $project  = $this->db->where('id', $projectId)->where('branch_id', $branchID)->get('cbc_projects')->row_array();
+        if (empty($project)) { show_404(); }
+
+        // Students in this class/section
+        $this->db->select('e.student_id, s.first_name, s.last_name, s.register_no, s.photo, e.roll');
+        $this->db->from('enroll as e');
+        $this->db->join('student as s', 's.id = e.student_id', 'inner');
+        $this->db->where(array('e.class_id' => $project['class_id'], 'e.section_id' => $project['section_id'], 'e.session_id' => get_session_id(), 'e.branch_id' => $branchID));
+        $students = $this->db->get()->result_array();
+
+        // Existing scores
+        $existingRaw = $this->cbc_model->getProjectScores($projectId);
+        $existing = array();
+        foreach ($existingRaw as $r) { $existing[$r['student_id']] = $r; }
+
+        if ($_POST) {
+            $scores = $this->input->post('scores');
+            if ($scores) {
+                $this->cbc_model->saveProjectScores($projectId, $scores, $branchID);
+                set_alert('success', translate('information_has_been_saved_successfully'));
+            }
+            redirect(base_url('cbc/project_scores/' . $projectId));
+        }
+
+        $this->data['project']  = $project;
+        $this->data['students'] = $students;
+        $this->data['existing'] = $existing;
+        $this->data['title']    = 'Project Scores: ' . $project['name'];
+        $this->data['sub_page'] = 'cbc/project_scores';
+        $this->data['main_menu']= 'cbc';
+        $this->load->view('layout/index', $this->data);
+    }
+
     // --- CBC Pathways (Senior Secondary) ---
 
     public function pathways()
@@ -618,6 +783,26 @@ class Cbc extends Admin_Controller
     }
 
     // --- AJAX helpers ---
+
+    public function getStudentsBySection()
+    {
+        $branchID  = $this->application_model->get_branch_id();
+        $classId   = intval($this->input->post('class_id'));
+        $sectionId = intval($this->input->post('section_id'));
+        $html = '<option value="">' . translate('select') . '</option>';
+        if ($classId && $sectionId) {
+            $this->db->select('s.id, s.first_name, s.last_name, s.register_no');
+            $this->db->from('enroll as e');
+            $this->db->join('student as s', 's.id = e.student_id', 'inner');
+            $this->db->where(array('e.class_id' => $classId, 'e.section_id' => $sectionId, 'e.session_id' => get_session_id(), 'e.branch_id' => $branchID));
+            $this->db->order_by('s.first_name', 'ASC');
+            $rows = $this->db->get()->result_array();
+            foreach ($rows as $r) {
+                $html .= '<option value="' . $r['id'] . '">' . htmlspecialchars($r['first_name'] . ' ' . $r['last_name']) . ' (' . $r['register_no'] . ')</option>';
+            }
+        }
+        echo $html;
+    }
 
     public function getLearningAreasByBranch()
     {

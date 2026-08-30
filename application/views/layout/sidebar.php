@@ -757,6 +757,18 @@
                                     <span><i class="fas fa-caret-right"></i> CBC Report Card</span>
                                 </a>
                             </li>
+                            <?php endif; if (get_permission('cbc_portfolio', 'is_view')): ?>
+                            <li class="<?php if ($sub_page == 'cbc/portfolio') echo 'nav-active';?>">
+                                <a href="<?=base_url('cbc/portfolio')?>">
+                                    <span><i class="fas fa-caret-right"></i> Portfolio</span>
+                                </a>
+                            </li>
+                            <?php endif; if (get_permission('cbc_projects', 'is_view')): ?>
+                            <li class="<?php if ($sub_page == 'cbc/projects' || $sub_page == 'cbc/project_scores') echo 'nav-active';?>">
+                                <a href="<?=base_url('cbc/projects')?>">
+                                    <span><i class="fas fa-caret-right"></i> Projects</span>
+                                </a>
+                            </li>
                             <?php endif; if (get_permission('cbc_assessment', 'is_view')): ?>
                             <li class="<?php if ($sub_page == 'cbc/analytics') echo 'nav-active';?>">
                                 <a href="<?=base_url('cbc/analytics')?>">
