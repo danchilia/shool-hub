@@ -481,7 +481,8 @@ $config['csrf_regenerate'] = FALSE;
 // Only exclude endpoints that external servers POST to (no browser session = no CSRF token).
 // Never disable CSRF globally for a whole controller.
 $config['csrf_exclude_uris'] = array(
-    'mpesa-callback/stk',            // Safaricom STK push callback
+    'mpesa-callback/stk',            // Safaricom STK push callback (student fees)
+    'mpesa-callback/subscription',   // Safaricom STK push callback (subscription)
     'feespayment/payumoney_success',  // PayU posts back here
     'feespayment/getsuccesspayment',  // PayPal GET redirect
 );

@@ -80,6 +80,14 @@
                                 </a>
                             </li>
                             <?php endif; ?>
+                            <?php if (is_admin_loggedin()): ?>
+                            <li class="<?php if ($sub_page == 'subscription/my_invoices') echo 'nav-active';?>">
+                                <a href="<?=base_url('subscription_payment/my_invoices')?>">
+                                    <i class="fas fa-file-invoice" style="font-size:.85rem"></i>
+                                    <span>My M-Pesa Invoices</span>
+                                </a>
+                            </li>
+                            <?php endif; ?>
                     <?php } ?>
                     <!-- all available modules (training/demo page) -->
                     <?php if (is_admin_loggedin() || is_superadmin_loggedin()): ?>
@@ -161,6 +169,16 @@
                             <li class="<?php if ($sub_page == 'subscription/invoices') echo 'nav-active';?>">
                                 <a href="<?=base_url('subscription/invoices')?>">
                                     <span><i class="fas fa-caret-right"></i> Invoices</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'subscription/payments') echo 'nav-active';?>">
+                                <a href="<?=base_url('subscription_payment/payments')?>">
+                                    <span><i class="fas fa-caret-right"></i> M-Pesa Payments</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'settings/mpesa') echo 'nav-active';?>">
+                                <a href="<?=base_url('settings/mpesa')?>">
+                                    <span><i class="fas fa-caret-right"></i> M-Pesa Settings</span>
                                 </a>
                             </li>
                             <li class="<?php if ($main_menu == 'setup_guide') echo 'nav-active';?>">

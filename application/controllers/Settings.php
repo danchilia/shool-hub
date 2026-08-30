@@ -367,6 +367,33 @@ class Settings extends Admin_Controller
         echo json_encode($array);
     }
 
+    public function mpesa()
+    {
+        if (!is_superadmin_loggedin()) access_denied();
+
+        if ($this->input->post('save_mpesa')) {
+            $fields = array(
+                'paybill_number'       => $this->input->post('paybill_number',       TRUE),
+                'account_info'         => $this->input->post('account_info',         TRUE),
+                'subscription_notice'  => $this->input->post('subscription_notice',  TRUE),
+                'mpesa_shortcode'      => $this->input->post('mpesa_shortcode',      TRUE),
+                'mpesa_consumer_key'   => $this->input->post('mpesa_consumer_key',   TRUE),
+                'mpesa_consumer_secret'=> $this->input->post('mpesa_consumer_secret',TRUE),
+                'mpesa_passkey'        => $this->input->post('mpesa_passkey',        TRUE),
+                'mpesa_sandbox'        => $this->input->post('mpesa_sandbox') ? 1 : 0,
+            );
+            $this->db->where('id', 1)->update('global_settings', $fields);
+            set_alert('success', 'M-Pesa settings saved successfully.');
+            redirect(current_url());
+        }
+
+        $this->data['mpesa'] = $this->db->get_where('global_settings', array('id' => 1))->row_array();
+        $this->data['title']     = 'M-Pesa / Paybill Settings';
+        $this->data['sub_page']  = 'settings/mpesa';
+        $this->data['main_menu'] = 'settings';
+        $this->load->view('layout/index', $this->data);
+    }
+
     public function branchUpdate($data)
     {
         $arrayBranch = array(

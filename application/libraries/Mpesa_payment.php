@@ -120,6 +120,32 @@ class Mpesa_payment
         );
     }
 
+    public function loadGlobalConfig()
+    {
+        $row = $this->ci->db->select('mpesa_consumer_key, mpesa_consumer_secret, mpesa_shortcode, mpesa_passkey, mpesa_sandbox')
+            ->where('id', 1)
+            ->get('global_settings')->row_array();
+
+        if ($row) {
+            $this->api_config = array(
+                'mpesa_consumer_key'    => $row['mpesa_consumer_key'],
+                'mpesa_consumer_secret' => $row['mpesa_consumer_secret'],
+                'mpesa_shortcode'       => $row['mpesa_shortcode'],
+                'mpesa_passkey'         => $row['mpesa_passkey'],
+                'mpesa_sandbox'         => $row['mpesa_sandbox'],
+                'mpesa_callback_url'    => base_url('mpesa-callback/subscription'),
+            );
+        }
+    }
+
+    public function isGlobalConfigValid()
+    {
+        return !empty($this->api_config['mpesa_consumer_key'])
+            && !empty($this->api_config['mpesa_consumer_secret'])
+            && !empty($this->api_config['mpesa_shortcode'])
+            && !empty($this->api_config['mpesa_passkey']);
+    }
+
     public function queryStatus($checkoutRequestId)
     {
         $accessToken = $this->getAccessToken();
