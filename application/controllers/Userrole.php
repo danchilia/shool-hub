@@ -459,6 +459,15 @@ class Userrole extends User_Controller
         $this->load->view('layout/index', $this->data);
     }
 
+    public function help()
+    {
+        $this->data['role']      = is_parent_loggedin() ? 'parent' : 'student';
+        $this->data['title']     = 'User Guide';
+        $this->data['main_menu'] = 'help';
+        $this->data['sub_page']  = 'help/index';
+        $this->load->view('layout/index', $this->data);
+    }
+
     public function homework()
     {
         $stu = $this->userrole_model->getStudentDetails();

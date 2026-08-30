@@ -213,6 +213,13 @@ if ((is_parent_loggedin() && !empty(get_activeChildren_id())) || is_student_logg
                             <i class="icons icon-envelope-open"></i><span><?=translate('message')?></span>
                         </a>
                     </li>
+
+                    <!-- user guide -->
+                    <li class="<?php if ($main_menu == 'help') echo 'nav-active'; ?>">
+                        <a href="<?=base_url('userrole/help')?>">
+                            <i class="fas fa-question-circle"></i><span>User Guide</span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>
