@@ -35,11 +35,11 @@
           <input type="text" name="region" class="form-control" placeholder="e.g. Nairobi North, Mombasa"
                  value="<?= set_value('region') ?>">
         </div>
-        <div class="col-md-6">
-          <label class="form-label">Password <span class="text-danger">*</span></label>
-          <input type="password" name="password" class="form-control" minlength="6" required>
-          <div class="form-text">Minimum 6 characters. Share securely with agent.</div>
-        </div>
+      </div>
+
+      <div class="alert alert-info py-2 small mb-3">
+        <i class="fas fa-envelope me-1"></i>
+        The agent will receive a welcome email with a temporary password (<strong>12345678</strong>) and will be required to change it on first login.
       </div>
 
       <div class="d-flex gap-2">
@@ -47,13 +47,5 @@
         <a href="<?= base_url('agents') ?>" class="btn btn-outline-secondary">Cancel</a>
       </div>
     </form>
-  </div>
-</div>
-
-<div class="mt-3 card border-0 shadow-sm p-3" style="max-width:600px;background:#f8f9fa">
-  <div class="small text-muted">
-    <i class="fas fa-info-circle me-1"></i>
-    After creating the agent, share their login URL:
-    <strong><?= base_url('agent_portal/login') ?></strong>
   </div>
 </div>

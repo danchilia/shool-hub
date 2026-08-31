@@ -29,7 +29,6 @@ class Agents extends Admin_Controller
             $this->form_validation->set_rules('last_name',  'Last Name',  'trim|required');
             $this->form_validation->set_rules('email',      'Email',      'trim|required|valid_email');
             $this->form_validation->set_rules('phone',      'Phone',      'trim|required');
-            $this->form_validation->set_rules('password',   'Password',   'trim|required|min_length[6]');
 
             if ($this->form_validation->run()) {
                 $email    = $this->input->post('email');
@@ -38,15 +37,43 @@ class Agents extends Admin_Controller
                 if ($existing > 0) {
                     $this->data['error'] = 'An agent with this email already exists.';
                 } else {
+                    $defaultPassword = '12345678';
+                    $firstName       = $this->input->post('first_name');
+                    $lastName        = $this->input->post('last_name');
+
                     $this->agent_model->createAgent(array(
-                        'first_name' => $this->input->post('first_name'),
-                        'last_name'  => $this->input->post('last_name'),
-                        'email'      => $email,
-                        'phone'      => $this->input->post('phone'),
-                        'region'     => $this->input->post('region'),
-                        'active'     => 1,
-                        'created_by' => get_loggedin_user_id(),
-                    ), $this->input->post('password'));
+                        'first_name'          => $firstName,
+                        'last_name'           => $lastName,
+                        'email'               => $email,
+                        'phone'               => $this->input->post('phone'),
+                        'region'              => $this->input->post('region'),
+                        'active'              => 1,
+                        'must_change_password'=> 1,
+                        'created_by'          => get_loggedin_user_id(),
+                    ), $defaultPassword);
+
+                    // Send welcome email
+                    $this->load->model('email_model');
+                    $portalUrl = base_url('agent_portal/login');
+                    $message = '
+                        <p>Dear ' . htmlspecialchars($firstName) . ',</p>
+                        <p>Welcome to the <strong>CST SchoolHub Agent Portal</strong>! Your account has been created.</p>
+                        <p>Use the details below to log in:</p>
+                        <table style="border-collapse:collapse;margin:12px 0">
+                            <tr><td style="padding:6px 14px 6px 0;font-weight:600">Portal URL:</td><td><a href="' . $portalUrl . '">' . $portalUrl . '</a></td></tr>
+                            <tr><td style="padding:6px 14px 6px 0;font-weight:600">Email:</td><td>' . htmlspecialchars($email) . '</td></tr>
+                            <tr><td style="padding:6px 14px 6px 0;font-weight:600">Temporary Password:</td><td><strong>' . $defaultPassword . '</strong></td></tr>
+                        </table>
+                        <p style="color:#e74c3c;font-weight:600">You will be required to change your password on first login.</p>
+                        <p>If you have any questions, contact the CST Solutions team.</p>
+                        <p>Best regards,<br><strong>CST Solutions</strong></p>
+                    ';
+                    $this->email_model->sendEmail(array(
+                        'recipient' => $email,
+                        'subject'   => 'Welcome to CST SchoolHub Agent Portal — Your Login Details',
+                        'message'   => $message,
+                    ));
+
                     redirect('agents');
                 }
             }

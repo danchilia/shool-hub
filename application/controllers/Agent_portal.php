@@ -18,6 +18,9 @@ class Agent_portal extends CI_Controller
         if (!$this->session->userdata('agent_loggedin')) {
             redirect('agent_portal/login');
         }
+        if ($this->session->userdata('agent_must_change_password')) {
+            redirect('agent_portal/change_password');
+        }
     }
 
     private function _agent_id()
@@ -54,12 +57,14 @@ class Agent_portal extends CI_Controller
             if ($cred && $this->app_lib->verify_password($password, $cred['password'])) {
                 $agent = $this->agent_model->getAgent($cred['user_id']);
                 if ($agent && $agent['active']) {
+                    $mustChange = !empty($agent['must_change_password']);
                     $this->session->set_userdata(array(
-                        'agent_loggedin'    => true,
-                        'loggedin_agent_id' => $agent['id'],
-                        'loggedin_agent'    => $agent,
+                        'agent_loggedin'             => true,
+                        'loggedin_agent_id'          => $agent['id'],
+                        'loggedin_agent'             => $agent,
+                        'agent_must_change_password' => $mustChange,
                     ));
-                    redirect('agent_portal');
+                    redirect($mustChange ? 'agent_portal/change_password' : 'agent_portal');
                 } else {
                     $data['error'] = 'Your account is inactive. Contact the administrator.';
                 }
@@ -287,6 +292,37 @@ class Agent_portal extends CI_Controller
     }
 
     // ─── FOLLOW-UPS ────────────────────────────────────────────────
+
+    public function change_password()
+    {
+        if (!$this->session->userdata('agent_loggedin')) {
+            redirect('agent_portal/login');
+        }
+        $agentId = $this->_agent_id();
+        $data = array('error' => '', 'success' => '');
+
+        if ($this->input->post('save')) {
+            $new     = $this->input->post('new_password');
+            $confirm = $this->input->post('confirm_password');
+            if (strlen($new) < 6) {
+                $data['error'] = 'Password must be at least 6 characters.';
+            } elseif ($new !== $confirm) {
+                $data['error'] = 'Passwords do not match.';
+            } else {
+                $this->agent_model->resetPassword($agentId, $new);
+                $this->db->where('id', $agentId)->update('agent', array('must_change_password' => 0));
+                $this->session->unset_userdata('agent_must_change_password');
+                redirect('agent_portal');
+            }
+        }
+
+        $data['_agent']      = $this->session->userdata('loggedin_agent');
+        $data['_active_url'] = $this->uri->uri_string();
+        $data['title']       = 'Set Your Password';
+        $this->load->view('agent_portal/layout/header', $data);
+        $this->load->view('agent_portal/change_password', $data);
+        $this->load->view('agent_portal/layout/footer', $data);
+    }
 
     public function my_level()
     {
