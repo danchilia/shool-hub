@@ -18,6 +18,7 @@
     <?php endif; ?>
 
     <form method="post">
+      <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
       <div style="margin-bottom:16px">
         <label style="font-size:.82rem;font-weight:600;display:block;margin-bottom:5px">New Password</label>
         <input type="password" name="new_password" required minlength="6"
