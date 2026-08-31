@@ -218,6 +218,9 @@ function ap_active($segment) {
     </a>
 
     <div class="nav-section">Finances</div>
+    <a href="<?= base_url('agent_portal/my_level') ?>" class="<?= ap_active('agent_portal/my_level') ?>">
+      <i class="fas fa-trophy"></i> My Level
+    </a>
     <a href="<?= base_url('agent_portal/earnings') ?>" class="<?= ap_active('agent_portal/earnings') ?>">
       <i class="fas fa-wallet"></i> My Earnings
     </a>

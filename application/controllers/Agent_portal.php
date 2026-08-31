@@ -288,6 +288,15 @@ class Agent_portal extends CI_Controller
 
     // ─── FOLLOW-UPS ────────────────────────────────────────────────
 
+    public function my_level()
+    {
+        $this->_require_auth();
+        $agentId = $this->_agent_id();
+        $data['level_data'] = $this->agent_model->getAgentLevelData($agentId);
+        $data['title']      = 'My Level';
+        $this->_render('agent_portal/levels/index', $data);
+    }
+
     public function followups()
     {
         $this->_require_auth();

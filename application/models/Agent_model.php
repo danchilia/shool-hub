@@ -255,6 +255,62 @@ class Agent_model extends CI_Model
         ));
     }
 
+    // ─── LEVELS ────────────────────────────────────────────────────
+
+    public function getAgentLevelData($agentId)
+    {
+        $activeSchools = $this->db->where(array('agent_id' => $agentId, 'status' => 'closed_won'))
+                                  ->count_all_results('agent_school');
+
+        // Level definitions: min_schools => [name, badge_color, has_contract]
+        $levels = array(
+            array('min' => 0,  'name' => 'Starter',      'color' => '#7f8c8d', 'contract' => false),
+            array('min' => 10, 'name' => 'Level 1',      'color' => '#cd7f32', 'contract' => true),
+            array('min' => 15, 'name' => 'Level 2',      'color' => '#95a5a6', 'contract' => true),
+            array('min' => 20, 'name' => 'Level 3',      'color' => '#f1c40f', 'contract' => true),
+            array('min' => 25, 'name' => 'Level 4',      'color' => '#2ecc71', 'contract' => true),
+            array('min' => 30, 'name' => 'Level 5',      'color' => '#3498db', 'contract' => true),
+            array('min' => 35, 'name' => 'Level 6',      'color' => '#9b59b6', 'contract' => true),
+            array('min' => 40, 'name' => 'Level 7',      'color' => '#e67e22', 'contract' => true),
+            array('min' => 45, 'name' => 'Level 8',      'color' => '#e74c3c', 'contract' => true),
+            array('min' => 50, 'name' => 'Legend',       'color' => '#c9a84c', 'contract' => true),
+        );
+
+        // Find current level
+        $current = $levels[0];
+        $currentIdx = 0;
+        foreach ($levels as $i => $lvl) {
+            if ($activeSchools >= $lvl['min']) {
+                $current = $lvl;
+                $currentIdx = $i;
+            }
+        }
+
+        // Monthly salary: 0 if under 10, else schools * 1000 capped at 50000
+        $salary = ($activeSchools < 10) ? 0 : min($activeSchools * 1000, 50000);
+
+        // Next level
+        $nextLevel = isset($levels[$currentIdx + 1]) ? $levels[$currentIdx + 1] : null;
+        $schoolsToNext = $nextLevel ? ($nextLevel['min'] - $activeSchools) : 0;
+
+        // Progress bar percent toward next level
+        $progressMin = $current['min'];
+        $progressMax = $nextLevel ? $nextLevel['min'] : $current['min'];
+        $progressPct = ($nextLevel && $progressMax > $progressMin)
+            ? min(100, round(($activeSchools - $progressMin) / ($progressMax - $progressMin) * 100))
+            : 100;
+
+        return array(
+            'active_schools' => $activeSchools,
+            'salary'         => $salary,
+            'current'        => $current,
+            'next_level'     => $nextLevel,
+            'schools_to_next'=> $schoolsToNext,
+            'progress_pct'   => $progressPct,
+            'all_levels'     => $levels,
+        );
+    }
+
     // ─── STATS ─────────────────────────────────────────────────────
 
     public function getDashboardStats($agentId)
