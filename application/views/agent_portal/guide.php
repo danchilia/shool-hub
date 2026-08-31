@@ -359,6 +359,33 @@
       </div>
     </div>
   </div>
+
+  <div class="guide-step">
+    <div class="step-num" style="background:#c9a84c">E</div>
+    <div class="step-body">
+      <div class="step-title">My Level — Career Progression & Monthly Retainer</div>
+      <div class="step-desc">
+        Go to <strong>Finances → My Level</strong> to see your current career level and monthly retainer.
+        As you grow your active school count, you move up levels and earn a higher monthly salary:
+        <ul style="margin-top:6px;padding-left:18px;line-height:2">
+          <li><strong>Starter (0–9 schools):</strong> Commission only, no monthly salary</li>
+          <li><strong>Level 1 (10 schools):</strong> KSh 10,000/month + permanent yearly contract</li>
+          <li><strong>Level 2 (15 schools):</strong> KSh 15,000/month</li>
+          <li><strong>Level 3 (20 schools):</strong> KSh 20,000/month</li>
+          <li>Continues up to <strong>Legend (50+ schools): KSh 50,000/month</strong></li>
+        </ul>
+        Your monthly retainer is only active while your schools continue paying and using the system.
+        If a school stops, it is removed from your active count — so always follow up and support your schools.
+      </div>
+      <div class="step-tip">
+        <i class="fas fa-trophy"></i>
+        <strong>Reaching Level 1 (10 active schools) qualifies you for a permanent yearly contract</strong>
+        — renewable as long as you maintain your active school count.
+        Your job does not stop at signup: keep visiting your schools, help them use the system,
+        and ensure they keep their subscription active.
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- QUICK REFERENCE -->
@@ -377,6 +404,8 @@
       <li>Receive school admin credentials from CST team</li>
       <li>Log in as school admin → enter all data to set up the school</li>
       <li>CST marks setup complete → <strong>commission added to your earnings</strong></li>
+      <li>Continue visiting & supporting your schools → check <strong>My Level</strong> as you grow</li>
+      <li>Reach <strong>10 active schools</strong> → earn monthly retainer + permanent yearly contract</li>
     </ol>
   </div>
 </div>
