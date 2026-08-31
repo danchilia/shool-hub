@@ -68,7 +68,7 @@ body {
     </button>
   </form>
 
-  <div class="portal-tag">Chilia Select Technologies · Field Agent Portal</div>
+  <div class="portal-tag">CST Solutions · Field Agent Portal</div>
 </div>
 <script src="<?= base_url('assets/vendor/bootstrap5/js/bootstrap.bundle.min.js') ?>"></script>
 </body>
