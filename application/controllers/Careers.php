@@ -79,7 +79,7 @@ class Careers extends MY_Controller {
                 <div style='color:#333;line-height:1.7;'>{$body}</div>
             </div>
             <p style='text-align:center;color:#999;font-size:12px;margin-top:12px;'>
-                &copy; " . date('Y') . " Chilia Select Technologies. All rights reserved.
+                &copy; " . date('Y') . " CST. All rights reserved.
             </p>
         </div>";
     }

@@ -6,7 +6,7 @@
 	<meta content="width=device-width,initial-scale=1" name="viewport">
 	<meta name="keywords" content="">
 	<meta name="description" content="CST SchoolHub - School Management System">
-	<meta name="author" content="Chilia Select Technologies">
+	<meta name="author" content="CST">
 	<title><?php echo translate('login');?></title>
 	<link rel="shortcut icon" href="<?php echo base_url('assets/images/favicon.png');?>">
     
