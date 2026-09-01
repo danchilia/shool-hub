@@ -58,7 +58,7 @@ table.lvl-table tr.is-current td { background: <?=$c?>18; }
         <?php if ($salary > 0): ?>
             Monthly Retainer: <strong>KSh <?= number_format($salary) ?></strong>
         <?php else: ?>
-            Bring <strong>10 active schools</strong> to start earning a monthly retainer
+            Earning: <strong>Commission per sign-up</strong> + Visit Expenses (max KSh 300/school)
         <?php endif; ?>
     </p>
 
@@ -143,12 +143,12 @@ table.lvl-table tr.is-current td { background: <?=$c?>18; }
                     <?php endif; ?>
                 </td>
                 <td><?= $lvl['min'] === 0 ? '0 – 9' : ($lvl['min'] === 50 ? '50+' : $lvl['min'] . ' – ' . ($lvl['min'] + 4)) ?></td>
-                <td><?= $lvlSalary > 0 ? 'KSh ' . number_format($lvlSalary) . '/month' : '—' ?></td>
+                <td><?= $lvlSalary > 0 ? 'KSh ' . number_format($lvlSalary) . '/month' : 'Commission + Expenses' ?></td>
                 <td>
                     <?php if ($lvl['contract']): ?>
                         <span style="color:#27ae60;font-weight:600"><i class="fas fa-check-circle me-1"></i>Yearly (Renewable)</span>
                     <?php else: ?>
-                        <span style="color:#aaa">Commission only</span>
+                        <span style="color:#aaa">Performance basis</span>
                     <?php endif; ?>
                 </td>
             </tr>
@@ -158,6 +158,6 @@ table.lvl-table tr.is-current td { background: <?=$c?>18; }
 </div>
 
 <p style="font-size:.78rem;color:var(--ap-muted);margin-top:12px;padding:0 4px">
-    * Monthly retainer is paid while your active schools continue using and paying for the system.
-    A school that stops paying is removed from your active count.
+    * Starter (0–9 schools): earn commission when a school signs up + expense reimbursement (max KSh 300 per school visit, paid end of month). No monthly retainer yet.<br>
+    * Level 1 and above: monthly retainer applies while your active schools continue paying. A school that stops paying is removed from your active count.
 </p>

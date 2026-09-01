@@ -141,7 +141,7 @@
           <li>What happened (outcome)</li>
           <li>Next follow-up date if needed</li>
         </ul>
-        Logging visits also generates your <strong>visit fee</strong> which is added to your earnings.
+        Logging visits supports your <strong>expense claims</strong> — always log a visit before submitting an expense for that school.
       </div>
       <div class="step-tip">
         <i class="fas fa-lightbulb"></i>
@@ -314,9 +314,14 @@
     <div class="step-body">
       <div class="step-title">Expense Claims</div>
       <div class="step-desc">
-        If you spend money visiting schools (transport, printing, etc.), you can claim reimbursement.
-        Go to <strong>Finances → Expense Claims</strong>, click <strong>"Add Expense"</strong>, fill in the description,
-        amount, and the school it relates to. CST will review and approve legitimate claims.
+        When you visit a school, you can claim transport and visit expenses. Go to <strong>Finances → Expense Claims</strong>,
+        select the school you visited, describe the cost, and enter the amount.
+        <ul style="margin-top:6px;padding-left:18px;line-height:2">
+          <li>Maximum <strong>KSh 300 per school visit</strong></li>
+          <li>Claims are reviewed and paid at the <strong>end of the month</strong></li>
+          <li>You must select a school — expenses must be linked to a visit</li>
+          <li>CST reserves the right to reject claims that are not legitimate visit costs</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -368,7 +373,7 @@
         Go to <strong>Finances → My Level</strong> to see your current career level and monthly retainer.
         As you grow your active school count, you move up levels and earn a higher monthly salary:
         <ul style="margin-top:6px;padding-left:18px;line-height:2">
-          <li><strong>Starter (0–9 schools):</strong> Commission only, no monthly salary</li>
+          <li><strong>Starter (0–9 schools):</strong> Commission when a school signs up + visit expense reimbursement (max KSh 300/school). No monthly salary yet.</li>
           <li><strong>Level 1 (10 schools):</strong> KSh 10,000/month + permanent yearly contract</li>
           <li><strong>Level 2 (15 schools):</strong> KSh 15,000/month</li>
           <li><strong>Level 3 (20 schools):</strong> KSh 20,000/month</li>

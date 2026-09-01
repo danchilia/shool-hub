@@ -372,13 +372,19 @@ class Agent_portal extends CI_Controller
 
         if ($this->input->post('save')) {
             $this->form_validation->set_rules('description', 'Description', 'trim|required');
-            $this->form_validation->set_rules('amount', 'Amount', 'trim|required|numeric');
+            $this->form_validation->set_rules('school_id',  'School',       'trim|required');
+            $this->form_validation->set_rules('amount',     'Amount',       'trim|required|numeric');
             if ($this->form_validation->run()) {
+                $amount = (float) $this->input->post('amount');
+                if ($amount > 300) {
+                    $this->session->set_flashdata('expense_error', 'Expense claim cannot exceed KSh 300 per school visit.');
+                    redirect('agent_portal/expenses');
+                }
                 $this->agent_model->addExpense(array(
                     'agent_id'    => $agentId,
                     'school_id'   => (int) $this->input->post('school_id') ?: null,
                     'description' => $this->input->post('description'),
-                    'amount'      => $this->input->post('amount'),
+                    'amount'      => $amount,
                     'status'      => 'pending',
                 ));
                 redirect('agent_portal/expenses');

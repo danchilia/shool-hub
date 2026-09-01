@@ -4,16 +4,25 @@
     <div class="ap-card">
       <div class="ap-card-header">Submit Expense Claim</div>
       <div class="ap-card-body">
+
+        <div style="background:rgba(243,156,18,.09);border-left:3px solid var(--ap-accent);border-radius:6px;padding:10px 13px;font-size:.8rem;color:var(--ap-text);margin-bottom:16px;line-height:1.6">
+          <i class="fas fa-info-circle me-1" style="color:var(--ap-accent)"></i>
+          Expenses cover school visit costs only. Maximum <strong>KSh 300 per school visit</strong>. Claims are reviewed and paid at the <strong>end of the month</strong>.
+        </div>
+
         <?php if (validation_errors()): ?>
         <div class="alert alert-danger" style="font-size:.82rem"><?= validation_errors() ?></div>
+        <?php endif; ?>
+        <?php if ($this->session->flashdata('expense_error')): ?>
+        <div class="alert alert-danger" style="font-size:.82rem"><?= $this->session->flashdata('expense_error') ?></div>
         <?php endif; ?>
         <form method="post" action="<?= base_url('agent_portal/expenses') ?>">
           <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
           <input type="hidden" name="save" value="1">
           <div class="mb-3">
-            <label class="form-label" style="font-size:.82rem">School (optional)</label>
-            <select name="school_id" class="form-select form-select-sm">
-              <option value="">— not school-specific —</option>
+            <label class="form-label" style="font-size:.82rem">School Visited <span class="text-danger">*</span></label>
+            <select name="school_id" class="form-select form-select-sm" required>
+              <option value="">— select school —</option>
               <?php foreach ($schools as $sch): ?>
                 <option value="<?= $sch['id'] ?>"><?= htmlspecialchars($sch['school_name']) ?></option>
               <?php endforeach; ?>
@@ -22,12 +31,13 @@
           <div class="mb-3">
             <label class="form-label" style="font-size:.82rem">Description <span class="text-danger">*</span></label>
             <input type="text" name="description" class="form-control form-control-sm"
-                   placeholder="e.g. Matatu fare to Thika" value="<?= set_value('description') ?>">
+                   placeholder="e.g. Matatu fare to school" value="<?= set_value('description') ?>">
           </div>
           <div class="mb-3">
             <label class="form-label" style="font-size:.82rem">Amount (KSh) <span class="text-danger">*</span></label>
-            <input type="number" name="amount" class="form-control form-control-sm" min="0" step="0.01"
-                   value="<?= set_value('amount') ?>">
+            <input type="number" name="amount" class="form-control form-control-sm" min="1" max="300" step="1"
+                   value="<?= set_value('amount') ?>" placeholder="Max KSh 300">
+            <div style="font-size:.75rem;color:var(--ap-muted);margin-top:3px">Maximum KSh 300 per school visit</div>
           </div>
           <button type="submit" class="ap-btn-primary w-100" style="font-size:.85rem">
             <i class="fas fa-paper-plane me-1"></i>Submit Claim
