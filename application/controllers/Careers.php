@@ -224,6 +224,7 @@ class Careers extends MY_Controller {
             $app_id = $this->careers_model->save_application([
                 'position_id'  => $position_id,
                 'applicant_id' => $applicant_id,
+                'county'       => $this->input->post('county', true),
                 'cover_letter' => $this->input->post('cover_letter', true),
                 'cv_orig_name' => $cv_orig,
                 'cv_enc_name'  => $cv_enc,

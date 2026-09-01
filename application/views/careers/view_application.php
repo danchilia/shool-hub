@@ -21,6 +21,7 @@
                 <tr><td class="text-muted">Department</td><td><?php echo html_escape($app['department']) ?: '—'; ?></td></tr>
                 <tr><td class="text-muted">Email</td><td><a href="mailto:<?php echo html_escape($app['email']); ?>"><?php echo html_escape($app['email']); ?></a></td></tr>
                 <tr><td class="text-muted">Phone</td><td><?php echo html_escape($app['phone']); ?></td></tr>
+                <tr><td class="text-muted">County</td><td><?php echo !empty($app['county']) ? html_escape($app['county']) : '—'; ?></td></tr>
                 <tr><td class="text-muted">Applied</td><td><?php echo date('d F Y', strtotime($app['created_at'])); ?></td></tr>
                 <tr>
                     <td class="text-muted">CV</td>

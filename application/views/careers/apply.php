@@ -26,6 +26,20 @@
             <div class="form-text">Accepted: PDF, DOC, DOCX &nbsp;·&nbsp; Max size: 5 MB</div>
         </div>
 
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Current County <span class="text-danger">*</span></label>
+            <select name="county" class="form-control" required>
+                <option value="">-- Select your county --</option>
+                <?php
+                $counties = ['Baringo','Bomet','Bungoma','Busia','Elgeyo-Marakwet','Embu','Garissa','Homa Bay','Isiolo','Kajiado','Kakamega','Kericho','Kiambu','Kilifi','Kirinyaga','Kisii','Kisumu','Kitui','Kwale','Laikipia','Lamu','Machakos','Makueni','Mandera','Marsabit','Meru','Migori','Mombasa','Murang\'a','Nairobi','Nakuru','Nandi','Narok','Nyamira','Nyandarua','Nyeri','Samburu','Siaya','Taita-Taveta','Tana River','Tharaka-Nithi','Trans Nzoia','Turkana','Uasin Gishu','Vihiga','Wajir','West Pokot'];
+                $selected = set_value('county');
+                foreach ($counties as $c):
+                ?>
+                <option value="<?php echo $c; ?>" <?php echo ($selected === $c) ? 'selected' : ''; ?>><?php echo $c; ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
         <div class="mb-4">
             <label class="form-label fw-semibold">
                 Cover Letter <span class="text-muted fw-normal">(optional)</span>
