@@ -50,7 +50,7 @@
       <p>This agreement is between <strong>CST Solutions</strong> ("the Company") and the individual named in the agent account ("the Agent").</p>
 
       <h5>2. Nature of Engagement</h5>
-      <p>The Agent is engaged on a <strong>performance basis</strong> and is not an employee of CST Solutions. The Agent operates as an independent representative responsible for identifying and onboarding schools onto the CST SchoolHub platform.</p>
+      <p>The Agent is engaged on a <strong>performance basis</strong> and represents CST Solutions as an independent field representative responsible for identifying and onboarding schools onto the CST SchoolHub platform.</p>
 
       <h5>3. Earnings Structure</h5>
       <ul>
