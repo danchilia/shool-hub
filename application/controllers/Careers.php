@@ -191,11 +191,23 @@ class Careers extends MY_Controller {
             redirect(base_url('careers/dashboard'));
         }
 
+        $applicant      = $this->db->get_where('career_applicants', array('id' => $applicant_id))->row_array();
         $data['job']        = $job;
+        $data['applicant']  = $applicant;
         $data['page_title'] = 'Apply — ' . $job['title'];
         $data['error']      = '';
 
         if ($this->input->post()) {
+            // Update contact info if changed
+            $newPhone = trim($this->input->post('phone'));
+            $newEmail = trim($this->input->post('contact_email'));
+            if ($newPhone || $newEmail) {
+                $update = array();
+                if ($newPhone) $update['phone'] = $newPhone;
+                if ($newEmail) $update['email'] = $newEmail;
+                $this->db->where('id', $applicant_id)->update('career_applicants', $update);
+            }
+
             if (empty($_FILES['cv']['name'])) {
                 $data['error'] = 'Please upload your CV (PDF or DOC, max 5MB).';
                 $this->public_view('apply', $data);

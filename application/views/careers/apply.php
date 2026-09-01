@@ -20,6 +20,25 @@
 
         <?php echo form_open_multipart('careers/apply/' . $job['id']); ?>
 
+        <div class="mb-3 p-3 rounded" style="background:#f0f4f8;border:1px solid #d0dce8">
+            <p class="mb-2 small fw-semibold text-muted">CONTACT DETAILS FOR COMMUNICATION</p>
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold" style="font-size:.85rem">Phone Number <span class="text-danger">*</span></label>
+                    <input type="tel" name="phone" class="form-control" required
+                           value="<?php echo htmlspecialchars($applicant['phone'] ?? set_value('phone')); ?>"
+                           placeholder="e.g. 0712345678">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold" style="font-size:.85rem">Email Address <span class="text-danger">*</span></label>
+                    <input type="email" name="contact_email" class="form-control" required
+                           value="<?php echo htmlspecialchars($applicant['email'] ?? set_value('contact_email')); ?>"
+                           placeholder="your@email.com">
+                </div>
+            </div>
+            <div class="form-text">These contacts will be used to reach you regarding your application.</div>
+        </div>
+
         <div class="mb-3">
             <label class="form-label fw-semibold">Upload CV / Resume <span class="text-danger">*</span></label>
             <input type="file" name="cv" class="form-control" accept=".pdf,.doc,.docx" required>
