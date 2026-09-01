@@ -54,13 +54,21 @@ table.lvl-table tr.is-current td { background: <?=$c?>18; }
 <div class="lvl-hero">
     <div class="lvl-badge"><i class="fas fa-trophy me-1"></i> Your Level</div>
     <div class="lvl-name"><?= htmlspecialchars($current['name']) ?></div>
-    <p class="lvl-salary">
-        <?php if ($salary > 0): ?>
-            Monthly Retainer: <strong>KSh <?= number_format($salary) ?></strong>
-        <?php else: ?>
-            Earning: <strong>Commission per sign-up</strong> + Visit Expenses (max KSh 300/school)
-        <?php endif; ?>
-    </p>
+    <?php if ($salary > 0): ?>
+    <p class="lvl-salary">Monthly Retainer: <strong>KSh <?= number_format($salary) ?>/month</strong></p>
+    <?php else: ?>
+    <div style="margin-top:10px;font-size:.88rem;line-height:1.8;opacity:.95">
+        <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:6px">
+            <span><i class="fas fa-handshake me-1" style="opacity:.8"></i> Commission per sign-up: <strong>KSh 500</strong></span>
+            <span><i class="fas fa-car me-1" style="opacity:.8"></i> Visit expense (max): <strong>KSh 300</strong></span>
+            <span style="background:rgba(255,255,255,.2);border-radius:20px;padding:2px 12px"><i class="fas fa-equals me-1"></i> Up to <strong>KSh 800 per school</strong></span>
+        </div>
+        <div style="font-size:.78rem;opacity:.8">
+            <i class="fas fa-arrow-circle-right me-1"></i>
+            Onboard <strong>10 active schools</strong> → unlock monthly salary + permanent yearly contract (renewable)
+        </div>
+    </div>
+    <?php endif; ?>
 
     <?php if ($current['contract']): ?>
     <div class="lvl-contract-badge">
