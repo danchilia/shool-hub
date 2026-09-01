@@ -371,4 +371,79 @@ class Agent_model extends CI_Model
             'total_commission'=> $total_comm['amount'] ?: 0,
         );
     }
+
+    // ─── AGREEMENTS (DIGITAL TERMS) ────────────────────────────────
+
+    public function hasAcceptedTerms($agentId)
+    {
+        return $this->db->where(array('agent_id' => $agentId, 'type' => 'starter_terms'))
+                        ->count_all_results('agent_agreements') > 0;
+    }
+
+    public function acceptTerms($agentId, $ip)
+    {
+        $this->db->insert('agent_agreements', array(
+            'agent_id'    => $agentId,
+            'type'        => 'starter_terms',
+            'accepted_at' => date('Y-m-d H:i:s'),
+            'ip_address'  => $ip,
+        ));
+    }
+
+    public function getAgreement($agentId)
+    {
+        return $this->db->where(array('agent_id' => $agentId, 'type' => 'starter_terms'))
+                        ->get('agent_agreements')->row_array();
+    }
+
+    // ─── CONTRACTS (PHYSICAL SIGNED UPLOAD) ───────────────────────
+
+    public function getContract($agentId)
+    {
+        return $this->db->get_where('agent_contracts', array('agent_id' => $agentId))->row_array();
+    }
+
+    public function createContractRecord($agentId, $levelName)
+    {
+        $existing = $this->getContract($agentId);
+        if ($existing) return;
+        $this->db->insert('agent_contracts', array(
+            'agent_id'   => $agentId,
+            'level_name' => $levelName,
+            'status'     => 'pending_upload',
+            'created_at' => date('Y-m-d H:i:s'),
+        ));
+    }
+
+    public function uploadContract($agentId, $filePath, $levelName)
+    {
+        $existing = $this->getContract($agentId);
+        if ($existing) {
+            $this->db->where('agent_id', $agentId)->update('agent_contracts', array(
+                'file_path'   => $filePath,
+                'level_name'  => $levelName,
+                'uploaded_at' => date('Y-m-d H:i:s'),
+                'status'      => 'uploaded',
+            ));
+        } else {
+            $this->db->insert('agent_contracts', array(
+                'agent_id'    => $agentId,
+                'level_name'  => $levelName,
+                'file_path'   => $filePath,
+                'uploaded_at' => date('Y-m-d H:i:s'),
+                'status'      => 'uploaded',
+                'created_at'  => date('Y-m-d H:i:s'),
+            ));
+        }
+    }
+
+    public function reviewContract($agentId, $status, $note, $reviewedBy)
+    {
+        $this->db->where('agent_id', $agentId)->update('agent_contracts', array(
+            'status'      => $status,
+            'review_note' => $note,
+            'reviewed_by' => $reviewedBy,
+            'reviewed_at' => date('Y-m-d H:i:s'),
+        ));
+    }
 }

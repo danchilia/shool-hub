@@ -90,6 +90,84 @@
     </div>
   </div>
 
+  <!-- Agreement & Contract -->
+  <div class="col-12">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-bold">Agreements & Contract</div>
+      <div class="card-body">
+        <div class="row g-4">
+
+          <!-- Starter Terms -->
+          <div class="col-md-5">
+            <div style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:10px">Starter Terms & Conditions</div>
+            <?php if (!empty($agreement)): ?>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="color:#27ae60;font-size:1.1rem"><i class="fas fa-check-circle"></i></span>
+              <div>
+                <div style="font-weight:600;font-size:.88rem">Accepted</div>
+                <div style="font-size:.78rem;color:#888">
+                  <?= date('d M Y, H:i', strtotime($agreement['accepted_at'])) ?>
+                  &nbsp;·&nbsp; IP: <?= htmlspecialchars($agreement['ip_address']) ?>
+                </div>
+              </div>
+            </div>
+            <?php else: ?>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="color:#e67e22;font-size:1.1rem"><i class="fas fa-clock"></i></span>
+              <div style="font-size:.86rem;color:#888">Not yet accepted</div>
+            </div>
+            <?php endif; ?>
+          </div>
+
+          <!-- Signed Contract -->
+          <div class="col-md-7">
+            <div style="font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:10px">Signed Employment Contract</div>
+            <?php
+            $cStatuses = array(
+                'pending_upload' => array('color'=>'#e67e22','label'=>'Awaiting Upload'),
+                'uploaded'       => array('color'=>'#3498db','label'=>'Uploaded — Pending Review'),
+                'verified'       => array('color'=>'#27ae60','label'=>'Verified & Active'),
+                'rejected'       => array('color'=>'#e74c3c','label'=>'Rejected'),
+            );
+            ?>
+            <?php if (!empty($contract)): ?>
+            <?php $cs = $cStatuses[$contract['status']] ?? $cStatuses['pending_upload']; ?>
+            <div class="d-flex align-items-center gap-3 mb-2 flex-wrap">
+              <span style="background:<?= $cs['color'] ?>22;color:<?= $cs['color'] ?>;border-radius:20px;padding:4px 14px;font-size:.78rem;font-weight:700">
+                <?= $cs['label'] ?>
+              </span>
+              <span style="font-size:.78rem;color:#888">Level: <?= htmlspecialchars($contract['level_name']) ?></span>
+              <?php if ($contract['uploaded_at']): ?>
+              <span style="font-size:.78rem;color:#888">Uploaded: <?= date('d M Y', strtotime($contract['uploaded_at'])) ?></span>
+              <?php endif; ?>
+              <?php if (!empty($contract['file_path'])): ?>
+              <a href="<?= base_url('agents/download_agent_contract/' . $agent['id']) ?>" class="btn btn-xs btn-sm btn-outline-secondary" style="font-size:.75rem">
+                <i class="fas fa-download me-1"></i>Download Signed Copy
+              </a>
+              <?php endif; ?>
+            </div>
+            <?php if ($contract['status'] === 'uploaded'): ?>
+            <form method="post" action="<?= base_url('agents/review_contract/' . $agent['id']) ?>" class="mt-2">
+              <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
+              <div class="d-flex gap-2 flex-wrap align-items-end">
+                <div style="flex:1;min-width:200px">
+                  <input type="text" name="note" class="form-control form-control-sm" placeholder="Review note (optional)">
+                </div>
+                <button name="status" value="verified" class="btn btn-sm btn-success"><i class="fas fa-check me-1"></i>Verify</button>
+                <button name="status" value="rejected" class="btn btn-sm btn-danger"><i class="fas fa-times me-1"></i>Reject</button>
+              </div>
+            </form>
+            <?php endif; ?>
+            <?php else: ?>
+            <div style="font-size:.86rem;color:#888">No contract uploaded yet.</div>
+            <?php endif; ?>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Recent visits -->
   <div class="col-12">
     <div class="card border-0 shadow-sm">

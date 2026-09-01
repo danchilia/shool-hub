@@ -221,6 +221,9 @@ function ap_active($segment) {
     <a href="<?= base_url('agent_portal/my_level') ?>" class="<?= ap_active('agent_portal/my_level') ?>">
       <i class="fas fa-trophy"></i> My Level
     </a>
+    <a href="<?= base_url('agent_portal/my_contract') ?>" class="<?= ap_active('agent_portal/my_contract') ?>">
+      <i class="fas fa-file-contract"></i> My Contract
+    </a>
     <a href="<?= base_url('agent_portal/earnings') ?>" class="<?= ap_active('agent_portal/earnings') ?>">
       <i class="fas fa-wallet"></i> My Earnings
     </a>

@@ -135,10 +135,33 @@ class Agents extends Admin_Controller
         $this->data['schools']   = $this->agent_model->getSchools($id);
         $this->data['visits']    = $this->agent_model->getVisits($id, null, 10);
         $this->data['earnings']  = $this->agent_model->getEarnings($id);
+        $this->data['agreement'] = $this->agent_model->getAgreement($id);
+        $this->data['contract']  = $this->agent_model->getContract($id);
         $this->data['title']     = $agent['first_name'] . ' ' . $agent['last_name'];
         $this->data['sub_page']  = 'agents/view';
         $this->data['main_menu'] = 'agents';
         $this->load->view('layout/index', $this->data);
+    }
+
+    public function review_contract($agentId = '')
+    {
+        $status = $this->input->post('status');
+        $note   = $this->input->post('note', true);
+        $this->agent_model->reviewContract($agentId, $status, $note, get_loggedin_user_id());
+        redirect('agents/view/' . $agentId);
+    }
+
+    public function download_agent_contract($agentId = '')
+    {
+        $contract = $this->agent_model->getContract($agentId);
+        if (!$contract || empty($contract['file_path'])) show_404();
+        $file = FCPATH . $contract['file_path'];
+        if (!file_exists($file)) show_404();
+        $this->load->helper('download');
+        $ext  = pathinfo($file, PATHINFO_EXTENSION);
+        $agent = $this->agent_model->getAgent($agentId);
+        $name = preg_replace('/[^a-zA-Z0-9_]/', '_', $agent['first_name'] . '_' . $agent['last_name']);
+        force_download('Signed_Contract_' . $name . '.' . $ext, file_get_contents($file));
     }
 
     public function earnings()

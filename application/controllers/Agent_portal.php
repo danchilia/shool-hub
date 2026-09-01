@@ -21,6 +21,14 @@ class Agent_portal extends CI_Controller
         if ($this->session->userdata('agent_must_change_password')) {
             redirect('agent_portal/change_password');
         }
+        // Skip terms check on the terms page itself
+        $current = $this->uri->uri_string();
+        if (strpos($current, 'agent_portal/terms') === false &&
+            strpos($current, 'agent_portal/logout') === false) {
+            if (!$this->agent_model->hasAcceptedTerms($this->_agent_id())) {
+                redirect('agent_portal/terms');
+            }
+        }
     }
 
     private function _agent_id()
@@ -333,6 +341,78 @@ class Agent_portal extends CI_Controller
         $this->_render('agent_portal/levels/index', $data);
     }
 
+    // ─── TERMS ACCEPTANCE ─────────────────────────────────────────
+
+    public function terms()
+    {
+        if (!$this->session->userdata('agent_loggedin')) {
+            redirect('agent_portal/login');
+        }
+        if ($this->session->userdata('agent_must_change_password')) {
+            redirect('agent_portal/change_password');
+        }
+
+        $agentId = $this->_agent_id();
+
+        if ($this->agent_model->hasAcceptedTerms($agentId)) {
+            redirect('agent_portal');
+        }
+
+        $data = array('error' => '');
+
+        if ($this->input->post('accept')) {
+            if ($this->input->post('i_agree') != '1') {
+                $data['error'] = 'You must check the box to confirm you have read and agree to the terms.';
+            } else {
+                $this->agent_model->acceptTerms($agentId, $this->input->ip_address());
+                redirect('agent_portal');
+            }
+        }
+
+        $data['title'] = 'Agent Terms & Conditions';
+        $this->_render('agent_portal/terms', $data);
+    }
+
+    // ─── CONTRACT UPLOAD ──────────────────────────────────────────
+
+    public function my_contract()
+    {
+        $this->_require_auth();
+        $agentId   = $this->_agent_id();
+        $levelData = $this->agent_model->getAgentLevelData($agentId);
+        $contract  = $this->agent_model->getContract($agentId);
+
+        if ($this->input->post('upload') && !empty($_FILES['contract_file']['name'])) {
+            $uploadPath = './uploads/documents/agent_contracts/';
+            if (!is_dir($uploadPath)) mkdir($uploadPath, 0755, true);
+
+            $this->load->library('upload', array(
+                'upload_path'   => $uploadPath,
+                'allowed_types' => 'pdf|jpg|jpeg|png',
+                'max_size'      => 10240,
+                'encrypt_name'  => true,
+            ));
+
+            if ($this->upload->do_upload('contract_file')) {
+                $file = $this->upload->data();
+                $this->agent_model->uploadContract(
+                    $agentId,
+                    'uploads/documents/agent_contracts/' . $file['file_name'],
+                    $levelData['current']['name']
+                );
+                $this->session->set_flashdata('contract_success', 'Contract uploaded successfully. CST will review and verify it.');
+                redirect('agent_portal/my_contract');
+            } else {
+                $data['upload_error'] = $this->upload->display_errors('', '');
+            }
+        }
+
+        $data['contract']   = $this->agent_model->getContract($agentId);
+        $data['level_data'] = $levelData;
+        $data['title']      = 'My Contract';
+        $this->_render('agent_portal/contract/index', $data);
+    }
+
     public function followups()
     {
         $this->_require_auth();
@@ -395,6 +475,116 @@ class Agent_portal extends CI_Controller
         $data['schools']  = $this->agent_model->getSchools($agentId);
         $data['title']    = 'Expense Claims';
         $this->_render('agent_portal/expenses/index', $data);
+    }
+
+    // ─── DOWNLOAD CONTRACT TEMPLATE ───────────────────────────────
+
+    public function download_contract()
+    {
+        $this->_require_auth();
+        $agentId   = $this->_agent_id();
+        $agent     = $this->agent_model->getAgent($agentId);
+        $levelData = $this->agent_model->getAgentLevelData($agentId);
+        $level     = $levelData['current']['name'];
+        $date      = date('d F Y');
+        $salary    = $levelData['salary'] > 0 ? 'KSh ' . number_format($levelData['salary']) . ' per month' : 'As per the active level schedule';
+
+        $html = '<!DOCTYPE html><html><head><meta charset="UTF-8">
+<style>
+body{font-family:Arial,sans-serif;font-size:13px;color:#222;margin:40px;line-height:1.8}
+h1{font-size:18px;text-align:center;margin-bottom:4px}
+.center{text-align:center}
+.section{margin:24px 0}
+h3{font-size:14px;margin:16px 0 6px;text-decoration:underline}
+p{margin:8px 0}
+.sign-block{margin-top:60px;display:flex;justify-content:space-between}
+.sign-line{border-top:1px solid #000;width:220px;margin-top:48px;font-size:11px;text-align:center;padding-top:4px}
+</style>
+</head><body>
+<div class="center">
+<h1>CST SOLUTIONS</h1>
+<p style="font-size:12px;color:#555">Building Digital Solutions for a Better Tomorrow</p>
+<hr>
+<h1 style="margin-top:16px">FIELD AGENT EMPLOYMENT CONTRACT</h1>
+<p style="font-size:12px">Level: <strong>' . htmlspecialchars($level) . '</strong> &nbsp;|&nbsp; Date: <strong>' . $date . '</strong></p>
+</div>
+
+<div class="section">
+<h3>1. PARTIES</h3>
+<p>This contract is entered into between <strong>CST Solutions</strong> (hereinafter "the Company") and:</p>
+<p>Full Name: <strong>' . htmlspecialchars($agent['first_name'] . ' ' . $agent['last_name']) . '</strong></p>
+<p>Email: <strong>' . htmlspecialchars($agent['email']) . '</strong></p>
+<p>Phone: <strong>' . htmlspecialchars($agent['phone'] ?? '') . '</strong></p>
+<p>Region: <strong>' . htmlspecialchars($agent['region'] ?? '') . '</strong></p>
+<p>(hereinafter "the Agent")</p>
+</div>
+
+<div class="section">
+<h3>2. NATURE OF CONTRACT</h3>
+<p>This is a <strong>one-year employment contract</strong> commencing on the date of signing and valid for twelve (12) months. The contract is renewable based on the Agent\'s continued performance and active school portfolio.</p>
+</div>
+
+<div class="section">
+<h3>3. MONTHLY RETAINER</h3>
+<p>The Agent is entitled to a monthly retainer of <strong>' . $salary . '</strong>, payable while their active school portfolio is maintained as per the levels schedule.</p>
+<p>The retainer is calculated at KSh 1,000 per active school per month, up to a maximum of KSh 50,000 per month. A school is active as long as it continues paying and using the CST SchoolHub platform.</p>
+</div>
+
+<div class="section">
+<h3>4. AGENT RESPONSIBILITIES</h3>
+<p>The Agent agrees to:</p>
+<ul>
+<li>Identify and visit potential schools in their assigned region</li>
+<li>Present and demonstrate the CST SchoolHub platform professionally and honestly</li>
+<li>Provide ongoing customer care and follow-up support to all schools in their portfolio</li>
+<li>Submit accurate visit reports and updates as required</li>
+<li>Maintain professional conduct and uphold the reputation of CST Solutions</li>
+</ul>
+</div>
+
+<div class="section">
+<h3>5. EXPENSE REIMBURSEMENT</h3>
+<p>The Company will reimburse legitimate school visit expenses up to a maximum of <strong>KSh 300 per school visit</strong>, paid at the end of each month upon approval of claims submitted through the agent portal.</p>
+</div>
+
+<div class="section">
+<h3>6. CONFIDENTIALITY</h3>
+<p>The Agent shall not disclose any proprietary information, client data, pricing, or business strategies of CST Solutions to any third party during or after the term of this contract.</p>
+</div>
+
+<div class="section">
+<h3>7. TERMINATION</h3>
+<p>Either party may terminate this contract by providing <strong>14 days written notice</strong>. The Company reserves the right to terminate immediately in cases of misconduct, dishonesty, or material breach of this contract.</p>
+</div>
+
+<div class="section">
+<h3>8. CONTRACT RENEWAL</h3>
+<p>This contract is renewable annually based on the Agent\'s performance and active portfolio. The Company will review and notify the Agent of renewal terms at least 30 days before expiry.</p>
+</div>
+
+<div class="section">
+<h3>9. GOVERNING LAW</h3>
+<p>This contract is governed by the laws of Kenya. Any disputes shall be resolved through mutual negotiation or through the appropriate Kenyan courts.</p>
+</div>
+
+<div class="sign-block">
+  <div>
+    <div class="sign-line">Signature of Agent</div>
+    <p style="font-size:11px;margin:4px 0 0">Name: ' . htmlspecialchars($agent['first_name'] . ' ' . $agent['last_name']) . '</p>
+    <p style="font-size:11px;margin:2px 0">Date: ___________________</p>
+  </div>
+  <div>
+    <div class="sign-line">Authorized Signatory — CST Solutions</div>
+    <p style="font-size:11px;margin:4px 0 0">Name: ___________________</p>
+    <p style="font-size:11px;margin:2px 0">Date: ___________________</p>
+  </div>
+</div>
+</body></html>';
+
+        header('Content-Type: text/html');
+        header('Content-Disposition: attachment; filename="CST_Agent_Contract_' . preg_replace('/[^a-zA-Z0-9]/', '_', $agent['first_name'] . '_' . $agent['last_name']) . '.html"');
+        echo $html;
+        exit;
     }
 
     // ─── DOWNLOAD BROCHURE ─────────────────────────────────────────
