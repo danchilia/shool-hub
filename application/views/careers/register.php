@@ -11,6 +11,7 @@
         <?php endif; ?>
 
         <?php echo form_open('careers/register'); ?>
+        <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
         <div class="mb-3">
             <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
             <input type="text" name="full_name" class="form-control" value="<?php echo set_value('full_name'); ?>" required>

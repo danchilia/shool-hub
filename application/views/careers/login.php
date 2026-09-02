@@ -11,6 +11,7 @@
         <?php endif; ?>
 
         <?php echo form_open('careers/login'); ?>
+        <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
         <div class="mb-3">
             <label class="form-label fw-semibold">Email Address</label>
             <input type="email" name="email" class="form-control" value="<?php echo set_value('email'); ?>" required autofocus>

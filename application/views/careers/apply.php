@@ -19,6 +19,7 @@
         <?php endif; ?>
 
         <?php echo form_open_multipart('careers/apply/' . $job['id']); ?>
+        <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
 
         <div class="mb-3 p-3 rounded" style="background:#f0f4f8;border:1px solid #d0dce8">
             <p class="mb-2 small fw-semibold text-muted">CONTACT DETAILS FOR COMMUNICATION</p>
