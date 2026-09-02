@@ -214,7 +214,7 @@ class Careers extends MY_Controller {
                 return;
             }
 
-            $upload_path = './uploads/documents/careers/';
+            $upload_path = FCPATH . 'uploads/documents/careers/';
             if (!is_dir($upload_path)) mkdir($upload_path, 0755, true);
 
             $this->load->library('upload', [
