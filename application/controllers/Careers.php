@@ -217,21 +217,34 @@ class Careers extends MY_Controller {
             $upload_path = FCPATH . 'uploads/documents/careers/';
             if (!is_dir($upload_path)) mkdir($upload_path, 0755, true);
 
-            $this->load->library('upload', [
-                'upload_path'   => $upload_path,
-                'allowed_types' => 'pdf|doc|docx',
-                'max_size'      => 5120,
-                'encrypt_name'  => true,
-            ]);
+            $file          = $_FILES['cv'];
+            $allowed_ext   = ['pdf', 'doc', 'docx'];
+            $ext           = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
-            if (!$this->upload->do_upload('cv')) {
-                $data['error'] = strip_tags($this->upload->display_errors());
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+                $data['error'] = 'Upload error (code ' . $file['error'] . '). Please try again.';
+                $this->public_view('apply', $data);
+                return;
+            }
+            if (!in_array($ext, $allowed_ext)) {
+                $data['error'] = 'Only PDF, DOC, and DOCX files are allowed.';
+                $this->public_view('apply', $data);
+                return;
+            }
+            if ($file['size'] > 5 * 1024 * 1024) {
+                $data['error'] = 'File size must be under 5 MB.';
                 $this->public_view('apply', $data);
                 return;
             }
 
-            $cv_orig = $this->upload->data('orig_name');
-            $cv_enc  = $this->upload->data('file_name');
+            $cv_orig = $file['name'];
+            $cv_enc  = md5(uniqid(rand(), true)) . '.' . $ext;
+
+            if (!move_uploaded_file($file['tmp_name'], $upload_path . $cv_enc)) {
+                $data['error'] = 'Failed to save your CV. Please try again.';
+                $this->public_view('apply', $data);
+                return;
+            }
 
             $app_id = $this->careers_model->save_application([
                 'position_id'  => $position_id,
