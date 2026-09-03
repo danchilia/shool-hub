@@ -409,6 +409,63 @@ class Settings extends Admin_Controller
         $this->load->view('layout/index', $this->data);
     }
 
+    public function test_company_smtp()
+    {
+        if (!is_superadmin_loggedin()) {
+            echo json_encode(array('success' => false, 'message' => 'Access denied.'));
+            return;
+        }
+
+        $cfg = $this->db->select('company_email, company_smtp_host, company_smtp_port, company_smtp_user, company_smtp_pass, company_smtp_encryption')
+                        ->get('global_settings')->row_array();
+
+        if (empty($cfg['company_smtp_host']) || empty($cfg['company_smtp_user'])) {
+            echo json_encode(array('success' => false, 'message' => 'No SMTP settings saved yet. Fill in and save first.'));
+            return;
+        }
+
+        $config = array(
+            'protocol'     => 'smtp',
+            'smtp_host'    => trim($cfg['company_smtp_host']),
+            'smtp_port'    => trim($cfg['company_smtp_port']),
+            'smtp_user'    => trim($cfg['company_smtp_user']),
+            'smtp_pass'    => trim($cfg['company_smtp_pass']),
+            'smtp_crypto'  => $cfg['company_smtp_encryption'],
+            'useragent'    => 'CodeIgniter',
+            'mailtype'     => 'html',
+            'newline'      => "\r\n",
+            'charset'      => 'utf-8',
+            'wordwrap'     => true,
+            'smtp_timeout' => 15,
+        );
+
+        $this->load->library('email', $config);
+        $this->email->from($cfg['company_email'], get_global_setting('institute_name'));
+        $this->email->to($cfg['company_smtp_user']);
+        $this->email->subject('CST SchoolHub — SMTP Test Email');
+        $this->email->message("
+            <div style='font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px;'>
+                <div style='background:#1a5276;padding:15px;text-align:center;border-radius:6px 6px 0 0;'>
+                    <h2 style='color:#fff;margin:0;'>CST SchoolHub</h2>
+                </div>
+                <div style='background:#fff;border:1px solid #ddd;padding:25px;border-radius:0 0 6px 6px;'>
+                    <h3 style='color:#27ae60;'>&#10003; SMTP Test Successful</h3>
+                    <p>Your company email is configured correctly.</p>
+                    <p><strong>From:</strong> {$cfg['company_email']}<br>
+                    <strong>Host:</strong> {$cfg['company_smtp_host']}:{$cfg['company_smtp_port']}<br>
+                    <strong>Encryption:</strong> {$cfg['company_smtp_encryption']}</p>
+                </div>
+            </div>
+        ");
+
+        if ($this->email->send(true)) {
+            echo json_encode(array('success' => true, 'message' => 'Test email sent to ' . $cfg['company_smtp_user'] . '. Check your inbox.'));
+        } else {
+            $debug = $this->email->print_debugger(array('headers'));
+            echo json_encode(array('success' => false, 'message' => 'Failed to send. Check SMTP details. Error: ' . strip_tags($debug)));
+        }
+    }
+
     public function branchUpdate($data)
     {
         $arrayBranch = array(

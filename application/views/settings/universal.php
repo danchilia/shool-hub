@@ -406,9 +406,48 @@ $(document).ready(function () {
 								<i class="fas fa-save"></i> Save Email Settings
 							</button>
 						</div>
+						<div class="col-md-2">
+							<button type="button" class="btn btn-success btn-block" id="testSmtpBtn">
+								<i class="fas fa-paper-plane"></i> Send Test Email
+							</button>
+						</div>
+					</div>
+					<div class="row" style="margin-top:10px;">
+						<div class="col-md-6 col-sm-offset-3">
+							<div id="smtpTestResult" style="display:none;"></div>
+						</div>
 					</div>
 				</footer>
 				<?php echo form_close(); ?>
+
+				<script>
+				document.getElementById('testSmtpBtn').addEventListener('click', function() {
+					var btn = this;
+					var result = document.getElementById('smtpTestResult');
+					btn.disabled = true;
+					btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+					result.style.display = 'none';
+
+					fetch('<?= base_url('settings/test_company_smtp') ?>', { method: 'POST' })
+						.then(function(r){ return r.json(); })
+						.then(function(data) {
+							result.style.display = 'block';
+							result.className = data.success
+								? 'alert alert-success'
+								: 'alert alert-danger';
+							result.innerHTML = data.message;
+							btn.disabled = false;
+							btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Test Email';
+						})
+						.catch(function() {
+							result.style.display = 'block';
+							result.className = 'alert alert-danger';
+							result.innerHTML = 'Request failed. Please try again.';
+							btn.disabled = false;
+							btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Test Email';
+						});
+				});
+				</script>
 			</div>
 
 		</div>
