@@ -952,7 +952,216 @@ class Branch_model extends MY_Model
             }
         }
 
-        // No auto-subscription: school admin must select a plan and pay (or superadmin activates manually).
+        // 42. PP-LEVEL STRANDS (Pre-Primary: PP1 & PP2)
+        $ppAreas = $this->db->where('branch_id', $branchId)->where('level', 'pp')->get('cbc_learning_areas')->result();
+        $ppAreaIds = array();
+        foreach ($ppAreas as $pa) { $ppAreaIds[$pa->name] = $pa->id; }
+        $ppStrands = array(
+            'Language Activities'                  => array('Listening and Speaking', 'Reading Readiness', 'Early Writing', 'Oral Expression'),
+            'Mathematical Activities'              => array('Numbers and Counting', 'Measurement', 'Shapes and Patterns', 'Data Handling'),
+            'Environmental Activities'             => array('Living Things', 'Non-Living Things', 'Weather and Seasons', 'Our Community'),
+            'Psychomotor and Creative Activities'  => array('Movement and Motor Skills', 'Music and Rhythm', 'Art and Craft', 'Games and Play'),
+            'Religious Education Activities'       => array("God's Creation", 'Moral Values', 'Prayer and Worship'),
+            'Nutrition and Hygiene Activities'     => array('Personal Hygiene', 'Food and Nutrition', 'Safety and First Aid'),
+        );
+        foreach ($ppStrands as $laName => $strandList) {
+            if (!isset($ppAreaIds[$laName])) continue;
+            $laId = $ppAreaIds[$laName];
+            foreach ($strandList as $sName) {
+                $exists = $this->db->get_where('cbc_strands', array('name' => $sName, 'learning_area_id' => $laId, 'branch_id' => $branchId))->num_rows();
+                if ($exists == 0) {
+                    $this->db->insert('cbc_strands', array('name' => $sName, 'learning_area_id' => $laId, 'branch_id' => $branchId));
+                }
+            }
+        }
+
+        // 43. SUBJECT-CLASS ALLOCATIONS (Form 1-4, all sections)
+        $subjectMap = array();
+        foreach ($this->db->where('branch_id', $branchId)->get('subject')->result() as $sub) {
+            $subjectMap[$sub->name] = $sub->id;
+        }
+        $classMap = array();
+        foreach ($this->db->where('branch_id', $branchId)->get('class')->result() as $cls) {
+            $classMap[$cls->name] = $cls->id;
+        }
+        $allSections = $this->db->where('branch_id', $branchId)->get('section')->result();
+        $formSubjects = array(
+            'Form 1' => array('English','Kiswahili','Mathematics','Biology','Chemistry','Physics','History','Geography','CRE','Business Studies','Agriculture','Computer Studies'),
+            'Form 2' => array('English','Kiswahili','Mathematics','Biology','Chemistry','Physics','History','Geography','CRE','Business Studies','Agriculture','Computer Studies'),
+            'Form 3' => array('English','Kiswahili','Mathematics','Biology','Chemistry','Physics','History','Geography','CRE','Business Studies','Agriculture','Computer Studies'),
+            'Form 4' => array('English','Kiswahili','Mathematics','Biology','Chemistry','Physics','History','Geography','CRE','Business Studies','Agriculture','Computer Studies'),
+        );
+        foreach ($formSubjects as $formName => $subjectList) {
+            if (!isset($classMap[$formName])) continue;
+            $classId = $classMap[$formName];
+            foreach ($allSections as $sec) {
+                foreach ($subjectList as $subName) {
+                    if (!isset($subjectMap[$subName])) continue;
+                    $subId = $subjectMap[$subName];
+                    $exists = $this->db->get_where('subject_assign', array(
+                        'class_id' => $classId, 'section_id' => $sec->id,
+                        'subject_id' => $subId, 'branch_id' => $branchId, 'session_id' => $sid,
+                    ))->num_rows();
+                    if ($exists == 0) {
+                        $this->db->insert('subject_assign', array(
+                            'class_id' => $classId, 'section_id' => $sec->id,
+                            'subject_id' => $subId, 'teacher_id' => 0,
+                            'branch_id' => $branchId, 'session_id' => $sid,
+                        ));
+                    }
+                }
+            }
+        }
+
+        // 44. CLASS TIMETABLE (Form 1, Section A — Monday to Friday)
+        $f1Id = isset($classMap['Form 1']) ? $classMap['Form 1'] : 0;
+        $secARow = $this->db->where('branch_id', $branchId)->where('name', 'A')->get('section')->row();
+        $secAId  = $secARow ? $secARow->id : 0;
+        if ($f1Id && $secAId) {
+            // [day, time_start, time_end, subject_name, is_break]
+            $ttEntries = array(
+                array('Monday',    '07:00:00','07:40:00','English',          false),
+                array('Monday',    '07:40:00','08:20:00','Mathematics',       false),
+                array('Monday',    '08:20:00','08:40:00','',                  true),
+                array('Monday',    '08:40:00','09:20:00','Biology',           false),
+                array('Monday',    '09:20:00','10:00:00','Chemistry',         false),
+                array('Monday',    '10:00:00','10:40:00','Kiswahili',         false),
+                array('Monday',    '10:40:00','11:00:00','',                  true),
+                array('Monday',    '11:00:00','11:40:00','History',           false),
+                array('Monday',    '11:40:00','12:20:00','Geography',         false),
+                array('Tuesday',   '07:00:00','07:40:00','Mathematics',       false),
+                array('Tuesday',   '07:40:00','08:20:00','English',           false),
+                array('Tuesday',   '08:20:00','08:40:00','',                  true),
+                array('Tuesday',   '08:40:00','09:20:00','Physics',           false),
+                array('Tuesday',   '09:20:00','10:00:00','CRE',               false),
+                array('Tuesday',   '10:00:00','10:40:00','Agriculture',       false),
+                array('Tuesday',   '10:40:00','11:00:00','',                  true),
+                array('Tuesday',   '11:00:00','11:40:00','Business Studies',  false),
+                array('Tuesday',   '11:40:00','12:20:00','Computer Studies',  false),
+                array('Wednesday', '07:00:00','07:40:00','Kiswahili',         false),
+                array('Wednesday', '07:40:00','08:20:00','Biology',           false),
+                array('Wednesday', '08:20:00','08:40:00','',                  true),
+                array('Wednesday', '08:40:00','09:20:00','Mathematics',       false),
+                array('Wednesday', '09:20:00','10:00:00','English',           false),
+                array('Wednesday', '10:00:00','10:40:00','Chemistry',         false),
+                array('Wednesday', '10:40:00','11:00:00','',                  true),
+                array('Wednesday', '11:00:00','11:40:00','Geography',         false),
+                array('Wednesday', '11:40:00','12:20:00','History',           false),
+                array('Thursday',  '07:00:00','07:40:00','Physics',           false),
+                array('Thursday',  '07:40:00','08:20:00','Kiswahili',         false),
+                array('Thursday',  '08:20:00','08:40:00','',                  true),
+                array('Thursday',  '08:40:00','09:20:00','CRE',               false),
+                array('Thursday',  '09:20:00','10:00:00','Mathematics',       false),
+                array('Thursday',  '10:00:00','10:40:00','Agriculture',       false),
+                array('Thursday',  '10:40:00','11:00:00','',                  true),
+                array('Thursday',  '11:00:00','11:40:00','Biology',           false),
+                array('Thursday',  '11:40:00','12:20:00','Business Studies',  false),
+                array('Friday',    '07:00:00','07:40:00','English',           false),
+                array('Friday',    '07:40:00','08:20:00','Kiswahili',         false),
+                array('Friday',    '08:20:00','08:40:00','',                  true),
+                array('Friday',    '08:40:00','09:20:00','Geography',         false),
+                array('Friday',    '09:20:00','10:00:00','History',           false),
+                array('Friday',    '10:00:00','10:40:00','Computer Studies',  false),
+                array('Friday',    '10:40:00','11:00:00','',                  true),
+                array('Friday',    '11:00:00','11:40:00','Physics',           false),
+                array('Friday',    '11:40:00','12:20:00','Chemistry',         false),
+            );
+            foreach ($ttEntries as $te) {
+                $subId = (!$te[4] && isset($subjectMap[$te[3]])) ? $subjectMap[$te[3]] : 0;
+                $this->db->insert('timetable_class', array(
+                    'class_id' => $f1Id, 'section_id' => $secAId,
+                    'break' => $te[4] ? 'true' : 'false',
+                    'subject_id' => $subId, 'teacher_id' => 0, 'class_room' => 'Room F1A',
+                    'time_start' => $te[1], 'time_end' => $te[2],
+                    'day' => $te[0], 'session_id' => $sid, 'branch_id' => $branchId,
+                ));
+            }
+        }
+
+        // 45. SAMPLE HOMEWORK (Form 1, Section A)
+        if ($f1Id && $secAId) {
+            $hwData = array(
+                array('English',     '+7 days', 'Write a 300-word essay: "The Role of Technology in Education in Kenya". Use real-life examples. Submit as a handwritten essay.'),
+                array('Mathematics', '+5 days', 'Complete Exercise 3.4 (Q1-20) on Linear Equations from KLB Mathematics Form 1 textbook. Show all working clearly.'),
+                array('Kiswahili',   '+4 days', 'Soma hadithi fupi "Ndoto ya Mtoto" ukurasa 45-52 kwenye kitabu chako cha Kiswahili. Jibu maswali yote ya ufahamu ukurasa 53.'),
+                array('Biology',     '+6 days', 'Draw and label the structure of a plant cell and an animal cell. List three differences between the two cells.'),
+                array('History',     '+7 days', 'Write brief notes on the causes and effects of the 1895 British Protectorate declaration over Kenya. Minimum one page.'),
+            );
+            foreach ($hwData as $hw) {
+                if (!isset($subjectMap[$hw[0]])) continue;
+                $this->db->insert('homework', array(
+                    'class_id' => $f1Id, 'section_id' => $secAId, 'session_id' => $sid,
+                    'subject_id'         => $subjectMap[$hw[0]],
+                    'date_of_homework'   => date('Y-m-d'),
+                    'date_of_submission' => date('Y-m-d', strtotime($hw[1])),
+                    'description'        => $hw[2],
+                    'created_by'         => 1,
+                    'create_date'        => date('Y-m-d'),
+                    'status'             => 'active',
+                    'sms_notification'   => 1,
+                    'schedule_date'      => null,
+                    'document'           => '',
+                    'evaluation_date'    => null,
+                    'evaluated_by'       => 0,
+                    'branch_id'          => $branchId,
+                ));
+            }
+        }
+
+        // 46. EXAM SCHEDULE — Term 1 Exam, Form 1 Section A
+        $f1ExamRow = $this->db->where('branch_id', $branchId)->where('grading_system', 'traditional')->order_by('id', 'ASC')->limit(1)->get('exam')->row();
+        $hallRow   = $this->db->where('branch_id', $branchId)->order_by('id', 'ASC')->limit(1)->get('exam_hall')->row();
+        $distRow   = $this->db->where('branch_id', $branchId)->where('name', 'End Term Exam')->get('exam_mark_distribution')->row();
+        if ($f1Id && $secAId && $f1ExamRow && $hallRow) {
+            $f1ExamId = $f1ExamRow->id;
+            $hallId   = $hallRow->id;
+            $distId   = $distRow ? $distRow->id : 0;
+            $examDays = array(
+                array('English',          1,  '08:00', '10:00'),
+                array('Mathematics',      2,  '08:00', '10:30'),
+                array('Biology',          3,  '08:00', '10:00'),
+                array('Kiswahili',        4,  '08:00', '10:00'),
+                array('Chemistry',        5,  '08:00', '10:00'),
+                array('Physics',          6,  '08:00', '10:00'),
+                array('History',          7,  '08:00', '10:00'),
+                array('Geography',        8,  '08:00', '10:00'),
+                array('CRE',              9,  '08:00', '09:30'),
+                array('Agriculture',      10, '08:00', '09:30'),
+                array('Business Studies', 11, '08:00', '10:00'),
+                array('Computer Studies', 12, '08:00', '10:00'),
+            );
+            foreach ($examDays as $ed) {
+                if (!isset($subjectMap[$ed[0]])) continue;
+                $this->db->insert('timetable_exam', array(
+                    'exam_id'           => $f1ExamId,
+                    'class_id'          => $f1Id,
+                    'section_id'        => $secAId,
+                    'subject_id'        => $subjectMap[$ed[0]],
+                    'time_start'        => $ed[2],
+                    'time_end'          => $ed[3],
+                    'mark_distribution' => json_encode($distId ? array($distId) : array()),
+                    'hall_id'           => $hallId,
+                    'exam_date'         => date('Y-m-d', strtotime('+' . $ed[1] . ' days')),
+                    'branch_id'         => $branchId,
+                    'session_id'        => $sid,
+                ));
+            }
+        }
+
+        // 47. 1-MONTH TRIAL SUBSCRIPTION
+        $subExists = $this->db->get_where('branch_subscriptions', array('branch_id' => $branchId))->num_rows();
+        if ($subExists == 0) {
+            $planRow = $this->db->order_by('id', 'ASC')->limit(1)->get('subscription_plan')->row();
+            $planId  = $planRow ? $planRow->id : 1;
+            $this->db->insert('branch_subscriptions', array(
+                'branch_id'     => $branchId,
+                'plan_id'       => $planId,
+                'billing_cycle' => 'monthly',
+                'start_date'    => date('Y-m-d'),
+                'end_date'      => date('Y-m-d', strtotime('+1 month')),
+                'status'        => 'active',
+            ));
+        }
     }
 
     public function seedUniversityDefaults($branchId)
