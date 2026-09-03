@@ -448,12 +448,12 @@ class Careers extends MY_Controller {
             }
         }
 
-        $this->data['sent']   = $sent;
-        $this->data['failed'] = $failed;
-        $this->data['log']    = $log;
-        $this->data['title']  = 'Retrospective Confirmation Emails';
-        $this->load->view('backEnd/header', $this->data);
-        $this->load->view('careers/email_results', $this->data);
-        $this->load->view('backEnd/footer');
+        $this->data['sent']     = $sent;
+        $this->data['failed']   = $failed;
+        $this->data['log']      = $log;
+        $this->data['title']    = 'Confirmation Emails';
+        $this->data['sub_page'] = 'careers/email_results';
+        $this->data['main_menu'] = 'careers';
+        $this->load->view('layout/index', $this->data);
     }
 }
