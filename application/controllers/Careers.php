@@ -410,4 +410,50 @@ class Careers extends MY_Controller {
         if (!file_exists($file)) show_404();
         force_download($app['cv_orig_name'], file_get_contents($file));
     }
+
+    // ── Superadmin: Retrospective confirmation emails ─────────────────────
+
+    public function send_confirmation_emails() {
+        $this->require_superadmin();
+
+        $this->db->select('ca.id, ca.position_id, cp.title as job_title, capp.full_name, capp.email');
+        $this->db->from('career_applications ca');
+        $this->db->join('career_positions cp',    'cp.id = ca.position_id');
+        $this->db->join('career_applicants capp', 'capp.id = ca.applicant_id');
+        $this->db->order_by('ca.id', 'ASC');
+        $applications = $this->db->get()->result_array();
+
+        $sent = 0; $failed = 0; $log = array();
+
+        foreach ($applications as $app) {
+            if (empty($app['email'])) { $failed++; continue; }
+
+            $ok = $this->send_email(
+                $app['email'],
+                'Application Received — ' . $app['job_title'],
+                $this->email_tpl('Application Received',
+                    "Dear {$app['full_name']},<br><br>
+                    Thank you for applying for the position of <strong>{$app['job_title']}</strong> at CST SchoolHub.<br><br>
+                    We have received your application and our HR team will review it shortly. You will receive an email update on the status of your application.<br><br>
+                    Best regards,<br><strong>CST SchoolHub HR Team</strong>"
+                )
+            );
+
+            if ($ok) {
+                $sent++;
+                $log[] = array('status' => 'sent',   'name' => $app['full_name'], 'email' => $app['email'], 'job' => $app['job_title']);
+            } else {
+                $failed++;
+                $log[] = array('status' => 'failed', 'name' => $app['full_name'], 'email' => $app['email'], 'job' => $app['job_title']);
+            }
+        }
+
+        $this->data['sent']   = $sent;
+        $this->data['failed'] = $failed;
+        $this->data['log']    = $log;
+        $this->data['title']  = 'Retrospective Confirmation Emails';
+        $this->load->view('backEnd/header', $this->data);
+        $this->load->view('careers/email_results', $this->data);
+        $this->load->view('backEnd/footer');
+    }
 }
