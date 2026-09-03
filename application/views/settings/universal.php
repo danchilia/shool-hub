@@ -28,6 +28,12 @@ $(document).ready(function () {
 				   <span class="hidden-xs"> <?=translate('logo')?></span>
 				</a>
 			</li>
+			<li <?=($this->session->flashdata('active') == 4 ? 'class="active"' : '');?>>
+				<a href="#company-smtp" data-toggle="tab">
+				   <i class="fas fa-envelope-open-text"></i>
+				   <span class="hidden-xs"> Company Email</span>
+				</a>
+			</li>
 		</ul>
 
 		<div class="tab-content">
@@ -325,6 +331,86 @@ $(document).ready(function () {
 				</footer>
 				<?php echo form_close(); ?>
 			</div>
+			<!-- Company Email / SMTP Tab -->
+			<div class="tab-pane box <?=($this->session->flashdata('active') == 4 ? 'active' : '');?>" id="company-smtp">
+				<?php echo form_open($this->uri->uri_string(), array('class' => 'validate form-horizontal form-bordered')); ?>
+
+				<div class="box-header with-border">
+					<p class="text-muted" style="padding:10px 15px 0;">
+						<i class="fas fa-info-circle"></i>
+						This is the <strong>system-wide fallback email</strong>. It is used for careers notifications and any school that has not configured its own SMTP.
+					</p>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label">From Email Address</label>
+					<div class="col-md-6">
+						<input type="email" class="form-control" name="company_email"
+							value="<?=set_value('company_email', isset($global_config['company_email']) ? $global_config['company_email'] : '')?>"
+							placeholder="noreply@cstschoolhub.co.ke" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label">SMTP Host</label>
+					<div class="col-md-6">
+						<input type="text" class="form-control" name="company_smtp_host"
+							value="<?=set_value('company_smtp_host', isset($global_config['company_smtp_host']) ? $global_config['company_smtp_host'] : '')?>"
+							placeholder="mail.cstschoolhub.co.ke" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label">SMTP Port</label>
+					<div class="col-md-6">
+						<input type="number" class="form-control" name="company_smtp_port"
+							value="<?=set_value('company_smtp_port', isset($global_config['company_smtp_port']) ? $global_config['company_smtp_port'] : '587')?>"
+							placeholder="587" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label">SMTP Username</label>
+					<div class="col-md-6">
+						<input type="text" class="form-control" name="company_smtp_user"
+							value="<?=set_value('company_smtp_user', isset($global_config['company_smtp_user']) ? $global_config['company_smtp_user'] : '')?>"
+							placeholder="noreply@cstschoolhub.co.ke" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label">SMTP Password</label>
+					<div class="col-md-6">
+						<input type="password" class="form-control" name="company_smtp_pass"
+							value="<?=set_value('company_smtp_pass', isset($global_config['company_smtp_pass']) ? $global_config['company_smtp_pass'] : '')?>"
+							placeholder="••••••••" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label">Encryption</label>
+					<div class="col-md-6">
+						<select class="form-control" name="company_smtp_encryption">
+							<?php $enc = isset($global_config['company_smtp_encryption']) ? $global_config['company_smtp_encryption'] : 'tls'; ?>
+							<option value="tls"  <?=($enc == 'tls'  ? 'selected' : '')?>>TLS (recommended — port 587)</option>
+							<option value="ssl"  <?=($enc == 'ssl'  ? 'selected' : '')?>>SSL (port 465)</option>
+							<option value="none" <?=($enc == 'none' ? 'selected' : '')?>>None (port 25)</option>
+						</select>
+					</div>
+				</div>
+
+				<footer class="panel-footer mt-lg">
+					<div class="row">
+						<div class="col-md-2 col-sm-offset-3">
+							<button type="submit" class="btn btn-primary btn-block" name="submit" value="company_smtp">
+								<i class="fas fa-save"></i> Save Email Settings
+							</button>
+						</div>
+					</div>
+				</footer>
+				<?php echo form_close(); ?>
+			</div>
+
 		</div>
 	</div>
 </section>

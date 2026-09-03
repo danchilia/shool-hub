@@ -68,6 +68,21 @@ class Settings extends Admin_Controller
             redirect(current_url());
         }
 
+        if ($this->input->post('submit') == 'company_smtp') {
+            if (!get_permission('global_settings', 'is_edit')) {
+                access_denied();
+            }
+            $config = array();
+            foreach ($this->input->post() as $input => $value) {
+                if ($input == 'submit') continue;
+                $config[$input] = $value;
+            }
+            $this->db->where('id', 1)->update('global_settings', $config);
+            set_alert('success', translate('the_configuration_has_been_updated'));
+            $this->session->set_flashdata('active', 4);
+            redirect(current_url());
+        }
+
         if ($this->input->post('submit') == 'logo') {
             $logo_slots = array(
                 'logo_file'   => array('dest' => FCPATH . 'uploads/app_image/logo.png',           'ext' => array('png')),
