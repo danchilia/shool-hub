@@ -10,14 +10,14 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ================================================================
 -- SECTION 1: NEW PARENTS (IDs 6-10)
 -- ================================================================
-INSERT INTO `parent` (`id`,`name`,`relation`,`father_name`,`mother_name`,`occupation`,`income`,`education`,`email`,`mobileno`,`address`,`city`,`state`,`branch_id`,`photo`) VALUES
+INSERT IGNORE INTO `parent` (`id`,`name`,`relation`,`father_name`,`mother_name`,`occupation`,`income`,`education`,`email`,`mobileno`,`address`,`city`,`state`,`branch_id`,`photo`) VALUES
 (6,  'Elizabeth Adhiambo', 'Mother', 'John Adhiambo',  'Elizabeth Adhiambo', 'Nurse',          '55000',  'Degree',    'elizabeth.adhiambo@gmail.com', '+254722200006', 'Umoja, Nairobi',     'Nairobi', 'Nairobi', 3, 'defualt.png'),
 (7,  'Thomas Njenga',      'Father', 'Thomas Njenga',  'Agnes Njenga',       'Driver',         '35000',  'Secondary', 'thomas.njenga@gmail.com',      '+254722200007', 'Mathare, Nairobi',   'Nairobi', 'Nairobi', 3, 'defualt.png'),
 (8,  'Catherine Wambua',   'Mother', 'James Wambua',   'Catherine Wambua',   'Shopkeeper',     '42000',  'Secondary', 'catherine.wambua@gmail.com',   '+254722200008', 'Kayole, Nairobi',    'Nairobi', 'Nairobi', 3, 'defualt.png'),
 (9,  'Francis Koech',      'Father', 'Francis Koech',  'Lilian Koech',       'Accountant',     '90000',  'Degree',    'francis.koech@gmail.com',      '+254722200009', 'Kileleshwa, Nairobi','Nairobi', 'Nairobi', 3, 'defualt.png'),
 (10, 'Beatrice Auma',      'Mother', 'Michael Auma',   'Beatrice Auma',      'Civil Servant',  '70000',  'Degree',    'beatrice.auma@gmail.com',      '+254722200010', 'Ruiru, Kiambu',      'Nairobi', 'Nairobi', 3, 'defualt.png');
 
-INSERT INTO `login_credential` (`user_id`,`username`,`password`,`role`,`active`) VALUES
+INSERT IGNORE INTO `login_credential` (`user_id`,`username`,`password`,`role`,`active`) VALUES
 (6,  'elizabeth.adhiambo@gmail.com', '$2y$10$GDVr5IXICpEnHpElnPlQJ.pmqCZZKOj6y4mBxNzJveR/vKShwQBRe', 6, 1),
 (7,  'thomas.njenga@gmail.com',      '$2y$10$GDVr5IXICpEnHpElnPlQJ.pmqCZZKOj6y4mBxNzJveR/vKShwQBRe', 6, 1),
 (8,  'catherine.wambua@gmail.com',   '$2y$10$GDVr5IXICpEnHpElnPlQJ.pmqCZZKOj6y4mBxNzJveR/vKShwQBRe', 6, 1),
@@ -28,7 +28,7 @@ INSERT INTO `login_credential` (`user_id`,`username`,`password`,`role`,`active`)
 -- SECTION 2: NEW STUDENTS (IDs 11-58)
 -- All passwords: 123456
 -- ================================================================
-INSERT INTO `student` (`id`,`register_no`,`upi_number`,`admission_date`,`first_name`,`last_name`,`gender`,`birthday`,`religion`,`caste`,`blood_group`,`mother_tongue`,`current_address`,`permanent_address`,`city`,`state`,`mobileno`,`category_id`,`email`,`parent_id`,`route_id`,`vehicle_id`,`hostel_id`,`room_id`,`previous_details`,`photo`) VALUES
+INSERT IGNORE INTO `student` (`id`,`register_no`,`upi_number`,`admission_date`,`first_name`,`last_name`,`gender`,`birthday`,`religion`,`caste`,`blood_group`,`mother_tongue`,`current_address`,`permanent_address`,`city`,`state`,`mobileno`,`category_id`,`email`,`parent_id`,`route_id`,`vehicle_id`,`hostel_id`,`room_id`,`previous_details`,`photo`) VALUES
 -- Grade 1 East (class 102) — born ~2020
 (11,'SAN-00011','UPI2026011','2026-01-06','James',    'Adhiambo', 'male',  '2020-03-14','Christian','','A+', 'English',  'Umoja, Nairobi',     'Umoja, Nairobi',     'Nairobi','Nairobi','+254722300011',10,'james.adhiambo@student.sunrise.ke',    6,0,0,0,0,'{"school_name":"","qualification":"","remarks":""}','defualt.png'),
 (12,'SAN-00012','UPI2026012','2026-01-06','Rose',     'Njenga',   'female','2020-07-22','Christian','','O+', 'Kiswahili','Mathare, Nairobi',   'Mathare, Nairobi',   'Nairobi','Nairobi','+254722300012',10,'rose.njenga@student.sunrise.ke',        7,0,0,0,0,'{"school_name":"","qualification":"","remarks":""}','defualt.png'),
@@ -90,7 +90,7 @@ INSERT INTO `student` (`id`,`register_no`,`upi_number`,`admission_date`,`first_n
 (58,'SAN-00058','UPI2026058','2026-01-06','Olive',    'Gakii',    'female','2021-08-30','Christian','','O-', 'Meru',     'Kayole, Nairobi',    'Kayole, Nairobi',    'Nairobi','Nairobi','+254722300058',10,'olive.gakii@student.sunrise.ke',        8,0,0,0,0,'{"school_name":"","qualification":"","remarks":""}','defualt.png');
 
 -- Student login credentials
-INSERT INTO `login_credential` (`user_id`,`username`,`password`,`role`,`active`) VALUES
+INSERT IGNORE INTO `login_credential` (`user_id`,`username`,`password`,`role`,`active`) VALUES
 (11,'james.adhiambo@student.sunrise.ke',    '$2y$10$GDVr5IXICpEnHpElnPlQJ.pmqCZZKOj6y4mBxNzJveR/vKShwQBRe',7,1),
 (12,'rose.njenga@student.sunrise.ke',        '$2y$10$GDVr5IXICpEnHpElnPlQJ.pmqCZZKOj6y4mBxNzJveR/vKShwQBRe',7,1),
 (13,'samuel.ochieng@student.sunrise.ke',     '$2y$10$GDVr5IXICpEnHpElnPlQJ.pmqCZZKOj6y4mBxNzJveR/vKShwQBRe',7,1),
@@ -143,7 +143,7 @@ INSERT INTO `login_credential` (`user_id`,`username`,`password`,`role`,`active`)
 -- ================================================================
 -- SECTION 3: STUDENT ENROLLMENTS
 -- ================================================================
-INSERT INTO `enroll` (`student_id`,`class_id`,`section_id`,`roll`,`session_id`,`branch_id`) VALUES
+INSERT IGNORE INTO `enroll` (`student_id`,`class_id`,`section_id`,`roll`,`session_id`,`branch_id`) VALUES
 -- Grade 1 East (class 102, section 10)
 (11,102,10,2,10,3),(12,102,10,3,10,3),(13,102,10,4,10,3),(14,102,10,5,10,3),
 -- Grade 2 West (class 103, section 11)
@@ -168,7 +168,7 @@ INSERT INTO `enroll` (`student_id`,`class_id`,`section_id`,`roll`,`session_id`,`
 (54,101,10,1,10,3),(55,101,10,2,10,3),(56,101,10,3,10,3),(57,101,10,4,10,3),(58,101,10,5,10,3);
 
 -- Fee allocations for new students
-INSERT INTO `fee_allocation` (`student_id`,`group_id`,`session_id`,`branch_id`) VALUES
+INSERT IGNORE INTO `fee_allocation` (`student_id`,`group_id`,`session_id`,`branch_id`) VALUES
 (11,10,10,3),(12,10,10,3),(13,10,10,3),(14,10,10,3),
 (15,10,10,3),(16,10,10,3),(17,10,10,3),(18,10,10,3),
 (19,10,10,3),(20,10,10,3),(21,10,10,3),(22,10,10,3),

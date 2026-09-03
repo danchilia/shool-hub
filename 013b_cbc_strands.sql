@@ -11,7 +11,7 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- Learning Areas: Lower Primary 100-107, Upper Primary 108-116,
 --                 Junior Secondary 117-124
 -- ================================================================
-INSERT INTO `cbc_strands` (`id`,`learning_area_id`,`name`,`branch_id`,`created_at`,`updated_at`) VALUES
+INSERT IGNORE INTO `cbc_strands` (`id`,`learning_area_id`,`name`,`branch_id`,`created_at`,`updated_at`) VALUES
 -- LOWER PRIMARY: Literacy Activities (LA 100)
 (100,100,'Listening and Speaking',3,NOW(),NOW()),
 (101,100,'Reading',3,NOW(),NOW()),
@@ -113,7 +113,7 @@ INSERT INTO `cbc_strands` (`id`,`learning_area_id`,`name`,`branch_id`,`created_a
 -- ================================================================
 -- SECTION 5: CBC SUB-STRANDS (IDs 100-239, 2 per strand)
 -- ================================================================
-INSERT INTO `cbc_sub_strands` (`id`,`name`,`strand_id`,`learning_area_id`,`branch_id`) VALUES
+INSERT IGNORE INTO `cbc_sub_strands` (`id`,`name`,`strand_id`,`learning_area_id`,`branch_id`) VALUES
 -- Strand 100: Listening and Speaking (Literacy)
 (100,'Oral Communication',100,100,3),
 (101,'Phonological Awareness',100,100,3),
@@ -332,7 +332,7 @@ INSERT INTO `cbc_sub_strands` (`id`,`name`,`strand_id`,`learning_area_id`,`branc
 -- ================================================================
 -- SECTION 6: CBC LEARNING OUTCOMES (IDs 100-239, 1 per sub-strand)
 -- ================================================================
-INSERT INTO `cbc_learning_outcomes` (`id`,`code`,`name`,`sub_strand_id`,`strand_id`,`learning_area_id`,`branch_id`) VALUES
+INSERT IGNORE INTO `cbc_learning_outcomes` (`id`,`code`,`name`,`sub_strand_id`,`strand_id`,`learning_area_id`,`branch_id`) VALUES
 (100,'LO1','Learner can communicate orally using appropriate vocabulary',100,100,100,3),
 (101,'LO2','Learner demonstrates phonological awareness through rhymes and syllables',101,100,100,3),
 (102,'LO3','Learner recognises and reads common words and simple sentences',102,101,100,3),
