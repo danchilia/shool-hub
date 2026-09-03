@@ -40,11 +40,15 @@ class Careers extends MY_Controller {
     }
 
     private function send_email($to, $subject, $body) {
-        $this->email_model->sendEmail([
+        $sent = $this->email_model->sendEmail([
             'recipient' => $to,
             'subject'   => $subject,
             'message'   => $body,
         ]);
+        if (!$sent) {
+            log_message('error', 'Careers: failed to send email to ' . $to . ' | Subject: ' . $subject);
+        }
+        return $sent;
     }
 
     private function email_tpl($heading, $body) {
