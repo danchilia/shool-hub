@@ -5,7 +5,7 @@ class Careers extends MY_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->model('careers_model');
+        $this->load->model(['careers_model', 'email_model']);
         $this->load->library('form_validation');
         $this->load->helper(['url', 'form', 'download']);
     }
@@ -40,31 +40,11 @@ class Careers extends MY_Controller {
     }
 
     private function send_email($to, $subject, $body) {
-        $row = $this->db->order_by('id', 'ASC')->limit(1)->get('email_config')->row_array();
-        if ($row && !empty($row['smtp_host'])) {
-            $cfg = [
-                'protocol'    => 'smtp',
-                'smtp_host'   => $row['smtp_host'],
-                'smtp_port'   => $row['smtp_port'],
-                'smtp_user'   => $row['smtp_user'],
-                'smtp_pass'   => $row['smtp_pass'],
-                'smtp_crypto' => $row['smtp_encryption'],
-                'mailtype'    => 'html',
-                'charset'     => 'utf-8',
-            ];
-            $from = $row['email'];
-        } else {
-            $cfg  = ['protocol' => 'mail', 'mailtype' => 'html', 'charset' => 'utf-8'];
-            $from = 'noreply@cstschoolhub.co.ke';
-        }
-        $this->load->library('email', $cfg);
-        $this->email->initialize($cfg);
-        $this->email->clear();
-        $this->email->from($from, 'CST SchoolHub Careers');
-        $this->email->to($to);
-        $this->email->subject($subject);
-        $this->email->message($body);
-        @$this->email->send();
+        $this->email_model->sendEmail([
+            'recipient' => $to,
+            'subject'   => $subject,
+            'message'   => $body,
+        ]);
     }
 
     private function email_tpl($heading, $body) {
