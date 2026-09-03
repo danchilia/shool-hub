@@ -428,13 +428,21 @@ $(document).ready(function () {
 					btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
 					result.style.display = 'none';
 
-					fetch('<?= base_url('settings/test_company_smtp') ?>', { method: 'POST' })
+					// Read CSRF token from cookie
+					var csrfToken = '';
+					document.cookie.split(';').forEach(function(c) {
+						var p = c.trim().split('=');
+						if (p[0] === 'school_cookie_name') csrfToken = decodeURIComponent(p[1]);
+					});
+
+					var body = new FormData();
+					body.append('school_csrf_name', csrfToken);
+
+					fetch('<?= base_url('settings/test_company_smtp') ?>', { method: 'POST', body: body })
 						.then(function(r){ return r.json(); })
 						.then(function(data) {
 							result.style.display = 'block';
-							result.className = data.success
-								? 'alert alert-success'
-								: 'alert alert-danger';
+							result.className = data.success ? 'alert alert-success' : 'alert alert-danger';
 							result.innerHTML = data.message;
 							btn.disabled = false;
 							btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Test Email';
