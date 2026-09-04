@@ -458,6 +458,7 @@ class Settings extends Admin_Controller
             </div>
         ");
 
+        $this->output->set_content_type('application/json');
         if ($this->email->send(true)) {
             echo json_encode(array('success' => true, 'message' => 'Test email sent to ' . $cfg['company_smtp_user'] . '. Check your inbox.'));
         } else {
