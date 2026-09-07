@@ -111,6 +111,65 @@
         </div>
         <?php echo form_close(); ?>
     </div>
+
+    <!-- Schedule Interview Panel -->
+    <div class="panel" style="border-top:3px solid #9b59b6;">
+        <header class="panel-heading" style="background:#f8f4ff;">
+            <h4 class="panel-title" style="color:#9b59b6;">
+                <i class="fas fa-video me-2"></i>Schedule Interview
+            </h4>
+        </header>
+        <?php echo form_open('careers/schedule_interview/' . $app['id']); ?>
+        <div class="panel-body">
+
+            <?php if (!empty($app['interview_date'])): ?>
+            <div style="background:#f0f9f5;border:1px solid #1abc9c;border-radius:6px;padding:10px;margin-bottom:15px;">
+                <small class="text-muted">Current Schedule</small><br>
+                <strong><?php echo date('d F Y', strtotime($app['interview_date'])); ?></strong>
+                at <strong><?php echo date('g:i A', strtotime($app['interview_time'])); ?></strong><br>
+                <a href="<?php echo html_escape($app['interview_link']); ?>" target="_blank" style="font-size:12px;">
+                    <i class="fas fa-link"></i> Meeting Link
+                </a>
+            </div>
+            <?php endif; ?>
+
+            <div class="form-group">
+                <label class="control-label">Interview Date <span class="required">*</span></label>
+                <input type="date" name="interview_date" class="form-control" required
+                    value="<?php echo !empty($app['interview_date']) ? $app['interview_date'] : ''; ?>"
+                    min="<?php echo date('Y-m-d'); ?>" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Interview Time <span class="required">*</span></label>
+                <input type="time" name="interview_time" class="form-control" required
+                    value="<?php echo !empty($app['interview_time']) ? substr($app['interview_time'], 0, 5) : ''; ?>" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Google Meet Link <span class="required">*</span></label>
+                <input type="url" name="interview_link" class="form-control" required
+                    value="<?php echo !empty($app['interview_link']) ? html_escape($app['interview_link']) : ''; ?>"
+                    placeholder="https://meet.google.com/xxx-xxxx-xxx" />
+                <small class="text-muted">
+                    <a href="https://meet.google.com/new" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> Create a new Google Meet
+                    </a>
+                </small>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Additional Notes</label>
+                <textarea name="interview_notes" class="form-control" rows="3"
+                    placeholder="e.g. Please prepare a 5-minute presentation..."><?php echo !empty($app['interview_notes']) ? html_escape($app['interview_notes']) : ''; ?></textarea>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button type="submit" class="btn btn-block" style="background:#9b59b6;color:#fff;">
+                <i class="fas fa-calendar-check me-1"></i>
+                <?php echo !empty($app['interview_date']) ? 'Reschedule & Notify' : 'Schedule & Notify Applicant'; ?>
+            </button>
+        </div>
+        <?php echo form_close(); ?>
+    </div>
+
 </div>
 
 </div>

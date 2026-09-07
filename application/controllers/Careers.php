@@ -402,6 +402,61 @@ class Careers extends MY_Controller {
         $this->load->view('layout/index', $this->data);
     }
 
+    public function schedule_interview($id) {
+        $this->require_superadmin();
+        $app = $this->careers_model->get_application($id);
+        if (!$app) show_404();
+
+        $date  = $this->input->post('interview_date',  true);
+        $time  = $this->input->post('interview_time',  true);
+        $link  = $this->input->post('interview_link',  true);
+        $notes = $this->input->post('interview_notes', true);
+
+        if (!$date || !$time || !$link) {
+            set_alert('error', 'Please fill in date, time and meeting link.');
+            redirect(base_url('careers/view_application/' . $id));
+        }
+
+        // Save to DB and set status to interview
+        $this->db->where('id', $id)->update('career_applications', array(
+            'interview_date'  => $date,
+            'interview_time'  => $time,
+            'interview_link'  => $link,
+            'interview_notes' => $notes,
+            'status'          => 'interview',
+        ));
+
+        // Format date/time nicely
+        $formatted_date = date('l, d F Y', strtotime($date));
+        $formatted_time = date('g:i A', strtotime($time));
+
+        // Send invitation email
+        $this->send_email(
+            $app['email'],
+            'Interview Invitation — ' . $app['position_title'],
+            $this->email_tpl('Interview Invitation',
+                "Dear {$app['full_name']},<br><br>
+                Congratulations! We are pleased to invite you for an interview for the position of <strong>{$app['position_title']}</strong> at CST SchoolHub.<br><br>
+                <table style='width:100%;border-collapse:collapse;margin:15px 0;'>
+                    <tr><td style='padding:8px;background:#f4f6f9;font-weight:bold;width:35%;'>Date</td><td style='padding:8px;border-bottom:1px solid #eee;'>{$formatted_date}</td></tr>
+                    <tr><td style='padding:8px;background:#f4f6f9;font-weight:bold;'>Time</td><td style='padding:8px;border-bottom:1px solid #eee;'>{$formatted_time}</td></tr>
+                    <tr><td style='padding:8px;background:#f4f6f9;font-weight:bold;'>Format</td><td style='padding:8px;border-bottom:1px solid #eee;'>Video Interview (Google Meet)</td></tr>
+                </table>
+                " . (!empty($notes) ? "<p><strong>Additional Notes:</strong><br>" . nl2br(htmlspecialchars($notes)) . "</p>" : "") . "
+                <p style='text-align:center;margin:25px 0;'>
+                    <a href='" . htmlspecialchars($link) . "' style='background:#1a5276;color:#fff;padding:12px 30px;border-radius:4px;text-decoration:none;font-size:16px;'>
+                        Join Interview
+                    </a>
+                </p>
+                <p>Please ensure you have a stable internet connection and join the meeting 5 minutes before the scheduled time.</p>
+                Best regards,<br><strong>CST SchoolHub HR Team</strong>"
+            )
+        );
+
+        set_alert('success', 'Interview scheduled. ' . $app['full_name'] . ' has been notified by email.');
+        redirect(base_url('careers/view_application/' . $id));
+    }
+
     public function download_cv($id) {
         $this->require_superadmin();
         $app = $this->careers_model->get_application($id);
