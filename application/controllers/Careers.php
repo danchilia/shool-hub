@@ -520,6 +520,100 @@ class Careers extends MY_Controller {
         force_download($app['cv_orig_name'], file_get_contents($file));
     }
 
+    // ── Superadmin: Retroactive portal access for already-shortlisted ────
+
+    public function send_shortlist_portal_emails() {
+        $this->require_superadmin();
+
+        // Get all shortlisted applicants who don't yet have an agent account
+        $this->db->select('ca.id, cp.title as position_title, capp.full_name, capp.email, capp.phone');
+        $this->db->from('career_applications ca');
+        $this->db->join('career_positions cp',    'cp.id = ca.position_id');
+        $this->db->join('career_applicants capp', 'capp.id = ca.applicant_id');
+        $this->db->where('ca.status', 'shortlisted');
+        $this->db->order_by('ca.id', 'ASC');
+        $applications = $this->db->get()->result_array();
+
+        $created = 0; $skipped = 0; $failed = 0; $log = array();
+
+        foreach ($applications as $app) {
+            if (empty($app['email'])) { $failed++; continue; }
+
+            // Skip if agent account already exists
+            $existing = $this->db->where(['username' => $app['email'], 'role' => 8])
+                                  ->get('login_credential')->num_rows();
+            if ($existing > 0) {
+                $skipped++;
+                $log[] = ['status' => 'skipped', 'name' => $app['full_name'], 'email' => $app['email'], 'job' => $app['position_title']];
+                continue;
+            }
+
+            $nameParts = explode(' ', trim($app['full_name']), 2);
+            $firstName = $nameParts[0];
+            $lastName  = isset($nameParts[1]) ? $nameParts[1] : '';
+            $tempPass  = '12345678';
+            $portalUrl = base_url('agent_portal/login');
+
+            $this->agent_model->createAgent([
+                'first_name'           => $firstName,
+                'last_name'            => $lastName,
+                'email'                => $app['email'],
+                'phone'                => $app['phone'],
+                'active'               => 1,
+                'must_change_password' => 1,
+                'created_by'           => get_loggedin_user_id(),
+            ], $tempPass);
+
+            $ok = $this->send_email(
+                $app['email'],
+                "You're Shortlisted! Access Your Agent Portal — " . $app['position_title'],
+                $this->email_tpl("Congratulations — You're Shortlisted!",
+                    "Dear {$app['full_name']},<br><br>
+                    We are pleased to inform you that your application for <strong>{$app['position_title']}</strong> has been shortlisted!<br><br>
+                    As part of our selection process, we have created an agent portal account for you.
+                    <strong>You have 24 hours</strong> to explore the portal and familiarise yourself with the system.
+                    This will serve as your qualification assessment — how well you understand and navigate the platform
+                    will determine your suitability for the role. Successful candidates will start working immediately.<br><br>
+                    <table style='width:100%;border-collapse:collapse;margin:15px 0;'>
+                        <tr><td style='padding:8px;background:#f4f6f9;font-weight:bold;width:35%;'>Portal URL</td><td style='padding:8px;border-bottom:1px solid #eee;'><a href='{$portalUrl}'>{$portalUrl}</a></td></tr>
+                        <tr><td style='padding:8px;background:#f4f6f9;font-weight:bold;'>Email</td><td style='padding:8px;border-bottom:1px solid #eee;'>{$app['email']}</td></tr>
+                        <tr><td style='padding:8px;background:#f4f6f9;font-weight:bold;'>Temporary Password</td><td style='padding:8px;border-bottom:1px solid #eee;'><strong>{$tempPass}</strong></td></tr>
+                    </table>
+                    <p style='color:#e74c3c;font-weight:600;'>You will be required to change your password on first login.</p>
+                    <p><strong>What to do next:</strong></p>
+                    <ul>
+                        <li>Log in to the portal using the credentials above</li>
+                        <li>Explore all sections and features available to you</li>
+                        <li>Be ready to discuss what you found and how the system works</li>
+                    </ul>
+                    <p style='text-align:center;margin:25px 0;'>
+                        <a href='{$portalUrl}' style='background:#1a5276;color:#fff;padding:12px 30px;border-radius:4px;text-decoration:none;font-size:16px;'>
+                            Access Agent Portal
+                        </a>
+                    </p>
+                    Best regards,<br><strong>CST SchoolHub HR Team</strong>"
+                )
+            );
+
+            if ($ok) {
+                $created++;
+                $log[] = ['status' => 'sent',   'name' => $app['full_name'], 'email' => $app['email'], 'job' => $app['position_title']];
+            } else {
+                $failed++;
+                $log[] = ['status' => 'failed', 'name' => $app['full_name'], 'email' => $app['email'], 'job' => $app['position_title']];
+            }
+        }
+
+        $this->data['created']   = $created;
+        $this->data['skipped']   = $skipped;
+        $this->data['failed']    = $failed;
+        $this->data['log']       = $log;
+        $this->data['title']     = 'Shortlist Portal Emails';
+        $this->data['sub_page']  = 'careers/shortlist_portal_results';
+        $this->data['main_menu'] = 'careers';
+        $this->load->view('layout/index', $this->data);
+    }
+
     // ── Superadmin: Retrospective confirmation emails ─────────────────────
 
     public function send_confirmation_emails() {
