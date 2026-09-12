@@ -225,6 +225,141 @@
   </div>
 </div>
 
+<!-- 8. PRINCIPAL NOT IN -->
+<div class="script-card">
+  <div class="script-card-header">
+    <span class="stage-badge" style="background:#7f8c8d">Situation</span>
+    <i class="fas fa-door-open" style="color:#7f8c8d"></i>
+    When the Principal is Not Available
+  </div>
+  <div class="script-card-body">
+    <div class="script-line">
+      "No problem at all. My name is [Your Name] from CST SchoolHub — we work with schools on
+      digital management systems. Could I leave some information for the principal?
+      I would also really appreciate if you could let them know I came by.
+      When would be the best time for me to come back and meet them briefly?"
+    </div>
+    <div class="script-note">
+      <i class="fas fa-info-circle"></i>
+      <span>Leave the brochure with the secretary or deputy. Be polite and warm — the secretary often influences
+      the principal's first impression of you. Get a specific day and time to return, and log it in your portal immediately.</span>
+    </div>
+  </div>
+</div>
+
+<!-- 9. PRICING CONVERSATION -->
+<div class="script-card">
+  <div class="script-card-header">
+    <span class="stage-badge" style="background:#c0392b">Step 8</span>
+    <i class="fas fa-tag" style="color:#c0392b"></i>
+    When They Ask "How Much Does It Cost?"
+  </div>
+  <div class="script-card-body">
+    <div class="script-line">
+      "It depends on the size of your school — we have plans designed for different school sizes
+      so you only pay for what you need. For a school your size, it would be around
+      KES [Basic: 3,000 / Standard: 5,000 / Premium: 20,000] per month.
+      That covers everything — all the modules, SMS notifications, support, and updates.
+      No hidden charges."
+    </div>
+    <div class="script-line accent">
+      "And if you pay yearly, you save two months — so you get twelve months of the system
+      for the price of ten. Many schools prefer that option."
+    </div>
+    <div class="script-note">
+      <i class="fas fa-info-circle"></i>
+      <span>State the price confidently — do not apologise for it or rush past it.
+      Pause after saying it and let them respond. Do not fill the silence by offering a discount immediately.</span>
+    </div>
+  </div>
+</div>
+
+<!-- 10. EXTRA OBJECTIONS -->
+<div class="script-card">
+  <div class="script-card-header">
+    <span class="stage-badge" style="background:#e67e22">More Responses</span>
+    <i class="fas fa-comments" style="color:#e67e22"></i>
+    More Common Situations
+  </div>
+  <div class="script-card-body">
+
+    <div class="objection-label">If they ask: "How many schools are already using it?"</div>
+    <div class="script-line accent">
+      "We are actively growing across Kenya and schools in several counties are already on the platform.
+      What I can tell you is that the schools using it have seen a big reduction in admin work —
+      especially around fees and report generation.
+      I would be happy to connect you with one of them if you would like to hear directly from another school."
+    </div>
+
+    <div class="objection-label">If they say: "We have no internet / poor connectivity"</div>
+    <div class="script-line accent">
+      "That is a concern we hear often and we have thought about it.
+      The system works well on basic mobile data — teachers can use it on their phones without needing fast internet.
+      For the office, a simple home router with a data bundle is usually enough.
+      And if your school needs a computer and internet connection to get started,
+      we can actually arrange that for you as an add-on — a computer and hotspot setup at an extra cost,
+      so you have everything ready from day one."
+    </div>
+
+    <div class="objection-label">If they say: "We already use something else but it has gaps"</div>
+    <div class="script-line accent">
+      "That is actually the most common situation we see. A lot of schools are using one system for fees
+      and something else for results — and nothing for parent communication.
+      CST SchoolHub brings everything under one login, one place.
+      Would it be useful if I showed you just the parts that cover those gaps?"
+    </div>
+
+    <div class="script-note" style="margin-top:8px">
+      <i class="fas fa-info-circle"></i>
+      Always acknowledge their concern first before responding. Never make them feel their objection was wrong.
+    </div>
+  </div>
+</div>
+
+<!-- 11. WHATSAPP TEMPLATES -->
+<div class="script-card">
+  <div class="script-card-header">
+    <span class="stage-badge" style="background:#25d366">WhatsApp</span>
+    <i class="fab fa-whatsapp" style="color:#25d366"></i>
+    WhatsApp Message Templates — Copy and Send
+  </div>
+  <div class="script-card-body">
+
+    <div class="objection-label">After a visit — same day</div>
+    <div class="script-line green">
+      "Good [morning/afternoon] [Name], this is [Your Name] from CST SchoolHub.
+      It was a pleasure visiting [School Name] today.
+      I have left our brochure with you — please take a look when you get a moment.
+      Feel free to reach out if you have any questions.
+      I will follow up with you on [agreed date]. Have a great day!"
+    </div>
+
+    <div class="objection-label">Follow-up after no response (3–5 days later)</div>
+    <div class="script-line green">
+      "Hello [Name], hope you are doing well.
+      I am just following up on the CST SchoolHub information I shared with you during my visit.
+      Have you had a chance to look through it?
+      I am happy to arrange a short demo at your convenience — it takes about 10 minutes.
+      Please let me know what works for you."
+    </div>
+
+    <div class="objection-label">When they are ready for a demo</div>
+    <div class="script-line green">
+      "That is great to hear! I can come by on [Day] at [Time] — does that work for you?
+      I will bring everything needed to show you the full system live.
+      Please make sure the principal or person who makes the decision is available if possible.
+      Looking forward to it!"
+    </div>
+
+    <div class="script-note">
+      <i class="fas fa-info-circle"></i>
+      <span>Send WhatsApp messages during working hours — 8am to 6pm only.
+      Use the school's official number if available, not a personal number.
+      Keep messages short, professional and warm.</span>
+    </div>
+  </div>
+</div>
+
 <!-- GOLDEN RULES -->
 <div class="ap-card" style="border-left:3px solid var(--ap-accent);margin-bottom:32px">
   <div class="ap-card-header"><i class="fas fa-star me-2" style="color:var(--ap-accent)"></i>Golden Rules to Always Remember</div>
