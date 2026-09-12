@@ -21,12 +21,19 @@ class Agent_portal extends CI_Controller
         if ($this->session->userdata('agent_must_change_password')) {
             redirect('agent_portal/change_password');
         }
-        // Skip terms check on the terms page itself
         $current = $this->uri->uri_string();
         if (strpos($current, 'agent_portal/terms') === false &&
             strpos($current, 'agent_portal/logout') === false) {
             if (!$this->agent_model->hasAcceptedTerms($this->_agent_id())) {
                 redirect('agent_portal/terms');
+            }
+            // Region check — skip on the set_region/save_region pages themselves
+            if (strpos($current, 'agent_portal/set_region') === false &&
+                strpos($current, 'agent_portal/save_region') === false) {
+                $agent = $this->agent_model->getAgent($this->_agent_id());
+                if (empty($agent['county']) || empty($agent['sub_county'])) {
+                    redirect('agent_portal/set_region');
+                }
             }
         }
     }
@@ -729,6 +736,66 @@ p{margin:8px 0}
     {
         $this->_require_auth();
         $this->_render('agent_portal/demo', array('title' => 'Demo School: Sunrise Academy'));
+    }
+
+    // ─── REGION SETUP ─────────────────────────────────────────────
+
+    public function set_region()
+    {
+        if (!$this->session->userdata('agent_loggedin')) {
+            redirect('agent_portal/login');
+        }
+        if ($this->session->userdata('agent_must_change_password')) {
+            redirect('agent_portal/change_password');
+        }
+
+        $agentId = $this->_agent_id();
+        $agent   = $this->agent_model->getAgent($agentId);
+
+        // Already set — go to portal
+        if (!empty($agent['county']) && !empty($agent['sub_county'])) {
+            redirect('agent_portal');
+        }
+
+        include(APPPATH . 'config/kenya_regions.php');
+        $data['kenya_regions'] = $kenya_regions;
+        $data['error']         = $this->session->flashdata('region_error');
+        $data['title']         = 'Set Your Working Region';
+        $this->_render('agent_portal/set_region', $data);
+    }
+
+    public function save_region()
+    {
+        if (!$this->session->userdata('agent_loggedin')) {
+            redirect('agent_portal/login');
+        }
+
+        $county     = trim($this->input->post('county',     true));
+        $sub_county = trim($this->input->post('sub_county', true));
+
+        if (!$county || !$sub_county) {
+            $this->session->set_flashdata('region_error', 'Please select both county and sub-county.');
+            redirect('agent_portal/set_region');
+        }
+
+        // Validate against the regions list
+        include(APPPATH . 'config/kenya_regions.php');
+        if (!isset($kenya_regions[$county]) || !in_array($sub_county, $kenya_regions[$county])) {
+            $this->session->set_flashdata('region_error', 'Invalid region selected. Please try again.');
+            redirect('agent_portal/set_region');
+        }
+
+        $agentId = $this->_agent_id();
+        $this->db->where('id', $agentId)->update('agent', [
+            'county'     => $county,
+            'sub_county' => $sub_county,
+        ]);
+
+        // Refresh session data
+        $agent = $this->agent_model->getAgent($agentId);
+        $this->session->set_userdata('loggedin_agent', $agent);
+
+        redirect('agent_portal');
     }
 
     // ─── ALL MODULES SHOWCASE ──────────────────────────────────────
