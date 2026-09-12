@@ -90,15 +90,21 @@
                 <div class="label-sm">County</div>
                 <div class="county-name" id="detected-county">—</div>
                 <div class="label-sm" style="margin-top:10px;">Sub-County</div>
-                <div class="subcounty-name" id="detected-subcounty">—</div>
+                <div class="subcounty-name" id="detected-subcounty" style="display:none;">—</div>
+                <!-- Shown only when sub-county could not be auto-detected -->
+                <div id="subcounty-picker" style="display:none;margin-top:8px;">
+                    <select id="confirm-subcounty-select" class="form-control" style="margin-top:4px;">
+                        <option value="">— Select your sub-county —</option>
+                    </select>
+                </div>
             </div>
             <p style="font-size:13px;color:#555;margin-bottom:16px;">
                 Will this be your working field — the area where you will visit schools?
             </p>
-            <?php echo form_open('agent_portal/save_region'); ?>
+            <?php echo form_open('agent_portal/save_region', ['id' => 'confirm-form']); ?>
                 <input type="hidden" name="county"     id="confirm-county">
                 <input type="hidden" name="sub_county" id="confirm-subcounty">
-                <button type="submit" class="btn-confirm">
+                <button type="button" class="btn-confirm" onclick="submitConfirm()">
                     <i class="fas fa-check"></i> Yes, this is my area
                 </button>
             <?php echo form_close(); ?>
@@ -187,16 +193,49 @@ function matchSubCounty(county, nominatimAddr) {
 
 function showConfirm(county, subCounty) {
     document.getElementById('step-detecting').style.display = 'none';
-    document.getElementById('detected-county').textContent    = county + ' County';
-    document.getElementById('detected-subcounty').textContent = subCounty ? subCounty + ' Sub-County' : 'Sub-county not detected — please verify';
-    document.getElementById('confirm-county').value     = county;
-    document.getElementById('confirm-subcounty').value  = subCounty;
-    document.getElementById('step-confirm').style.display = 'block';
+    document.getElementById('detected-county').textContent  = county + ' County';
+    document.getElementById('confirm-county').value         = county;
+    document.getElementById('confirm-subcounty').value      = subCounty;
 
-    // If sub-county wasn't matched, pre-fill the manual dropdowns and suggest changing
-    if (!subCounty) {
-        preSelectCounty(county);
+    if (subCounty) {
+        // Sub-county detected — show as text
+        document.getElementById('detected-subcounty').textContent = subCounty + ' Sub-County';
+        document.getElementById('detected-subcounty').style.display = 'block';
+        document.getElementById('subcounty-picker').style.display  = 'none';
+    } else {
+        // Sub-county not detected — show dropdown for this county
+        document.getElementById('detected-subcounty').style.display = 'none';
+        document.getElementById('subcounty-picker').style.display   = 'block';
+        var sel = document.getElementById('confirm-subcounty-select');
+        sel.innerHTML = '<option value="">— Select your sub-county —</option>';
+        if (kenyaRegions[county]) {
+            kenyaRegions[county].forEach(function(sub) {
+                var o = document.createElement('option');
+                o.value = sub; o.textContent = sub;
+                sel.appendChild(o);
+            });
+        }
     }
+
+    document.getElementById('step-confirm').style.display = 'block';
+}
+
+function submitConfirm() {
+    var county    = document.getElementById('confirm-county').value;
+    var subCounty = document.getElementById('confirm-subcounty').value;
+
+    // If sub-county came from the dropdown, read it now
+    if (!subCounty) {
+        subCounty = document.getElementById('confirm-subcounty-select').value;
+        document.getElementById('confirm-subcounty').value = subCounty;
+    }
+
+    if (!county || !subCounty) {
+        alert('Please select your sub-county from the list before continuing.');
+        return;
+    }
+
+    document.getElementById('confirm-form').submit();
 }
 
 function showManual(preCounty) {
