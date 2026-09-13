@@ -84,7 +84,33 @@ $warn    = $this->session->flashdata('dir_warn');
     </a>
 </div>
 
+<!-- Area chips -->
+<?php
+$areas = [];
+foreach ($schools as $s) {
+    $a = trim($s['area'] ?? '');
+    if ($a && strtolower($a) !== 'not specified' && strtolower($a) !== 'not listed') {
+        $areas[$a] = true;
+    }
+}
+ksort($areas);
+?>
+<?php if (!empty($areas)): ?>
+<div style="margin-bottom:6px;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:#aaa;font-weight:700;">
+    <i class="fas fa-map-marker-alt"></i> Filter by Area
+</div>
+<div class="filter-chips" id="area-chips">
+    <span class="filter-chip all-chip active" data-area="">All Areas</span>
+    <?php foreach ($areas as $area => $_): ?>
+    <span class="filter-chip" data-area="<?php echo html_escape($area); ?>"><?php echo html_escape($area); ?></span>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
+
 <!-- Type filter chips -->
+<div style="margin-bottom:6px;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:#aaa;font-weight:700;">
+    <i class="fas fa-school"></i> Filter by Type
+</div>
 <div class="filter-chips" id="type-chips">
     <span class="filter-chip all-chip active" data-type="">All Types</span>
     <?php foreach ($types as $t): if (empty($t['type'])) continue; ?>
@@ -96,7 +122,7 @@ $warn    = $this->session->flashdata('dir_warn');
 <div class="dir-stats">
     <span id="visible-count"><?php echo number_format($total); ?> schools in your area</span>
     <span style="font-size:.75rem;color:#bbb;">
-        <i class="fas fa-circle" style="color:#27ae60;font-size:.55rem;vertical-align:middle;"></i> Green border = already in your pipeline
+        <i class="fas fa-circle" style="color:#27ae60;font-size:.55rem;vertical-align:middle;"></i> Green = already in your pipeline
     </span>
 </div>
 
@@ -184,31 +210,44 @@ $warn    = $this->session->flashdata('dir_warn');
     var countEl     = document.getElementById('visible-count');
     var pagination  = document.getElementById('pagination');
     var activeType  = '';
+    var activeArea  = '';
 
     function filter() {
-        var q    = searchInput.value.toLowerCase().trim();
+        var q     = searchInput.value.toLowerCase().trim();
         var shown = 0;
         cards.forEach(function(c) {
             var nameMatch = !q || c.dataset.name.indexOf(q) > -1
                                || c.dataset.area.indexOf(q) > -1
                                || c.dataset.location.indexOf(q) > -1;
             var typeMatch = !activeType || c.dataset.type === activeType;
-            if (nameMatch && typeMatch) { c.style.display = ''; shown++; }
+            var areaMatch = !activeArea || c.dataset.area.toLowerCase() === activeArea.toLowerCase();
+            if (nameMatch && typeMatch && areaMatch) { c.style.display = ''; shown++; }
             else c.style.display = 'none';
         });
         countEl.textContent = shown + ' school' + (shown !== 1 ? 's' : '') + ' shown';
         noResults.style.display = (shown === 0 && cards.length > 0) ? 'block' : 'none';
-        if (pagination) pagination.style.display = (q || activeType) ? 'none' : '';
+        if (pagination) pagination.style.display = (q || activeType || activeArea) ? 'none' : '';
     }
 
     searchInput.addEventListener('input', filter);
 
-    document.getElementById('type-chips').addEventListener('click', function(e){
+    var typeChips = document.getElementById('type-chips');
+    if (typeChips) typeChips.addEventListener('click', function(e){
         var chip = e.target.closest('.filter-chip');
         if (!chip) return;
-        document.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
+        typeChips.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
         chip.classList.add('active');
         activeType = chip.dataset.type;
+        filter();
+    });
+
+    var areaChips = document.getElementById('area-chips');
+    if (areaChips) areaChips.addEventListener('click', function(e){
+        var chip = e.target.closest('.filter-chip');
+        if (!chip) return;
+        areaChips.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
+        chip.classList.add('active');
+        activeArea = chip.dataset.area;
         filter();
     });
 })();
