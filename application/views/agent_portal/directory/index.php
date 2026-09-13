@@ -16,14 +16,6 @@
 }
 .dir-search-bar input[type=text]:focus { border-color:#1a6fb3; }
 
-.filter-chips { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center; }
-.filter-chip {
-    cursor:pointer;padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:600;
-    border:1.5px solid #d0d7de;background:#fff;color:#555;transition:all .15s;white-space:nowrap;
-}
-.filter-chip:hover { border-color:#1a6fb3;color:#1a6fb3; }
-.filter-chip.active { background:#1a6fb3;color:#fff;border-color:#1a6fb3; }
-.filter-chip.all-chip.active { background:#1a2e4a;border-color:#1a2e4a; }
 
 .dir-stats {
     display:flex;justify-content:space-between;align-items:center;
@@ -84,38 +76,28 @@ $warn    = $this->session->flashdata('dir_warn');
     </a>
 </div>
 
-<!-- Area chips -->
+<!-- Area & Type dropdowns -->
 <?php
 $areas = [];
 foreach ($schools as $s) {
     $a = trim($s['area'] ?? '');
-    if ($a && strtolower($a) !== 'not specified' && strtolower($a) !== 'not listed') {
-        $areas[$a] = true;
-    }
+    if ($a && strtolower($a) !== 'not specified' && strtolower($a) !== 'not listed') $areas[$a] = true;
 }
 ksort($areas);
 ?>
-<?php if (!empty($areas)): ?>
-<div style="margin-bottom:6px;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:#aaa;font-weight:700;">
-    <i class="fas fa-map-marker-alt"></i> Filter by Area
-</div>
-<div class="filter-chips" id="area-chips">
-    <span class="filter-chip all-chip active" data-area="">All Areas</span>
-    <?php foreach ($areas as $area => $_): ?>
-    <span class="filter-chip" data-area="<?php echo html_escape($area); ?>"><?php echo html_escape($area); ?></span>
-    <?php endforeach; ?>
-</div>
-<?php endif; ?>
-
-<!-- Type filter chips -->
-<div style="margin-bottom:6px;font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:#aaa;font-weight:700;">
-    <i class="fas fa-school"></i> Filter by Type
-</div>
-<div class="filter-chips" id="type-chips">
-    <span class="filter-chip all-chip active" data-type="">All Types</span>
-    <?php foreach ($types as $t): if (empty($t['type'])) continue; ?>
-    <span class="filter-chip" data-type="<?php echo html_escape($t['type']); ?>"><?php echo html_escape($t['type']); ?></span>
-    <?php endforeach; ?>
+<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+    <select id="area-filter" class="form-control" style="flex:1;min-width:160px;max-width:220px;">
+        <option value="">All Areas</option>
+        <?php foreach ($areas as $area => $_): ?>
+        <option value="<?php echo html_escape($area); ?>"><?php echo html_escape($area); ?></option>
+        <?php endforeach; ?>
+    </select>
+    <select id="type-filter" class="form-control" style="flex:1;min-width:180px;max-width:240px;">
+        <option value="">All Types</option>
+        <?php foreach ($types as $t): if (empty($t['type'])) continue; ?>
+        <option value="<?php echo html_escape($t['type']); ?>"><?php echo html_escape($t['type']); ?></option>
+        <?php endforeach; ?>
+    </select>
 </div>
 
 <!-- Stats row -->
@@ -231,24 +213,9 @@ ksort($areas);
 
     searchInput.addEventListener('input', filter);
 
-    var typeChips = document.getElementById('type-chips');
-    if (typeChips) typeChips.addEventListener('click', function(e){
-        var chip = e.target.closest('.filter-chip');
-        if (!chip) return;
-        typeChips.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
-        chip.classList.add('active');
-        activeType = chip.dataset.type;
-        filter();
-    });
-
-    var areaChips = document.getElementById('area-chips');
-    if (areaChips) areaChips.addEventListener('click', function(e){
-        var chip = e.target.closest('.filter-chip');
-        if (!chip) return;
-        areaChips.querySelectorAll('.filter-chip').forEach(function(c){ c.classList.remove('active'); });
-        chip.classList.add('active');
-        activeArea = chip.dataset.area;
-        filter();
-    });
+    var areaSelect = document.getElementById('area-filter');
+    var typeSelect = document.getElementById('type-filter');
+    if (areaSelect) areaSelect.addEventListener('change', function(){ activeArea = this.value; filter(); });
+    if (typeSelect) typeSelect.addEventListener('change', function(){ activeType = this.value; filter(); });
 })();
 </script>
