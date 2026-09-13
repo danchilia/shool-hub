@@ -22,6 +22,17 @@ CREATE TABLE IF NOT EXISTS `school_directory` (
     INDEX `idx_phone`      (`phone`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Link agent pipeline schools to the directory
-ALTER TABLE `agent_school`
-    ADD COLUMN `directory_id` INT DEFAULT NULL;
+-- Link agent pipeline schools to the directory (skip if column already exists)
+SET @col_exists = (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME   = 'agent_school'
+      AND COLUMN_NAME  = 'directory_id'
+);
+SET @sql = IF(@col_exists = 0,
+    'ALTER TABLE `agent_school` ADD COLUMN `directory_id` INT DEFAULT NULL',
+    'SELECT 1 -- directory_id already exists'
+);
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
