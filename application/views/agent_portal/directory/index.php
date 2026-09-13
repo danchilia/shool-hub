@@ -158,6 +158,11 @@ ksort($areas);
         <span style="color:#27ae60;font-size:.8rem;font-weight:700;">
             <i class="fas fa-check-circle"></i> In Pipeline
         </span>
+        <?php elseif (isset($claimed_map[$s['id']])): ?>
+        <span title="Assigned to <?php echo html_escape($claimed_map[$s['id']]); ?>"
+              style="color:#aaa;font-size:.78rem;font-weight:600;white-space:nowrap;">
+            <i class="fas fa-lock"></i> Assigned
+        </span>
         <?php else: ?>
         <a href="<?php echo base_url('agent_portal/add_from_directory/' . $s['id']); ?>"
            class="btn btn-sm btn-primary" style="font-size:.78rem;">

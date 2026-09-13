@@ -740,16 +740,32 @@ p{margin:8px 0}
         $pipeline = $this->db->select('directory_id')->where('agent_id', $agentId)->where('directory_id IS NOT NULL', null, false)->get('agent_school')->result_array();
         $inPipeline = array_column($pipeline, 'directory_id');
 
-        $data['schools']    = $result['rows'];
-        $data['total']      = $result['total'];
-        $data['page']       = $page;
-        $data['limit']      = $limit;
-        $data['filters']    = $filters;
-        $data['in_pipeline']= $inPipeline;
-        $data['regions']    = $this->school_directory_model->get_regions();
-        $data['types']      = $this->school_directory_model->get_types();
-        $data['ownerships'] = $this->school_directory_model->get_ownerships();
-        $data['title']      = 'School Directory';
+        // Get IDs claimed by OTHER agents (to show as locked)
+        $claimed = $this->db
+            ->select('ag.directory_id, a.first_name, a.last_name')
+            ->from('agent_school ag')
+            ->join('agents a', 'a.id = ag.agent_id', 'left')
+            ->where('ag.agent_id !=', $agentId)
+            ->where('ag.directory_id IS NOT NULL', null, false)
+            ->get()->result_array();
+        $claimedMap = []; // directory_id => agent first name
+        foreach ($claimed as $c) {
+            if (!isset($claimedMap[$c['directory_id']])) {
+                $claimedMap[$c['directory_id']] = $c['first_name'];
+            }
+        }
+
+        $data['schools']     = $result['rows'];
+        $data['total']       = $result['total'];
+        $data['page']        = $page;
+        $data['limit']       = $limit;
+        $data['filters']     = $filters;
+        $data['in_pipeline'] = $inPipeline;
+        $data['claimed_map'] = $claimedMap;
+        $data['regions']     = $this->school_directory_model->get_regions();
+        $data['types']       = $this->school_directory_model->get_types();
+        $data['ownerships']  = $this->school_directory_model->get_ownerships();
+        $data['title']       = 'School Directory';
         $this->_render('agent_portal/directory/index', $data);
     }
 
@@ -762,11 +778,26 @@ p{margin:8px 0}
         $school = $this->school_directory_model->get($directoryId);
         if (!$school) show_404();
 
-        // Already in pipeline?
+        // Already in this agent's pipeline?
         $exists = $this->db->where(['agent_id' => $agentId, 'directory_id' => $directoryId])->count_all_results('agent_school');
         if ($exists) {
             $this->session->set_flashdata('dir_info', $school['school_name'] . ' is already in your pipeline.');
             redirect('agent_portal/directory');
+            return;
+        }
+
+        // Already claimed by another agent?
+        $otherAgent = $this->db
+            ->select('a.first_name, a.last_name')
+            ->from('agent_school ag')
+            ->join('agents a', 'a.id = ag.agent_id', 'left')
+            ->where('ag.directory_id', $directoryId)
+            ->where('ag.agent_id !=', $agentId)
+            ->get()->row_array();
+        if ($otherAgent) {
+            $this->session->set_flashdata('dir_warn', $school['school_name'] . ' is already assigned to agent ' . $otherAgent['first_name'] . '. Each school can only be worked by one agent.');
+            redirect('agent_portal/directory');
+            return;
         }
 
         $this->agent_model->addSchool([
