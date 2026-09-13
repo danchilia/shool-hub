@@ -82,9 +82,9 @@ class School_directory_model extends CI_Model {
         return ['rows' => $rows, 'total' => $total];
     }
 
-    public function get_regions()    { return $this->db->select('DISTINCT region')->order_by('region','ASC')->get('school_directory')->result_array(); }
-    public function get_types()      { return $this->db->select('DISTINCT type')->order_by('type','ASC')->get('school_directory')->result_array(); }
-    public function get_ownerships() { return $this->db->select('DISTINCT ownership')->order_by('ownership','ASC')->get('school_directory')->result_array(); }
+    public function get_regions()    { return $this->db->distinct()->select('region')->order_by('region','ASC')->get('school_directory')->result_array(); }
+    public function get_types()      { return $this->db->distinct()->select('type')->order_by('type','ASC')->get('school_directory')->result_array(); }
+    public function get_ownerships() { return $this->db->distinct()->select('ownership')->order_by('ownership','ASC')->get('school_directory')->result_array(); }
 
     public function count_by_status($status) {
         return $this->db->where('status', $status)->count_all_results('school_directory');
