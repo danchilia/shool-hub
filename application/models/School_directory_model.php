@@ -25,10 +25,12 @@ class School_directory_model extends CI_Model {
         // Phone match (if phone provided and not empty/generic)
         if ($phone && strlen(trim($phone)) >= 7) {
             $cleanPhone = preg_replace('/\D/', '', $phone);
-            $this->db->where('REPLACE(REPLACE(REPLACE(phone,"+","")," ",""),"-","") =', $cleanPhone);
-            if ($exclude_id) $this->db->where('id !=', $exclude_id);
-            $byPhone = $this->db->get('school_directory')->row_array();
-            if ($byPhone) return $byPhone;
+            if ($cleanPhone && strlen($cleanPhone) >= 7) {
+                $this->db->where("REPLACE(REPLACE(REPLACE(REPLACE(`phone`,'+',''),' ',''),'-',''),'(','') = " . $this->db->escape($cleanPhone), null, false);
+                if ($exclude_id) $this->db->where('id !=', $exclude_id);
+                $byPhone = $this->db->get('school_directory')->row_array();
+                if ($byPhone) return $byPhone;
+            }
         }
 
         return null;
