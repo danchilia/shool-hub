@@ -216,6 +216,32 @@
                     </li>
                     <?php endif; ?>
 
+                    <?php if (is_superadmin_loggedin()): ?>
+                    <!-- school directory -->
+                    <li class="nav-parent <?php if ($main_menu == 'school_directory') echo 'nav-expanded nav-active'; ?>">
+                        <a>
+                            <i class="fas fa-school"></i><span>School Directory</span>
+                        </a>
+                        <ul class="nav nav-children">
+                            <li class="<?php if ($sub_page == 'school_directory/index') echo 'nav-active'; ?>">
+                                <a href="<?=base_url('school_directory')?>">
+                                    <span><i class="fas fa-caret-right"></i> Browse Directory</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'school_directory/upload') echo 'nav-active'; ?>">
+                                <a href="<?=base_url('school_directory/upload')?>">
+                                    <span><i class="fas fa-caret-right"></i> Upload from Excel</span>
+                                </a>
+                            </li>
+                            <li class="<?php if ($sub_page == 'school_directory/pending') echo 'nav-active'; ?>">
+                                <a href="<?=base_url('school_directory/pending')?>">
+                                    <span><i class="fas fa-caret-right"></i> Pending Review</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+
                     <?php
                     if (get_permission('student', 'is_add') ||
                     get_permission('multiple_import', 'is_add') ||
