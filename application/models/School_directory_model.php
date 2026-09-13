@@ -72,7 +72,7 @@ class School_directory_model extends CI_Model {
 
         $this->db->order_by('sd.school_name', 'ASC');
 
-        $total = $this->db->count_all_results('school_directory sd', false);
+        $total = $this->db->count_all_results('', false);
 
         $this->db->limit($limit, $offset);
         $rows = $this->db->get()->result_array();
