@@ -156,7 +156,7 @@ class Admission_request extends Admin_Controller
                 $sectionID = $this->input->post('section_id');
                 $csv_array = $this->csvimport->get_array($_FILES["userfile"]["tmp_name"]);
                 if ($csv_array) {
-                    $columnHeaders = array('FirstName','LastName','BloodGroup','Gender','Birthday','MotherTongue','Religion','Caste','Phone','City','State','PresentAddress','PermanentAddress','CategoryID','Roll','AdmissionDate','UPINumber','StudentEmail','StudentPassword','GuardianName','GuardianRelation','FatherName','MotherName','GuardianOccupation','GuardianMobileNo','GuardianAddress','GuardianEmail','GuardianPassword');
+                    $columnHeaders = array('RegistrationNo','FirstName','LastName','BloodGroup','Gender','Birthday','MotherTongue','Religion','Caste','Phone','City','State','PresentAddress','PermanentAddress','CategoryID','Roll','AdmissionDate','UPINumber','StudentEmail','StudentPassword','GuardianName','GuardianRelation','FatherName','MotherName','GuardianOccupation','GuardianMobileNo','GuardianAddress','GuardianEmail','GuardianPassword');
                     $csvData = array();
                     foreach ($csv_array as $row) {
                         if ($i == 0) {
@@ -185,7 +185,7 @@ class Admission_request extends Admin_Controller
                                         'city' => $row['City'],
                                         'state' => $row['State'],
                                         'category_id' => $row['CategoryID'],
-                                        'register_no' => '',
+                                        'register_no' => isset($row['RegistrationNo']) ? trim($row['RegistrationNo']) : '',
                                         'admission_date' => date('Y-m-d', strtotime($row['AdmissionDate'])),
                                         'upi_number' => isset($row['UPINumber']) ? $row['UPINumber'] : '',
                                         'password' => $row['StudentPassword'],
