@@ -207,11 +207,11 @@ function ap_active($segment) {
     </a>
 
     <div class="nav-section">Schools</div>
-    <a href="<?= base_url('agent_portal/schools') ?>" class="<?= ap_active('agent_portal/schools') ?>">
-      <i class="fas fa-school"></i> My Schools
+    <a href="<?= base_url('agent_portal/directory') ?>" class="<?= ap_active('agent_portal/directory') ?>">
+      <i class="fas fa-book-open"></i> School Directory
     </a>
-    <a href="<?= base_url('agent_portal/add_school') ?>" class="<?= ap_active('agent_portal/add_school') ?>">
-      <i class="fas fa-plus-circle"></i> Add School Lead
+    <a href="<?= base_url('agent_portal/schools') ?>" class="<?= ap_active('agent_portal/schools') ?>">
+      <i class="fas fa-school"></i> My Pipeline
     </a>
     <a href="<?= base_url('agent_portal/followups') ?>" class="<?= ap_active('agent_portal/followups') ?>">
       <i class="fas fa-calendar-check"></i> Follow-ups
