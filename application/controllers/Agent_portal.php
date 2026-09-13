@@ -744,7 +744,7 @@ p{margin:8px 0}
         $claimed = $this->db
             ->select('ag.directory_id, a.first_name, a.last_name')
             ->from('agent_school ag')
-            ->join('agents a', 'a.id = ag.agent_id', 'left')
+            ->join('agent a', 'a.id = ag.agent_id', 'left')
             ->where('ag.agent_id !=', $agentId)
             ->where('ag.directory_id IS NOT NULL', null, false)
             ->get()->result_array();
@@ -790,7 +790,7 @@ p{margin:8px 0}
         $otherAgent = $this->db
             ->select('a.first_name, a.last_name')
             ->from('agent_school ag')
-            ->join('agents a', 'a.id = ag.agent_id', 'left')
+            ->join('agent a', 'a.id = ag.agent_id', 'left')
             ->where('ag.directory_id', $directoryId)
             ->where('ag.agent_id !=', $agentId)
             ->get()->row_array();
