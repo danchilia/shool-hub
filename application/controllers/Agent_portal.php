@@ -714,6 +714,129 @@ p{margin:8px 0}
         $this->_render('agent_portal/schools/submissions', $data);
     }
 
+    // ─── SCHOOL DIRECTORY ──────────────────────────────────────────
+
+    public function directory()
+    {
+        $this->_require_auth();
+        $this->load->model('school_directory_model');
+        $agentId = $this->_agent_id();
+        $agent   = $this->agent_model->getAgent($agentId);
+
+        $filters = [
+            'q'         => $this->input->get('q',         true),
+            'region'    => $this->input->get('region',    true) ?: ($agent['county'] ?? ''),
+            'type'      => $this->input->get('type',      true),
+            'ownership' => $this->input->get('ownership', true),
+            'status'    => 'active',
+        ];
+        $page   = max(1, (int) $this->input->get('page'));
+        $limit  = 30;
+        $offset = ($page - 1) * $limit;
+
+        $result = $this->school_directory_model->search($filters, $limit, $offset);
+
+        // Get IDs already in this agent's pipeline
+        $pipeline = $this->db->select('directory_id')->where('agent_id', $agentId)->where('directory_id IS NOT NULL', null, false)->get('agent_school')->result_array();
+        $inPipeline = array_column($pipeline, 'directory_id');
+
+        $data['schools']    = $result['rows'];
+        $data['total']      = $result['total'];
+        $data['page']       = $page;
+        $data['limit']      = $limit;
+        $data['filters']    = $filters;
+        $data['in_pipeline']= $inPipeline;
+        $data['regions']    = $this->school_directory_model->get_regions();
+        $data['types']      = $this->school_directory_model->get_types();
+        $data['ownerships'] = $this->school_directory_model->get_ownerships();
+        $data['title']      = 'School Directory';
+        $this->_render('agent_portal/directory/index', $data);
+    }
+
+    public function add_from_directory($directoryId)
+    {
+        $this->_require_auth();
+        $this->load->model('school_directory_model');
+        $agentId = $this->_agent_id();
+
+        $school = $this->school_directory_model->get($directoryId);
+        if (!$school) show_404();
+
+        // Already in pipeline?
+        $exists = $this->db->where(['agent_id' => $agentId, 'directory_id' => $directoryId])->count_all_results('agent_school');
+        if ($exists) {
+            $this->session->set_flashdata('dir_info', $school['school_name'] . ' is already in your pipeline.');
+            redirect('agent_portal/directory');
+        }
+
+        $this->agent_model->addSchool([
+            'agent_id'       => $agentId,
+            'school_name'    => $school['school_name'],
+            'phone'          => $school['phone'],
+            'county'         => $school['county'] ?: $school['region'],
+            'sub_county'     => $school['sub_county'] ?: $school['area'],
+            'notes'          => $school['road_location'],
+            'status'         => 'lead',
+            'interest_level' => 'unknown',
+            'directory_id'   => $directoryId,
+        ]);
+
+        $this->session->set_flashdata('dir_success', $school['school_name'] . ' added to your pipeline.');
+        redirect('agent_portal/directory');
+    }
+
+    public function add_new_to_directory()
+    {
+        $this->_require_auth();
+        $this->load->model('school_directory_model');
+        $agentId = $this->_agent_id();
+
+        if ($this->input->post('save')) {
+            $name  = trim($this->input->post('school_name', true));
+            $phone = trim($this->input->post('phone',       true));
+
+            // Duplicate check against directory
+            $dup = $this->school_directory_model->find_duplicate($name, $phone);
+            if ($dup) {
+                $this->session->set_flashdata('dir_warn',
+                    'A similar school already exists in the directory: <strong>' . html_escape($dup['school_name']) . '</strong> (' . html_escape($dup['area']) . '). ' .
+                    '<a href="' . base_url('agent_portal/add_from_directory/' . $dup['id']) . '">Add it to your pipeline instead?</a>');
+                redirect('agent_portal/add_new_to_directory');
+            }
+
+            $ownership = trim($this->input->post('ownership', true));
+            if (!$ownership) $ownership = 'Not Specified';
+
+            $dirId = $this->school_directory_model->insert([
+                'school_name'   => $name,
+                'type'          => trim($this->input->post('type',          true)),
+                'ownership'     => $ownership,
+                'area'          => trim($this->input->post('area',          true)),
+                'region'        => trim($this->input->post('region',        true)),
+                'phone'         => $phone,
+                'road_location' => trim($this->input->post('road_location', true)),
+                'status'        => 'pending_review',
+                'added_by'      => $agentId,
+            ]);
+
+            $this->agent_model->addSchool([
+                'agent_id'       => $agentId,
+                'school_name'    => $name,
+                'phone'          => $phone,
+                'notes'          => trim($this->input->post('road_location', true)),
+                'status'         => 'lead',
+                'interest_level' => 'unknown',
+                'directory_id'   => $dirId,
+            ]);
+
+            $this->session->set_flashdata('dir_success', $name . ' added to the directory (pending review) and to your pipeline.');
+            redirect('agent_portal/directory');
+        }
+
+        $data['title'] = 'Add School Not in Directory';
+        $this->_render('agent_portal/directory/add_new', $data);
+    }
+
     // ─── VISIT SCRIPT ──────────────────────────────────────────────
 
     public function script()

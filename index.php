@@ -62,6 +62,11 @@ if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] !== 'localhost' && (!i
     exit;
 }
 
+// Composer autoloader (PhpSpreadsheet and other packages)
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING
