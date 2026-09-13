@@ -101,8 +101,9 @@ class School_directory extends MY_Controller {
 
         try {
             $spreadsheet = IOFactory::load($tmp);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $this->data['error'] = 'Could not read the file: ' . $e->getMessage();
+            log_message('error', 'School directory preview load error: ' . $e->getMessage());
             $this->load->view('layout/index', $this->data);
             return;
         }
@@ -164,7 +165,8 @@ class School_directory extends MY_Controller {
 
         try {
             $spreadsheet = IOFactory::load($tmp);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
+            log_message('error', 'School directory import load error: ' . $e->getMessage());
             set_alert('error', 'Could not read file: ' . $e->getMessage());
             redirect(base_url('school_directory/upload'));
             return;
@@ -208,7 +210,8 @@ class School_directory extends MY_Controller {
                         'status'        => 'active',
                     ]);
                     $imported++;
-                } catch (Exception $e) {
+                } catch (\Throwable $e) {
+                    log_message('error', 'School directory insert error: ' . $e->getMessage() . ' | name=' . $name);
                     $errors++;
                 }
             }
