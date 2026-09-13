@@ -111,18 +111,18 @@
   <div class="guide-step">
     <div class="step-num">4</div>
     <div class="step-body">
-      <div class="step-title">Add a School Lead</div>
+      <div class="step-title">Find Schools Using the School Directory</div>
       <div class="step-desc">
-        Every school you identify as a potential customer must be added to your portal.
-        Go to <strong>Schools → Add School Lead</strong> and fill in:
-        <ul style="margin-top:6px;padding-left:18px;line-height:2">
-          <li>School name (required)</li>
-          <li>Principal's name and phone</li>
-          <li>County and sub-county</li>
-          <li>Approximate number of students</li>
-          <li>Whether they currently use any school system</li>
-        </ul>
-        The school is saved with status <strong>"Lead"</strong> meaning you have identified them but not yet visited.
+        CST SchoolHub gives you a pre-loaded directory of schools in your area.
+        Go to <strong>Schools → School Directory</strong> to browse schools in your county.
+        You can filter by area, type, or ownership, or search by name.
+        When you find a school you want to target, click <strong>"Add to Pipeline"</strong> —
+        the school is instantly added to your <strong>My Pipeline</strong> list with status <strong>"Lead"</strong>.
+      </div>
+      <div class="step-tip">
+        <i class="fas fa-lightbulb"></i>
+        <strong>School not in the directory?</strong> Click <em>"School Not Listed? Add It"</em> at the top right of the directory.
+        Fill in the details and it will be added to your pipeline immediately and submitted to CST for verification.
       </div>
     </div>
   </div>
@@ -399,7 +399,7 @@
   <div class="ap-card-body" style="font-size:.85rem">
     <ol style="padding-left:20px;line-height:2.2;margin:0">
       <li>Download the Data Collection Form from the portal</li>
-      <li>Identify a school → Add it as a <strong>School Lead</strong></li>
+      <li>Browse <strong>School Directory</strong> → click <strong>Add to Pipeline</strong> (or add unlisted school manually)</li>
       <li>Visit the school → <strong>Log the Visit</strong> (earn visit fee)</li>
       <li>Do a demo → Log visit as "Demo"</li>
       <li>Follow up until school agrees → Log each interaction</li>
