@@ -725,13 +725,13 @@ p{margin:8px 0}
 
         $filters = [
             'q'         => $this->input->get('q',         true),
-            'region'    => $this->input->get('region',    true) ?: ($agent['county'] ?? ''),
+            'region'    => $this->input->get('region',    true),
             'type'      => $this->input->get('type',      true),
             'ownership' => $this->input->get('ownership', true),
             'status'    => 'active',
         ];
         $page   = max(1, (int) $this->input->get('page'));
-        $limit  = 30;
+        $limit  = 100; // load more per page so live filtering works well
         $offset = ($page - 1) * $limit;
 
         $result = $this->school_directory_model->search($filters, $limit, $offset);

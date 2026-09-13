@@ -86,13 +86,19 @@ foreach ($schools as $s) {
 ksort($areas);
 ?>
 <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
-    <select id="area-filter" class="form-control" style="flex:1;min-width:160px;max-width:220px;">
+    <select id="region-filter" class="form-control" style="flex:1;min-width:180px;">
+        <option value="">All Regions</option>
+        <?php foreach ($regions as $r): if (empty($r['region'])) continue; ?>
+        <option value="<?php echo html_escape($r['region']); ?>"><?php echo html_escape($r['region']); ?></option>
+        <?php endforeach; ?>
+    </select>
+    <select id="area-filter" class="form-control" style="flex:1;min-width:150px;">
         <option value="">All Areas</option>
         <?php foreach ($areas as $area => $_): ?>
         <option value="<?php echo html_escape($area); ?>"><?php echo html_escape($area); ?></option>
         <?php endforeach; ?>
     </select>
-    <select id="type-filter" class="form-control" style="flex:1;min-width:180px;max-width:240px;">
+    <select id="type-filter" class="form-control" style="flex:1;min-width:180px;">
         <option value="">All Types</option>
         <?php foreach ($types as $t): if (empty($t['type'])) continue; ?>
         <option value="<?php echo html_escape($t['type']); ?>"><?php echo html_escape($t['type']); ?></option>
@@ -123,7 +129,8 @@ ksort($areas);
      data-name="<?php echo strtolower(html_escape($s['school_name'])); ?>"
      data-area="<?php echo strtolower(html_escape($s['area'] ?? '')); ?>"
      data-location="<?php echo strtolower(html_escape($s['road_location'] ?? '')); ?>"
-     data-type="<?php echo html_escape($s['type'] ?? ''); ?>">
+     data-type="<?php echo html_escape($s['type'] ?? ''); ?>"
+     data-region="<?php echo html_escape($s['region'] ?? ''); ?>">
     <div style="flex:1;">
         <div class="dir-school-name"><?php echo html_escape($s['school_name']); ?></div>
         <div class="dir-school-meta">
@@ -191,8 +198,9 @@ ksort($areas);
     var noResults   = document.getElementById('no-results');
     var countEl     = document.getElementById('visible-count');
     var pagination  = document.getElementById('pagination');
-    var activeType  = '';
-    var activeArea  = '';
+    var activeType   = '';
+    var activeArea   = '';
+    var activeRegion = '';
 
     function filter() {
         var q     = searchInput.value.toLowerCase().trim();
@@ -201,21 +209,24 @@ ksort($areas);
             var nameMatch = !q || c.dataset.name.indexOf(q) > -1
                                || c.dataset.area.indexOf(q) > -1
                                || c.dataset.location.indexOf(q) > -1;
-            var typeMatch = !activeType || c.dataset.type === activeType;
-            var areaMatch = !activeArea || c.dataset.area.toLowerCase() === activeArea.toLowerCase();
-            if (nameMatch && typeMatch && areaMatch) { c.style.display = ''; shown++; }
+            var typeMatch   = !activeType   || c.dataset.type === activeType;
+            var areaMatch   = !activeArea   || c.dataset.area.toLowerCase() === activeArea.toLowerCase();
+            var regionMatch = !activeRegion || c.dataset.region === activeRegion;
+            if (nameMatch && typeMatch && areaMatch && regionMatch) { c.style.display = ''; shown++; }
             else c.style.display = 'none';
         });
         countEl.textContent = shown + ' school' + (shown !== 1 ? 's' : '') + ' shown';
         noResults.style.display = (shown === 0 && cards.length > 0) ? 'block' : 'none';
-        if (pagination) pagination.style.display = (q || activeType || activeArea) ? 'none' : '';
+        if (pagination) pagination.style.display = (q || activeType || activeArea || activeRegion) ? 'none' : '';
     }
 
     searchInput.addEventListener('input', filter);
 
-    var areaSelect = document.getElementById('area-filter');
-    var typeSelect = document.getElementById('type-filter');
-    if (areaSelect) areaSelect.addEventListener('change', function(){ activeArea = this.value; filter(); });
-    if (typeSelect) typeSelect.addEventListener('change', function(){ activeType = this.value; filter(); });
+    var regionSelect = document.getElementById('region-filter');
+    var areaSelect   = document.getElementById('area-filter');
+    var typeSelect   = document.getElementById('type-filter');
+    if (regionSelect) regionSelect.addEventListener('change', function(){ activeRegion = this.value; filter(); });
+    if (areaSelect)   areaSelect.addEventListener('change',   function(){ activeArea   = this.value; filter(); });
+    if (typeSelect)   typeSelect.addEventListener('change',   function(){ activeType   = this.value; filter(); });
 })();
 </script>
