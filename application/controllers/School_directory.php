@@ -114,15 +114,20 @@ class School_directory extends MY_Controller {
             $sheet = $spreadsheet->getSheet($i);
             $rows  = $sheet->toArray(null, true, true, true);
 
-            // Detect header row (first non-empty row)
+            // Find the real header row — must contain "school name" column
             $header = [];
             $data   = [];
             foreach ($rows as $row) {
-                $vals = array_values(array_filter($row, fn($v) => $v !== null && $v !== ''));
-                if (empty($vals)) continue;
-                if (empty($header)) { $header = array_map('strtolower', array_map('trim', array_values($row))); continue; }
+                $vals = array_map('strtolower', array_map('trim', array_values($row)));
+                if (empty($header)) {
+                    if (in_array('school name', $vals)) {
+                        $header = $vals;
+                    }
+                    continue;
+                }
                 $mapped = array_combine($header, array_values($row));
-                if (empty(trim($mapped[array_key_first($mapped)] ?? ''))) continue;
+                $name   = trim($mapped['school name'] ?? '');
+                if ($name === '' || is_numeric($name)) continue; // skip # rows
                 $data[] = $mapped;
             }
 
@@ -169,13 +174,15 @@ class School_directory extends MY_Controller {
 
             $header = [];
             foreach ($rows as $row) {
-                $vals = array_values(array_filter($row, fn($v) => $v !== null && $v !== ''));
-                if (empty($vals)) continue;
-                if (empty($header)) { $header = array_map('strtolower', array_map('trim', array_values($row))); continue; }
+                $vals = array_map('strtolower', array_map('trim', array_values($row)));
+                if (empty($header)) {
+                    if (in_array('school name', $vals)) $header = $vals;
+                    continue;
+                }
 
                 $mapped = array_combine($header, array_values($row));
-                $name   = trim($mapped['school name'] ?? $mapped['name'] ?? '');
-                if (!$name) continue;
+                $name   = trim($mapped['school name'] ?? '');
+                if ($name === '' || is_numeric($name)) continue;
 
                 $phone     = trim($mapped['phone number'] ?? $mapped['phone'] ?? '');
                 $ownership = trim($mapped['ownership'] ?? '');
