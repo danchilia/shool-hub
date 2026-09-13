@@ -150,10 +150,14 @@ class School_directory extends MY_Controller {
     }
 
     private function _do_import() {
+        @ini_set('memory_limit', '256M');
+        @ini_set('max_execution_time', 300);
+
         $tmp = $this->session->userdata('sd_tmp_file');
         if (!$tmp || !file_exists($tmp)) {
             set_alert('error', 'Upload session expired. Please upload the file again.');
             redirect(base_url('school_directory/upload'));
+            return;
         }
 
         $regions = $this->input->post('regions') ?: [];
@@ -163,6 +167,7 @@ class School_directory extends MY_Controller {
         } catch (Exception $e) {
             set_alert('error', 'Could not read file: ' . $e->getMessage());
             redirect(base_url('school_directory/upload'));
+            return;
         }
 
         $imported = 0; $skipped = 0; $errors = 0;
