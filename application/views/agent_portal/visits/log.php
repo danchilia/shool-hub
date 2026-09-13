@@ -41,7 +41,9 @@
       </div>
       <div class="col-md-6">
         <label class="form-label">Visit Type</label>
-        <select name="visit_type" class="form-select">
+        <select name="visit_type" class="form-select" id="visitTypeSelect">
+          <option value="phone_call">📞 Phone Call</option>
+          <option value="physical_visit">🚶 Physical Visit</option>
           <option value="demo">Demo / Presentation</option>
           <option value="follow_up">Follow-up Visit</option>
           <option value="setup">System Setup</option>
@@ -65,6 +67,7 @@
           <option value="needs_followup">Needs Follow-up</option>
           <option value="signed_up">Signed Up! 🎉</option>
           <option value="not_interested">Not Interested</option>
+          <option value="no_answer">Number Not Reachable</option>
         </select>
       </div>
 
@@ -185,4 +188,20 @@ function updatePreview() {
 outcomeEl.addEventListener('change', updateRows);
 planSelect.addEventListener('change', updatePreview);
 updateRows();
+
+var visitTypeEl = document.getElementById('visitTypeSelect');
+var gpsBox      = document.getElementById('gpsBox');
+
+function toggleGps() {
+  if (visitTypeEl.value === 'phone_call') {
+    gpsBox.style.display = 'none';
+    document.getElementById('fLat').value = '';
+    document.getElementById('fLng').value = '';
+    document.getElementById('fAcc').value = '';
+  } else {
+    gpsBox.style.display = '';
+    if (!document.getElementById('fLat').value) captureGps();
+  }
+}
+visitTypeEl.addEventListener('change', toggleGps);
 </script>
