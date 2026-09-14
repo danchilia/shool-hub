@@ -87,16 +87,42 @@
   </div>
 </div>
 
-<!-- STEP 1 — REACH THE RIGHT PERSON -->
+<!-- STEP 1 — CONFIRM THE SCHOOL -->
 <div class="script-card">
   <div class="script-card-header">
     <span class="stage-badge" style="background:var(--ap-navy)">Step 1</span>
     <i class="fas fa-phone" style="color:var(--ap-accent)"></i>
+    Confirm You Have the Right School
+  </div>
+  <div class="script-card-body">
+    <div class="script-line">
+      "Good [morning/afternoon], I'm [Your Name]. Am I speaking with [School Name]?"
+    </div>
+    <div class="objection-label">If yes — confirm the right person:</div>
+    <div class="script-line green">
+      "Great. Could I speak with the Director or Head Teacher please?"
+    </div>
+    <div class="objection-label">If wrong number / wrong school:</div>
+    <div class="script-line accent">
+      "I apologise for the confusion — I must have the wrong number. Have a good day."
+    </div>
+    <div class="script-note">
+      <i class="fas fa-info-circle"></i>
+      If it's the wrong number, update the phone number in your pipeline and log the outcome as "Number Not Reachable" with a note. Do not pitch until you have confirmed the school.
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2 — REACH THE RIGHT PERSON -->
+<div class="script-card">
+  <div class="script-card-header">
+    <span class="stage-badge" style="background:#2c3e50">Step 2</span>
+    <i class="fas fa-user-tie" style="color:var(--ap-accent)"></i>
     Reach the Right Person
   </div>
   <div class="script-card-body">
     <div class="script-line">
-      "Good [morning/afternoon], I'm [Your Name]. Could I speak with the person who handles the school's administration — the Director or Head Teacher?"
+      "Could I speak with the person who handles the school's administration — the Director or Head Teacher?"
     </div>
     <div class="objection-label">If not available:</div>
     <div class="script-line accent">
@@ -109,10 +135,10 @@
   </div>
 </div>
 
-<!-- STEP 2 — OPENING -->
+<!-- STEP 3 — OPENING -->
 <div class="script-card">
   <div class="script-card-header">
-    <span class="stage-badge" style="background:#2980b9">Step 2</span>
+    <span class="stage-badge" style="background:#2980b9">Step 3</span>
     <i class="fas fa-comment-dots" style="color:#2980b9"></i>
     Opening — Lead With Their Problem, Not Your Product
   </div>
@@ -136,10 +162,10 @@
   </div>
 </div>
 
-<!-- STEP 3 — LISTEN AND ASK -->
+<!-- STEP 4 — LISTEN AND ASK -->
 <div class="script-card">
   <div class="script-card-header">
-    <span class="stage-badge" style="background:#8e44ad">Step 3</span>
+    <span class="stage-badge" style="background:#8e44ad">Step 4</span>
     <i class="fas fa-ear-listen" style="color:#8e44ad"></i>
     Listen and Ask Questions — Do Not Pitch Yet
   </div>
@@ -155,10 +181,10 @@
   </div>
 </div>
 
-<!-- STEP 4 — PITCH -->
+<!-- STEP 5 — PITCH -->
 <div class="script-card">
   <div class="script-card-header">
-    <span class="stage-badge" style="background:var(--ap-green)">Step 4</span>
+    <span class="stage-badge" style="background:var(--ap-green)">Step 5</span>
     <i class="fas fa-lightbulb" style="color:var(--ap-green)"></i>
     The Pitch — Tie It to What They Just Told You
   </div>
@@ -186,10 +212,10 @@
   </div>
 </div>
 
-<!-- STEP 5 — OBJECTIONS -->
+<!-- STEP 6 — OBJECTIONS -->
 <div class="script-card">
   <div class="script-card-header">
-    <span class="stage-badge" style="background:#e67e22">Step 5</span>
+    <span class="stage-badge" style="background:#e67e22">Step 6</span>
     <i class="fas fa-comments" style="color:#e67e22"></i>
     Handling Objections
   </div>
@@ -227,10 +253,10 @@
   </div>
 </div>
 
-<!-- STEP 6 — CLOSE -->
+<!-- STEP 7 — CLOSE -->
 <div class="script-card">
   <div class="script-card-header">
-    <span class="stage-badge" style="background:var(--ap-navy2)">Step 6</span>
+    <span class="stage-badge" style="background:var(--ap-navy2)">Step 7</span>
     <i class="fas fa-flag-checkered" style="color:var(--ap-accent)"></i>
     Close — Book the Visit
   </div>
