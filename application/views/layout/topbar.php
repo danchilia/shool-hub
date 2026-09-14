@@ -144,7 +144,7 @@ $userRole  = ucfirst(loggedin_role_name());
                         Collect Fees
                     </a>
                     <?php endif; if (get_permission('sendsmsmail', 'is_add')): ?>
-                    <a href="<?php echo base_url('sendsmsmail'); ?>">
+                    <a href="<?php echo base_url('sendsmsmail/sms'); ?>">
                         <i class="fas fa-paper-plane"></i>
                         Send SMS / Email
                     </a>
