@@ -90,7 +90,10 @@ $userRole  = ucfirst(loggedin_role_name());
                      get_permission('leave_manage', 'is_view') ||
                      get_permission('live_class', 'is_view') ||
                      get_permission('due_invoice', 'is_view') ||
-                     get_permission('invoice', 'is_view');
+                     get_permission('invoice', 'is_view') ||
+                     get_permission('admission_approval', 'is_view') ||
+                     get_permission('collect_fees', 'is_add') ||
+                     get_permission('sendsmsmail', 'is_add');
         if ($showQuick):
         ?>
         <div class="position-relative">
@@ -129,6 +132,21 @@ $userRole  = ucfirst(loggedin_role_name());
                     <a href="<?php echo base_url('fees/invoice_list'); ?>">
                         <i class="fas fa-file-invoice"></i>
                         <?php echo translate('payments_history'); ?>
+                    </a>
+                    <?php endif; if (get_permission('admission_approval', 'is_view')): ?>
+                    <a href="<?php echo base_url('admission_request'); ?>">
+                        <i class="fas fa-clipboard-check"></i>
+                        Admission Requests
+                    </a>
+                    <?php endif; if (get_permission('collect_fees', 'is_add')): ?>
+                    <a href="<?php echo base_url('fees/collect_fees'); ?>">
+                        <i class="fas fa-cash-register"></i>
+                        Collect Fees
+                    </a>
+                    <?php endif; if (get_permission('sendsmsmail', 'is_add')): ?>
+                    <a href="<?php echo base_url('sendsmsmail'); ?>">
+                        <i class="fas fa-paper-plane"></i>
+                        Send SMS / Email
                     </a>
                     <?php endif; ?>
                 </div>
