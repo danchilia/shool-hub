@@ -40,6 +40,239 @@
 }
 </style>
 
+<!-- Script tabs -->
+<div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;">
+  <button onclick="showScript('phone')" id="tab-phone" class="script-tab active-tab">
+    <i class="fas fa-phone"></i> Phone Call Script
+  </button>
+  <button onclick="showScript('visit')" id="tab-visit" class="script-tab">
+    <i class="fas fa-handshake"></i> Physical Visit Script
+  </button>
+</div>
+
+<style>
+.script-tab {
+  padding:10px 22px;border-radius:8px;border:2px solid var(--ap-border);
+  background:var(--ap-white);color:var(--ap-muted);font-weight:600;font-size:.85rem;
+  cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .15s;
+}
+.script-tab.active-tab {
+  background:var(--ap-navy);color:#fff;border-color:var(--ap-navy);
+}
+</style>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PHONE CALL SCRIPT -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="script-phone">
+
+<div class="tip-box">
+  <i class="fas fa-phone"></i>
+  <strong>Key mindset:</strong> Most schools will sense a sales call within 10 seconds and switch off.
+  Lead with their problem, ask questions, and let them do the talking. The best phone call feels like a conversation — not a pitch.
+</div>
+
+<!-- BEFORE YOU CALL -->
+<div class="script-card">
+  <div class="script-card-header">
+    <span class="stage-badge" style="background:#7f8c8d">Before You Call</span>
+    <i class="fas fa-clipboard-list" style="color:#7f8c8d"></i>
+    Check the School Card First
+  </div>
+  <div class="script-card-body">
+    <div class="script-note" style="margin:0">
+      <i class="fas fa-info-circle"></i>
+      <span>Check the school's area/location, type (primary/secondary), phone number, and any notes from previous contact before dialling. It helps you personalise the call.</span>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 1 — REACH THE RIGHT PERSON -->
+<div class="script-card">
+  <div class="script-card-header">
+    <span class="stage-badge" style="background:var(--ap-navy)">Step 1</span>
+    <i class="fas fa-phone" style="color:var(--ap-accent)"></i>
+    Reach the Right Person
+  </div>
+  <div class="script-card-body">
+    <div class="script-line">
+      "Good [morning/afternoon], I'm [Your Name]. Could I speak with the person who handles the school's administration — the Director or Head Teacher?"
+    </div>
+    <div class="objection-label">If not available:</div>
+    <div class="script-line accent">
+      "No problem. Could I get their name so I know who to ask for when I call back? And what time is usually best to reach them?"
+    </div>
+    <div class="script-note">
+      <i class="fas fa-info-circle"></i>
+      Log the name and best call-back time. Set a follow-up date in your portal and end the call politely.
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2 — OPENING -->
+<div class="script-card">
+  <div class="script-card-header">
+    <span class="stage-badge" style="background:#2980b9">Step 2</span>
+    <i class="fas fa-comment-dots" style="color:#2980b9"></i>
+    Opening — Lead With Their Problem, Not Your Product
+  </div>
+  <div class="script-card-body">
+    <div class="objection-label">When speaking to the Director / Owner:</div>
+    <div class="script-line">
+      "Thank you for taking my call — I'll be quick. I visit schools around [area] and one thing I keep hearing from school owners is that collecting fees and keeping track of student records takes up so much time. Is that something you experience here as well?"
+    </div>
+    <div class="objection-label">When speaking to the Head Teacher:</div>
+    <div class="script-line">
+      "Thank you for taking my call — I'll be quick. I work with schools around [area] and teachers often tell me that things like attendance, exams and homework take a lot of manual work. Is that something your teachers deal with here?"
+    </div>
+    <div class="objection-label">When speaking to a Secretary / Receptionist:</div>
+    <div class="script-line accent">
+      "I understand — I just have a quick question. Does your school currently use any system for managing fees and student records, or is it mostly done manually?"
+    </div>
+    <div class="script-note">
+      <i class="fas fa-info-circle"></i>
+      End your opening with a question. If they answer, you have them. If they say no problem exists, ask what they use — you will still learn something useful.
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3 — LISTEN AND ASK -->
+<div class="script-card">
+  <div class="script-card-header">
+    <span class="stage-badge" style="background:#8e44ad">Step 3</span>
+    <i class="fas fa-ear-listen" style="color:#8e44ad"></i>
+    Listen and Ask Questions — Do Not Pitch Yet
+  </div>
+  <div class="script-card-body">
+    <div class="script-line accent">"How many students do you currently have?"</div>
+    <div class="script-line accent">"How do you handle fee collection right now — do parents pay at the office?"</div>
+    <div class="script-line accent">"Do teachers fill in attendance registers manually?"</div>
+    <div class="script-line accent">"When it comes to exams, how do you generate report cards?"</div>
+    <div class="script-note">
+      <i class="fas fa-info-circle"></i>
+      Ask one question at a time. The more they share, the more you can connect your solution to their actual situation. The pain point they mention is your entry point.
+    </div>
+  </div>
+</div>
+
+<!-- STEP 4 — PITCH -->
+<div class="script-card">
+  <div class="script-card-header">
+    <span class="stage-badge" style="background:var(--ap-green)">Step 4</span>
+    <i class="fas fa-lightbulb" style="color:var(--ap-green)"></i>
+    The Pitch — Tie It to What They Just Told You
+  </div>
+  <div class="script-card-body">
+    <div class="objection-label">If fees are a problem:</div>
+    <div class="script-line green">
+      "That's exactly what we've helped other schools with. We have a system where parents pay directly through M-Pesa and it records automatically — the school can see who has paid and who hasn't in real time, without anyone having to chase anyone."
+    </div>
+    <div class="objection-label">If attendance is manual:</div>
+    <div class="script-line green">
+      "We have a module where teachers mark attendance on their phone or computer and it's saved instantly. Parents also get an SMS if their child is absent."
+    </div>
+    <div class="objection-label">If exams/report cards are manual:</div>
+    <div class="script-line green">
+      "Teachers enter marks once and the system generates all the report cards automatically — no more filling them by hand."
+    </div>
+    <div class="objection-label">If generally interested:</div>
+    <div class="script-line green">
+      "It basically replaces all the paperwork — admissions, fees, attendance, exams, homework, even library records — everything is in one place and the Director can see everything from their phone."
+    </div>
+    <div class="script-note">
+      <i class="fas fa-info-circle"></i>
+      Only use the lines that match what they told you. Do not list every feature — pick the one that solves their problem.
+    </div>
+  </div>
+</div>
+
+<!-- STEP 5 — OBJECTIONS -->
+<div class="script-card">
+  <div class="script-card-header">
+    <span class="stage-badge" style="background:#e67e22">Step 5</span>
+    <i class="fas fa-comments" style="color:#e67e22"></i>
+    Handling Objections
+  </div>
+  <div class="script-card-body">
+
+    <div class="objection-label">"We already have a system"</div>
+    <div class="script-line accent">
+      "That's good to hear — can I ask what system you use? The reason I ask is some schools have a system but it doesn't cover everything, especially M-Pesa integration or CBC assessments. If yours covers all of that, I won't waste your time. But if there are gaps, it might be worth a quick look."
+    </div>
+
+    <div class="objection-label">"We are not interested"</div>
+    <div class="script-line accent">
+      "I completely understand. Can I just ask — is it that you feel you don't need it right now, or is there something specific? I just want to make sure I'm not missing something."
+    </div>
+
+    <div class="objection-label">"How much does it cost?"</div>
+    <div class="script-line accent">
+      "The pricing depends on the size of the school and which features make sense for you. That's actually easier to explain in person because I can show you exactly what you'd be getting. It won't take long."
+    </div>
+
+    <div class="objection-label">"We don't have budget right now"</div>
+    <div class="script-line accent">
+      "I hear that — a lot of schools say that. What I usually find is that once they see how much time and money leaks through manual processes, the system actually pays for itself. Would you be open to just seeing it first, no commitment?"
+    </div>
+
+    <div class="objection-label">"Call back later / We're busy"</div>
+    <div class="script-line accent">
+      "Of course — when would be a good time? I want to make sure I call when you can actually give it a few minutes."
+    </div>
+
+    <div class="script-note" style="margin-top:8px">
+      <i class="fas fa-info-circle"></i>
+      Never argue with an objection. Acknowledge it first, then ask a gentle follow-up question. If they are firm, respect it and ask when to call back.
+    </div>
+  </div>
+</div>
+
+<!-- STEP 6 — CLOSE -->
+<div class="script-card">
+  <div class="script-card-header">
+    <span class="stage-badge" style="background:var(--ap-navy2)">Step 6</span>
+    <i class="fas fa-flag-checkered" style="color:var(--ap-accent)"></i>
+    Close — Book the Visit
+  </div>
+  <div class="script-card-body">
+    <div class="script-line">
+      "I'm actually in [area] this week. It would only take about 20 minutes for me to come and show you how it works — I'll bring it on a laptop so you can see a real school using it. Would [suggest a day] work for you, or is there a better day?"
+    </div>
+    <div class="objection-label">If they agree:</div>
+    <div class="script-line green">
+      "Perfect. I'll come by on [day] at [time]. I'll also send you a message the day before to confirm. Thank you so much — I look forward to meeting you."
+    </div>
+    <div class="objection-label">If they are not ready:</div>
+    <div class="script-line accent">
+      "No problem. Let me leave you my number — [your number] — and I'll follow up with you in a few days. Thank you for your time."
+    </div>
+    <div class="script-note">
+      <i class="fas fa-info-circle"></i>
+      Always end with a specific next step — a visit date, a call-back date, or permission to follow up. Never end with "okay goodbye."
+    </div>
+  </div>
+</div>
+
+<!-- AFTER THE CALL -->
+<div class="ap-card" style="border-left:3px solid var(--ap-green);margin-bottom:24px">
+  <div class="ap-card-header"><i class="fas fa-clipboard-check me-2" style="color:var(--ap-green)"></i>After Every Call — Log It Immediately</div>
+  <div class="ap-card-body" style="font-size:.86rem;line-height:2.1">
+    <ul style="margin:0;padding-left:18px">
+      <li>✅ Visit booked → set the visit date in your portal</li>
+      <li>📞 Call back → note who to ask for and the agreed time</li>
+      <li>❌ Not interested → note the reason in case things change later</li>
+      <li>📵 No answer → set a follow-up to try again in 1–2 days</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- end #script-phone -->
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- VISIT SCRIPT (existing) -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div id="script-visit" style="display:none">
+
 <div class="tip-box">
   <i class="fas fa-lightbulb"></i>
   <strong>Key mindset:</strong> You are not selling you are helping a school discover whether CST SchoolHub solves a problem they already have.
@@ -377,3 +610,14 @@
     </ul>
   </div>
 </div>
+
+</div><!-- end #script-visit -->
+
+<script>
+function showScript(tab) {
+  document.getElementById('script-phone').style.display = tab === 'phone' ? '' : 'none';
+  document.getElementById('script-visit').style.display = tab === 'visit' ? '' : 'none';
+  document.getElementById('tab-phone').classList.toggle('active-tab', tab === 'phone');
+  document.getElementById('tab-visit').classList.toggle('active-tab', tab === 'visit');
+}
+</script>
